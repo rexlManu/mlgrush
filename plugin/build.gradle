@@ -1,0 +1,56 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'java'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+compileJava.options.encoding = "UTF-8"
+
+group 'de.rexlmanu.mlgrush'
+version project.property('version')
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+    }
+    maven {
+        url "https://jitpack.io"
+    }
+}
+
+configurations {
+
+}
+
+dependencies {
+    implementation('org.projectlombok:lombok:1.18.20')
+    annotationProcessor('org.projectlombok:lombok:1.18.20')
+    // api('org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT')
+    implementation(files('../libs/spigot-1.8.8.jar'))
+
+    compile('org.jetbrains:annotations:16.0.2')
+    compile('eu.miopowered:packetlistener:1.0')
+   //  compile('eu.miopowered:repository:java8-SNAPSHOT')
+    compile(project(':arenalib'))
+    compile group: 'com.github.cryptomorin', name: 'XSeries', version: '7.9.1.1'
+    compile 'fr.mrmicky:fastboard:v1.1.0'
+
+}
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        filter ReplaceTokens, tokens: [version: version]
+        duplicatesStrategy = 'include'
+    }
+}
+
+shadowJar {
+    relocate 'fr.mrmicky.fastboard', 'de.rexlmanu.mlgrush.plugin.libs.fastboard'
+    relocate 'com.cryptomorin.xseries', 'de.rexlmanu.mlgrush.plugin.libs.xseries'
+    configurations = [project.configurations.compile]
+    destinationDirectory.set(new File("C:\\Users\\Emman\\Desktop\\Workspace\\mlgrush\\libs\\plugins"))
+}

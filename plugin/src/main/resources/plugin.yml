@@ -1,0 +1,14 @@
+name: MLGRush
+version: @version@
+author: Emmanuel Lampe
+main: de.rexlmanu.mlgrush.plugin.GamePlugin
+commands:
+  mlgrush:
+    description: The main command for mlgrush
+    usage: /mlgrush help
+    permission: mlgrush.command.main
+    aliases: mr
+  inventory:
+    description: Change the layout of your inventory
+    usage: /inventory
+    aliases: inv

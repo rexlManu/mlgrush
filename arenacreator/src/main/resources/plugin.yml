@@ -1,0 +1,10 @@
+name: ArenaCreator
+author: Emmanuel Lampe
+main: de.rexlmanu.mlgrush.arenacreator.ArenaCreatorPlugin
+version: @version@
+commands:
+  arenacreator:
+    aliases: ac
+    usage: /arenacreator help
+    description: Tool to create arenas for mlgrush
+    permission: mlgrush.command.arenacreator

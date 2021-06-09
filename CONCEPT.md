@@ -1,0 +1,1 @@
+Player joins a lobby with certain actions

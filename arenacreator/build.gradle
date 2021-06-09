@@ -1,0 +1,55 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'java'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+compileJava.options.encoding = "UTF-8"
+
+group 'de.rexlmanu.mlgrush'
+version project.property('version')
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+    }
+    maven {
+        url "https://jitpack.io"
+    }
+}
+
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
+dependencies {
+    compileOnly ('org.projectlombok:lombok:1.18.20')
+    annotationProcessor('org.projectlombok:lombok:1.18.20')
+    // api('org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT')
+    compileOnly (files('../libs/spigot-1.8.8.jar'))
+
+    shade('org.jetbrains:annotations:16.0.2')
+    shade(project(':arenalib'))
+}
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        filter ReplaceTokens, tokens: [version: version]
+        duplicatesStrategy = 'include'
+    }
+}
+jar {
+    destinationDirectory.set(new File("C:\\Users\\Emman\\Desktop\\Workspace\\mlgrush\\libs\\plugins"))
+
+    configurations.shade.each { dep ->
+        if(!dep.isDirectory() && !dep.path.endsWith(".pom")) {
+            from(project.zipTree(dep)) {
+                exclude 'META-INF', 'META-INF/**'
+            }
+        }
+    }
+}
