@@ -352,7 +352,7 @@ public class Arena implements Listener, Runnable {
 
     private void killPlayer(Player player, boolean ignoreStats) {
         GamePlayer gamePlayer = this.getPlayer(player);
-        if (!ignoreStats) {
+        if (!ignoreStats && gamePlayer.arenaStatistics() != null) {
             gamePlayer.arenaStatistics().addDeath();
             if (gamePlayer.arenaStatistics().lastHitter() != null) {
                 this.getPlayer(gamePlayer.arenaStatistics().lastHitter()).arenaStatistics().addKill();

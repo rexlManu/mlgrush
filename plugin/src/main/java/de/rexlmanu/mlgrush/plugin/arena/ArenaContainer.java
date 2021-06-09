@@ -63,7 +63,10 @@ public class ArenaContainer {
     }
 
     public void abort(Arena arena) {
-        arena.players().forEach(gamePlayer -> gamePlayer.arena(null));
+        arena.players().forEach(gamePlayer -> {
+            gamePlayer.arena(null);
+            gamePlayer.sendMessage("Das Spiel wurde abgebrochen.");
+        });
         this.activeArenas.remove(arena);
     }
 

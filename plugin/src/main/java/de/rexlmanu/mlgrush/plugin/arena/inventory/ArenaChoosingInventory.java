@@ -3,6 +3,7 @@ package de.rexlmanu.mlgrush.plugin.arena.inventory;
 import de.rexlmanu.mlgrush.arenalib.ArenaTemplate;
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.arena.Arena;
+import de.rexlmanu.mlgrush.plugin.arena.ArenaContainer;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
@@ -21,6 +22,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -114,6 +116,16 @@ public class ArenaChoosingInventory implements Listener, Runnable {
             });
         });
 
+    }
+
+    @EventHandler
+    public void handle(PlayerQuitEvent event) {
+        if (this.arena.players().stream().noneMatch(gamePlayer -> gamePlayer.player().equals(event.getPlayer()))) {
+            return;
+        }
+
+        this.unregister();
+        GameManager.instance().arenaContainer().abort(this.arena);
     }
 
     private void updateVotes() {
