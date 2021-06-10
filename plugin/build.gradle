@@ -66,6 +66,4 @@ shadowJar {
 
   configurations = [project.configurations.compile]
   archiveFileName = "mlgrush-${version}.jar"
-
-  destinationDirectory.set(new File("C:\\Users\\Emman\\Desktop\\Workspace\\mlgrush\\libs\\plugins"))
 }
