@@ -1,4 +1,6 @@
 package de.rexlmanu.mlgrush.plugin.game;
 
-public interface GameEnvironment {
+import org.bukkit.event.Listener;
+
+public interface GameEnvironment extends Listener {
 }

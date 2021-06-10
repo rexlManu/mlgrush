@@ -12,6 +12,6 @@ import java.io.Serializable;
 @Accessors(fluent = true)
 @Builder
 public class Position implements Serializable {
-    private double x, y, z;
-    private float yaw, pitch;
+  private double x, y, z;
+  private float yaw, pitch;
 }

@@ -9,11 +9,11 @@ import java.util.List;
 
 public class ArenaCreatorPlugin extends JavaPlugin {
 
-    public static final List<ArenaCreationProcess> ARENA_CREATION_PROCESSES = new ArrayList<>();
+  public static final List<ArenaCreationProcess> ARENA_CREATION_PROCESSES = new ArrayList<>();
 
-    @Override
-    public void onEnable() {
-        this.getDataFolder().mkdir();
-        this.getCommand("arenacreator").setExecutor(new ArenaCreatorCommand());
-    }
+  @Override
+  public void onEnable() {
+    this.getDataFolder().mkdir();
+    this.getCommand("arenacreator").setExecutor(new ArenaCreatorCommand());
+  }
 }

@@ -10,38 +10,38 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 public class Statistics {
-    private int kills, deaths, wins, games, blocks;
+  private int kills, deaths, wins, games, blocks;
 
-    public Statistics() {
-        this.kills = 0;
-        this.deaths = 0;
-        this.wins = 0;
-        this.games = 0;
-        this.blocks = 0;
-    }
+  public Statistics() {
+    this.kills = 0;
+    this.deaths = 0;
+    this.wins = 0;
+    this.games = 0;
+    this.blocks = 0;
+  }
 
-    public Statistics addKills(int kills) {
-        this.kills += kills;
-        return this;
-    }
+  public Statistics addKills(int kills) {
+    this.kills += kills;
+    return this;
+  }
 
-    public Statistics addDeaths(int deaths) {
-        this.deaths += deaths;
-        return this;
-    }
+  public Statistics addDeaths(int deaths) {
+    this.deaths += deaths;
+    return this;
+  }
 
-    public Statistics addBlocks(int blocks) {
-        this.blocks += blocks;
-        return this;
-    }
+  public Statistics addBlocks(int blocks) {
+    this.blocks += blocks;
+    return this;
+  }
 
-    public Statistics addGame() {
-        this.games++;
-        return this;
-    }
+  public Statistics addGame() {
+    this.games++;
+    return this;
+  }
 
-    public Statistics addWin() {
-        this.wins++;
-        return this;
-    }
+  public Statistics addWin() {
+    this.wins++;
+    return this;
+  }
 }

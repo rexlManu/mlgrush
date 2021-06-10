@@ -8,18 +8,18 @@ import java.util.List;
 
 public interface SubCommand {
 
-    @NotNull
-    String name();
+  @NotNull
+  String name();
 
-    @NotNull
-    default String description() {
-        return "";
-    }
+  @NotNull
+  default String description() {
+    return "";
+  }
 
-    void execute(GamePlayer gamePlayer, String[] arguments) throws Exception;
+  void execute(GamePlayer gamePlayer, String[] arguments) throws Exception;
 
-    @NotNull
-    default List<String> suggestions(GamePlayer gamePlayer, String[] arguments) {
-        return new ArrayList<>();
-    }
+  @NotNull
+  default List<String> suggestions(GamePlayer gamePlayer, String[] arguments) {
+    return new ArrayList<>();
+  }
 }

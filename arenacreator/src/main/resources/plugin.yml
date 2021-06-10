@@ -1,7 +1,9 @@
 name: ArenaCreator
-author: Emmanuel Lampe
 main: de.rexlmanu.mlgrush.arenacreator.ArenaCreatorPlugin
 version: @version@
+author: @author@
+description: @description@
+website: @website@
 commands:
   arenacreator:
     aliases: ac

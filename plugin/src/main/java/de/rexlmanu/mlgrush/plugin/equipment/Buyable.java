@@ -4,16 +4,16 @@ import org.bukkit.Material;
 
 public interface Buyable {
 
-    String name();
+  String name();
 
-    default String permission() {
-        return "mlgrush.equipment." + this.name().toLowerCase();
-    }
+  default String permission() {
+    return "mlgrush.equipment." + this.name().toLowerCase();
+  }
 
-    String displayName();
+  String displayName();
 
-    int cost();
+  int cost();
 
-    Material material();
+  Material material();
 
 }

@@ -4,6 +4,6 @@ import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 
 public interface Equipment {
 
-    void onEquip(GamePlayer gamePlayer, int slot);
+  void onEquip(GamePlayer gamePlayer, int slot);
 
 }

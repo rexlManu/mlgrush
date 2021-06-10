@@ -12,42 +12,42 @@ import java.util.Optional;
  */
 public interface Repository<T extends Key> {
 
-    /**
-     * Finds all associated objects and returns them in a {@link ImmutableList} list
-     *
-     * @return all objects
-     */
-    ImmutableList<T> all();
+  /**
+   * Finds all associated objects and returns them in a {@link ImmutableList} list
+   *
+   * @return all objects
+   */
+  ImmutableList<T> all();
 
-    /**
-     * Search for a object with a specific {@link Key}
-     *
-     * @param key the key that is used to search
-     * @return a {@link Optional} with the object, could be empty
-     */
-    Optional<T> find(@NotNull Key key);
+  /**
+   * Search for a object with a specific {@link Key}
+   *
+   * @param key the key that is used to search
+   * @return a {@link Optional} with the object, could be empty
+   */
+  Optional<T> find(@NotNull Key key);
 
-    /**
-     * Executes the create operation for a object
-     *
-     * @param object the object that should be inserted
-     * @return should return false if the object is already inserted
-     */
-    boolean insert(@NotNull T object);
+  /**
+   * Executes the create operation for a object
+   *
+   * @param object the object that should be inserted
+   * @return should return false if the object is already inserted
+   */
+  boolean insert(@NotNull T object);
 
-    /**
-     * Update a object to save it
-     *
-     * @param object the object that should be updated
-     * @return a if the action was successful
-     */
-    boolean update(@NotNull T object);
+  /**
+   * Update a object to save it
+   *
+   * @param object the object that should be updated
+   * @return a if the action was successful
+   */
+  boolean update(@NotNull T object);
 
-    /**
-     * Deletes a object by {@link Key}
-     *
-     * @param key the key from the object
-     * @return should only return false if the object dont exist
-     */
-    boolean delete(@NotNull Key key);
+  /**
+   * Deletes a object by {@link Key}
+   *
+   * @param key the key from the object
+   * @return should only return false if the object dont exist
+   */
+  boolean delete(@NotNull Key key);
 }

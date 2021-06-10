@@ -10,29 +10,29 @@ import java.util.Optional;
 
 public class LocationProvider {
 
-    private File file;
-    private FileConfiguration configuration;
+  private File file;
+  private FileConfiguration configuration;
 
-    public LocationProvider(File dataFolder) {
-        this.file = dataFolder.toPath().resolve("location.yml").toFile();
-        this.configuration = YamlConfiguration.loadConfiguration(this.file);
-        if (!this.file.exists()) this.save();
-    }
+  public LocationProvider(File dataFolder) {
+    this.file = dataFolder.toPath().resolve("location.yml").toFile();
+    this.configuration = YamlConfiguration.loadConfiguration(this.file);
+    if (!this.file.exists()) this.save();
+  }
 
-    public void save() {
-        try {
-            this.configuration.save(this.file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+  public void save() {
+    try {
+      this.configuration.save(this.file);
+    } catch (IOException e) {
+      e.printStackTrace();
     }
+  }
 
-    public Optional<Location> get(String key) {
-        return Optional.ofNullable((Location) this.configuration.get(key));
-    }
+  public Optional<Location> get(String key) {
+    return Optional.ofNullable((Location) this.configuration.get(key));
+  }
 
-    public void set(String key, Location location) {
-        this.configuration.set(key, location);
-        this.save();
-    }
+  public void set(String key, Location location) {
+    this.configuration.set(key, location);
+    this.save();
+  }
 }

@@ -1,6 +1,8 @@
 name: MLGRush
 version: @version@
-author: Emmanuel Lampe
+author: @author@
+description: @description@
+website: @website@
 main: de.rexlmanu.mlgrush.plugin.GamePlugin
 commands:
   mlgrush:

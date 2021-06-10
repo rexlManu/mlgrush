@@ -16,11 +16,11 @@ import java.util.Map;
 @Data
 @Builder
 public class ArenaTemplate implements Serializable {
-    private String displayMaterial;
-    private String name;
-    private String description;
-    private Map<String, Position> positionMap;
-    private List<Ingredient> ingredients;
-    // x, y, z, code
-    private int[][][] layout;
+  private String displayMaterial;
+  private String name;
+  private String description;
+  private Map<String, Position> positionMap;
+  private List<Ingredient> ingredients;
+  // x, y, z, code
+  private int[][][] layout;
 }

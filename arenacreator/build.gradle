@@ -1,55 +1,57 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id 'java'
+  id 'com.github.johnrengelman.shadow' version '6.1.0'
+  id 'java'
 }
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = targetCompatibility = '1.8'
 compileJava.options.encoding = "UTF-8"
 
 group 'de.rexlmanu.mlgrush'
 version project.property('version')
 
-repositories {
-    mavenCentral()
-    maven {
-        url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
-    }
-    maven {
-        url "https://jitpack.io"
-    }
-}
+tasks.build.dependsOn tasks.shadowJar
 
-configurations {
-    shade
-    compile.extendsFrom shade
+repositories {
+  mavenCentral()
+  maven {
+    name "spigot-repo"
+    url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+  }
+  maven {
+    name "bungeecord-repo"
+    url "https://oss.sonatype.org/content/repositories/snapshots"
+  }
 }
 
 dependencies {
-    compileOnly ('org.projectlombok:lombok:1.18.20')
-    annotationProcessor('org.projectlombok:lombok:1.18.20')
-    // api('org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT')
-    compileOnly (files('../libs/spigot-1.8.8.jar'))
+  implementation('org.projectlombok:lombok:1.18.20')
+  annotationProcessor('org.projectlombok:lombok:1.18.20')
+  implementation('org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT')
+//    compileOnly (files('../libs/spigot-1.8.8.jar')) // for nms
 
-    shade('org.jetbrains:annotations:16.0.2')
-    shade(project(':arenalib'))
+  compile('org.jetbrains:annotations:16.0.2')
+  compile(project(':arenalib')) {
+    transitive = false
+  }
 }
 
 processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: version]
-        duplicatesStrategy = 'include'
-    }
+  from(sourceSets.main.resources.srcDirs) {
+    filter ReplaceTokens, tokens: [
+      version    : version,
+      description: project.property('plugin.description'),
+      author     : project.property('plugin.author'),
+      website    : project.property('plugin.website'),
+    ]
+    duplicatesStrategy = 'include'
+  }
 }
-jar {
-    destinationDirectory.set(new File("C:\\Users\\Emman\\Desktop\\Workspace\\mlgrush\\libs\\plugins"))
 
-    configurations.shade.each { dep ->
-        if(!dep.isDirectory() && !dep.path.endsWith(".pom")) {
-            from(project.zipTree(dep)) {
-                exclude 'META-INF', 'META-INF/**'
-            }
-        }
-    }
+shadowJar {
+  configurations = [project.configurations.compile]
+  archiveFileName = "arenacreator-${version}.jar"
+
+  destinationDirectory.set(new File("C:\\Users\\Emman\\Desktop\\Workspace\\mlgrush\\libs\\plugins"))
 }

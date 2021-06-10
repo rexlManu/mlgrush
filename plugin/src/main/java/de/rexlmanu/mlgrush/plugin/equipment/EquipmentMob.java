@@ -16,10 +16,10 @@ import java.util.List;
 @Builder
 public class EquipmentMob {
 
-    private EntityType entityType;
-    private List<String> lines;
-    private String locationName;
-    private String inventoryName;
-    private Buyable[] elements;
+  private EntityType entityType;
+  private List<String> lines;
+  private String locationName;
+  private String inventoryName;
+  private Buyable[] elements;
 
 }

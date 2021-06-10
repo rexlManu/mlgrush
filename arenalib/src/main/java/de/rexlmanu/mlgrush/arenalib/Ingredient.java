@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Data
 @Accessors(fluent = true)
 public class Ingredient implements Serializable {
-    private int code;
-    private String material;
-    private int data;
+  private int code;
+  private String material;
+  private int data;
 }

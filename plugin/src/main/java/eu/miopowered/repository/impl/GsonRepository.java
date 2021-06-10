@@ -26,117 +26,117 @@ import java.util.stream.Collectors;
  */
 public class GsonRepository<T extends Key> implements Repository<T> {
 
-    private static final Gson GSON = new GsonBuilder().serializeNulls().create();
+  private static final Gson GSON = new GsonBuilder().serializeNulls().create();
 
-    /**
-     * Creates a instance for {@link GsonRepository} declared {@link Repository}
-     *
-     * @param directory the directory where the objects are saved
-     * @param type      the object class is needed to deserialize the object back to the class
-     * @param <T>       the object type
-     * @return Repository instance
-     */
-    public static <T extends Key> Repository<T> of(Path directory, Class<T> type) {
-        return new GsonRepository<>(directory, type);
+  /**
+   * Creates a instance for {@link GsonRepository} declared {@link Repository}
+   *
+   * @param directory the directory where the objects are saved
+   * @param type      the object class is needed to deserialize the object back to the class
+   * @param <T>       the object type
+   * @return Repository instance
+   */
+  public static <T extends Key> Repository<T> of(Path directory, Class<T> type) {
+    return new GsonRepository<>(directory, type);
+  }
+
+  private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
+
+  private final Path directory;
+  private final Class<T> type;
+
+  private GsonRepository(Path directory, Class<T> type) {
+    this.directory = directory;
+    this.type = type;
+  }
+
+  @Override
+  public ImmutableList<T> all() {
+    try {
+      return ImmutableList.copyOf(Files.list(this.directory)
+        .map(this::read)
+        .map(this::fromJson)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList()));
+    } catch (IOException e) {
+      logger.log(Level.SEVERE, "Failed to find all elements.", e);
+      return null;
     }
+  }
 
-    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
-
-    private final Path directory;
-    private final Class<T> type;
-
-    private GsonRepository(Path directory, Class<T> type) {
-        this.directory = directory;
-        this.type = type;
+  @Override
+  public Optional<T> find(@NotNull Key key) {
+    try {
+      return Optional.ofNullable(
+        this.fromJson(new String(Files.readAllBytes(this.directory.resolve(this.keyAsFileName(key)))))
+      );
+    } catch (IOException e) {
+      logger.log(Level.SEVERE, "Could not found any element with that key.", e);
+      return Optional.empty();
     }
+  }
 
-    @Override
-    public ImmutableList<T> all() {
-        try {
-            return ImmutableList.copyOf(Files.list(this.directory)
-                    .map(this::read)
-                    .map(this::fromJson)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList()));
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Failed to find all elements.", e);
-            return null;
-        }
+  @Override
+  public boolean insert(@NotNull T object) {
+    try {
+      Files.write(
+        this.directory.resolve(this.keyAsFileName(object)),
+        this.toJson(object).getBytes(),
+        StandardOpenOption.CREATE_NEW
+      );
+      return true;
+    } catch (IOException e) {
+      logger.log(Level.SEVERE, "Error occurred while inserting data.", e);
+      return false;
     }
+  }
 
-    @Override
-    public Optional<T> find(@NotNull Key key) {
-        try {
-            return Optional.ofNullable(
-                    this.fromJson(new String(Files.readAllBytes(this.directory.resolve(this.keyAsFileName(key)))))
-            );
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Could not found any element with that key.", e);
-            return Optional.empty();
-        }
+  @Override
+  public boolean update(@NotNull T object) {
+    try {
+      Files.write(
+        this.directory.resolve(this.keyAsFileName(object)),
+        this.toJson(object).getBytes(),
+        StandardOpenOption.CREATE,
+        StandardOpenOption.WRITE,
+        StandardOpenOption.TRUNCATE_EXISTING
+      );
+      return true;
+    } catch (IOException e) {
+      logger.log(Level.SEVERE, "Error occurred while updating data.", e);
+      return false;
     }
+  }
 
-    @Override
-    public boolean insert(@NotNull T object) {
-        try {
-            Files.write(
-                    this.directory.resolve(this.keyAsFileName(object)),
-                    this.toJson(object).getBytes(),
-                    StandardOpenOption.CREATE_NEW
-            );
-            return true;
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error occurred while inserting data.", e);
-            return false;
-        }
+  @Override
+  public boolean delete(@NotNull Key key) {
+    try {
+      return Files.deleteIfExists(this.directory.resolve(this.keyAsFileName(key)));
+    } catch (IOException e) {
+      logger.log(Level.SEVERE, "Error occurred while deleting data.", e);
+      return false;
     }
+  }
 
-    @Override
-    public boolean update(@NotNull T object) {
-        try {
-            Files.write(
-                    this.directory.resolve(this.keyAsFileName(object)),
-                    this.toJson(object).getBytes(),
-                    StandardOpenOption.CREATE,
-                    StandardOpenOption.WRITE,
-                    StandardOpenOption.TRUNCATE_EXISTING
-            );
-            return true;
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error occurred while updating data.", e);
-            return false;
-        }
+  private String read(Path path) {
+    try {
+      return new String(Files.readAllBytes(path));
+    } catch (IOException e) {
+      logger.log(Level.SEVERE, "Error occurred while reading data.", e);
+      return null;
     }
+  }
 
-    @Override
-    public boolean delete(@NotNull Key key) {
-        try {
-            return Files.deleteIfExists(this.directory.resolve(this.keyAsFileName(key)));
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error occurred while deleting data.", e);
-            return false;
-        }
-    }
+  private String keyAsFileName(Key key) {
+    return key.getKey() + ".json";
+  }
 
-    private String read(Path path) {
-        try {
-            return new String(Files.readAllBytes(path));
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error occurred while reading data.", e);
-            return null;
-        }
-    }
+  private String toJson(T object) {
+    return GSON.toJson(object, object.getClass());
+  }
 
-    private String keyAsFileName(Key key) {
-        return key.getKey() + ".json";
-    }
-
-    private String toJson(T object) {
-        return GSON.toJson(object, object.getClass());
-    }
-
-    private T fromJson(String content) {
-        if (content == null) return null;
-        return GSON.fromJson(content, this.type);
-    }
+  private T fromJson(String content) {
+    if (content == null) return null;
+    return GSON.fromJson(content, this.type);
+  }
 }

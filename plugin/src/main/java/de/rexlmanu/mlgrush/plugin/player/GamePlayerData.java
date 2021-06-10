@@ -16,35 +16,35 @@ import java.util.UUID;
 @Setter
 public class GamePlayerData implements Key {
 
-    private UUID uniqueId;
-    private int coins;
-    private List<String> boughtItems;
-    private List<String> inventorySorting;
-    private Statistics statistics;
-    private String selectedStick, selectedBlock;
+  private UUID uniqueId;
+  private int coins;
+  private List<String> boughtItems;
+  private List<String> inventorySorting;
+  private Statistics statistics;
+  private String selectedStick, selectedBlock;
 
-    public GamePlayerData(UUID uniqueId) {
-        this.uniqueId = uniqueId;
-        this.coins = 0;
-        this.boughtItems = new ArrayList<>();
-        this.inventorySorting = new ArrayList<String>() {{
-            add("stick");
-            add("pickaxe");
-            add("block");
-            add(null);
-            add(null);
-            add(null);
-            add(null);
-            add(null);
-            add(null);
-        }};
-        this.statistics = new Statistics();
-        this.selectedStick = null;
-        this.selectedBlock = null;
-    }
+  public GamePlayerData(UUID uniqueId) {
+    this.uniqueId = uniqueId;
+    this.coins = 0;
+    this.boughtItems = new ArrayList<>();
+    this.inventorySorting = new ArrayList<String>() {{
+      add("stick");
+      add("pickaxe");
+      add("block");
+      add(null);
+      add(null);
+      add(null);
+      add(null);
+      add(null);
+      add(null);
+    }};
+    this.statistics = new Statistics();
+    this.selectedStick = null;
+    this.selectedBlock = null;
+  }
 
-    @Override
-    public String getKey() {
-        return uniqueId.toString();
-    }
+  @Override
+  public String getKey() {
+    return uniqueId.toString();
+  }
 }
