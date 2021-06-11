@@ -69,6 +69,7 @@ public class LobbyEnvironment implements GameEnvironment {
       player.getInventory().setItem(8, LEAVE_ITEM);
       player.getInventory().setItem(4, SPECATOR_ITEM);
       player.getInventory().setItem(0, CHALLENGER_ITEM);
+      event.gamePlayer().sendMessage("Hey, willkommen zurück!");
     });
     coordinator.add(environment, AsyncPlayerChatEvent.class, event -> {
       event.target().setCancelled(true);
