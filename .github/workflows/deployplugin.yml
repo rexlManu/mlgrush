@@ -19,7 +19,9 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: Artifacts
-          path: build/libs/
+          path: |
+            plugin/build/libs/*.jar
+            arenacreator/build/libs/*.jar
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@master
         with:
