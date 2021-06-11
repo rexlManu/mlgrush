@@ -32,8 +32,10 @@ import java.util.Arrays;
 public class LobbyEnvironment implements GameEnvironment {
 
   private static ItemStack LEAVE_ITEM = ItemStackBuilder.of(Material.IRON_DOOR).name("&8» &eSpiel verlassen").build();
+  private static ItemStack SPECATOR_ITEM = ItemStackBuilder.of(Material.COMPASS).name("&8» &eSpectator").build();
+
   private static ItemStack CHALLENGER_ITEM = ItemStackBuilder.of(Material.IRON_SWORD).name("&8» &eQueue")
-    .lore("&7<Rechtsklick> &8- &eQueue beitreten / verlassen",
+    .lore("&7<Rechtsklick> &8- &eHerausforderung annehmen",
       "&7<Linksklick> &8- &eSpieler herausfordern").build();
 
   public LobbyEnvironment() {
@@ -64,6 +66,9 @@ public class LobbyEnvironment implements GameEnvironment {
 
       GameManager.instance().arenaManager().arenaContainer().activeArenas().forEach(arena ->
         arena.players().forEach(gamePlayer -> gamePlayer.player().hidePlayer(player)));
+      player.getInventory().setItem(8, LEAVE_ITEM);
+      player.getInventory().setItem(4, SPECATOR_ITEM);
+      player.getInventory().setItem(0, CHALLENGER_ITEM);
     });
     coordinator.add(environment, AsyncPlayerChatEvent.class, event -> {
       event.target().setCancelled(true);
