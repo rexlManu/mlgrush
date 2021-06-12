@@ -35,7 +35,7 @@ public class GamePlayer {
   private Environment environment;
 
   private Map<UUID, Long> challengeRequests;
-  private boolean creatingGame;
+  private boolean creatingGame, buildMode;
 
   public GamePlayer(UUID uniqueId) {
     this.uniqueId = uniqueId;
@@ -43,6 +43,7 @@ public class GamePlayer {
     this.fastBoard = new FastBoard(this.player());
     this.environment = Environment.LOBBY;
     this.creatingGame = false;
+    this.buildMode = false;
 
     this.challengeRequests = ExpiringMap
       .builder()

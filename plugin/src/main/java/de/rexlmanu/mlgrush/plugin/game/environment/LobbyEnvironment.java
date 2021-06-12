@@ -67,8 +67,8 @@ public class LobbyEnvironment implements GameEnvironment {
 
       PlayerProvider.getPlayers(ENVIRONMENT).forEach(gamePlayer -> gamePlayer.player().sendMessage(message));
     });
-    coordinator.add(ENVIRONMENT, BlockPlaceEvent.class, event -> event.target().setCancelled(true));
-    coordinator.add(ENVIRONMENT, BlockBreakEvent.class, event -> event.target().setCancelled(true));
+    coordinator.add(ENVIRONMENT, BlockPlaceEvent.class, event -> event.target().setCancelled(!event.gamePlayer().buildMode()));
+    coordinator.add(ENVIRONMENT, BlockBreakEvent.class, event -> event.target().setCancelled(!event.gamePlayer().buildMode()));
     coordinator.add(ENVIRONMENT, PlayerInteractEvent.class, event -> {
       Player player = event.gamePlayer().player();
       if (event.target().getAction().name().contains("RIGHT")) {
@@ -95,7 +95,10 @@ public class LobbyEnvironment implements GameEnvironment {
         || !CHALLENGER_ITEM.equals(event.target().getPlayer().getItemInHand())) return;
       PlayerProvider.find(event.target().getRightClicked().getUniqueId()).ifPresent(target -> {
         GamePlayer gamePlayer = event.gamePlayer();
-        if (!gamePlayer.challengeRequests().containsKey(target.uniqueId()) || gamePlayer.creatingGame() || target.creatingGame())
+        if (!CHALLENGER_ITEM.equals(event.target().getPlayer().getItemInHand())
+          || !gamePlayer.challengeRequests().containsKey(target.uniqueId())
+          || gamePlayer.creatingGame()
+          || target.creatingGame())
           return;
         gamePlayer.challengeRequests().remove(target.uniqueId());
         gamePlayer.sendMessage(String.format("Du hast zum Duell mit &e%s&7 zugestimmt.", target.player().getName()));

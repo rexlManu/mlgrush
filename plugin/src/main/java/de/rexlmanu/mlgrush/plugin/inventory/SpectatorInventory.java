@@ -122,7 +122,7 @@ public class SpectatorInventory implements Listener, Runnable {
   private IntStream getInnerSlots() {
     return IntStream.range(9, this.inventory.getSize() - 7) // remove the first and last row
       .filter(value -> value % 9 != 0 && value % 9 != 1) // remove the first and last slot
-      .map(operand -> operand + 1); // add 9 to every slot because we removed the first row so the count is not correct otherwise
+      .map(operand -> operand - 1); // add 9 to every slot because we removed the first row so the count is not correct otherwise
   }
 
   private int getNextFreeSlot() {

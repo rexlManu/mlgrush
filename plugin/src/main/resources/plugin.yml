@@ -14,3 +14,7 @@ commands:
     description: Change the layout of your inventory
     usage: /inventory
     aliases: inv
+  quit:
+    description: Leave the game
+    usage: /quit
+    aliases: [ q, surrender, leave, lobby ]

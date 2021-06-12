@@ -2,6 +2,7 @@ package de.rexlmanu.mlgrush.plugin.command;
 
 import de.rexlmanu.mlgrush.plugin.Constants;
 import de.rexlmanu.mlgrush.plugin.command.exception.CommandParameterMissingException;
+import de.rexlmanu.mlgrush.plugin.command.subs.BuildCommand;
 import de.rexlmanu.mlgrush.plugin.command.subs.DebugCommand;
 import de.rexlmanu.mlgrush.plugin.command.subs.HelpCommand;
 import de.rexlmanu.mlgrush.plugin.command.subs.SetLocationCommand;
@@ -29,6 +30,7 @@ public class MainCommand implements CommandExecutor, TabExecutor {
     this.commands.add(new SetLocationCommand());
     this.commands.add(new HelpCommand(this.commands));
     this.commands.add(new DebugCommand());
+    this.commands.add(new BuildCommand());
   }
 
   @Override

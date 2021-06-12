@@ -2,6 +2,7 @@ package de.rexlmanu.mlgrush.plugin;
 
 import de.rexlmanu.mlgrush.plugin.command.InventoryCommand;
 import de.rexlmanu.mlgrush.plugin.command.MainCommand;
+import de.rexlmanu.mlgrush.plugin.command.QuitCommand;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayerData;
 import de.rexlmanu.mlgrush.plugin.task.ArenaActionbarTask;
@@ -43,6 +44,7 @@ public class GamePlugin extends JavaPlugin {
     command.setTabCompleter(executor);
 
     this.getCommand("inventory").setExecutor(new InventoryCommand());
+    this.getCommand("quit").setExecutor(new QuitCommand());
 
     // StatsHandler.updateStatsWall();
     // Bukkit.getScheduler().runTaskTimerAsynchronously(this, StatsHandler::updateStatsWall, 0, 10 * 60 * 20);
