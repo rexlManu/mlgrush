@@ -17,6 +17,7 @@ import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.utility.LocationUtils;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
+import de.rexlmanu.mlgrush.plugin.utility.RandomElement;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -137,6 +138,26 @@ public class ArenaEnvironment implements GameEnvironment {
         if (event.target().killer() != null)
           arena.statsFromPlayer(event.target().killer()).addKill();
       }));
+    coordinator.add(Environment.LOBBY, PlayerMoveEvent.class, event -> {
+      Location to = event.target().getTo();
+      Location from = event.target().getFrom();
+      if (to.getX() == from.getX()
+        && to.getY() == from.getY()
+        && to.getZ() == from.getZ()) return;
+
+      arenaManager
+        .arenaContainer()
+        .activeArenas()
+        .stream()
+        .filter(arena -> arena.spectators().contains(event.gamePlayer()))
+        .findAny()
+        .ifPresent(arena -> {
+          if (arena.region().contains(to)) {
+            // Teleport back to random spawn
+            event.gamePlayer().player().teleport(RandomElement.of(arena.gameTeams()).spawnLocation());
+          }
+        });
+    });
   }
 
   @EventHandler
