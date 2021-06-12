@@ -18,6 +18,7 @@ public class QuitCommand implements CommandExecutor {
         return;
       }
       GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(gamePlayer).ifPresent(arena -> {
+        arena.getTeam(gamePlayer).members().remove(gamePlayer);
         arena.players().forEach(target -> target.sendMessage(String.format("&e%s &7hat das Spiel verlassen.", gamePlayer.player().getName())));
         gamePlayer.sendMessage("Du hast das Spiel verlassen.");
         GameManager.instance().arenaManager().delete(arena);
