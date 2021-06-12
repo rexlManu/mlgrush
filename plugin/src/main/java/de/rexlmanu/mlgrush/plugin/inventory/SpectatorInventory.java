@@ -107,7 +107,8 @@ public class SpectatorInventory implements Listener, Runnable {
 
   private void reorderItems() {
     int index = 0;
-    for (int slot = 0; slot < this.getInnerSlots().toArray().length; slot++) {
+    int[] innerSlots = this.getInnerSlots().toArray();
+    for (int slot : innerSlots) {
       if (this.arenaDisplayItems.size() <= index) {
         this.inventory.setItem(slot, null);
         continue;
