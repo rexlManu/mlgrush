@@ -60,6 +60,8 @@ public class ArenaManager {
   }
 
   public void create(List<GamePlayer> players) {
+    // Prevent dupe arenas, I dont know when could that happen but better to protect against that
+    if (players.stream().anyMatch(GamePlayer::creatingGame)) return;
     ArenaChoosingInventory.create(players).whenComplete((template, throwable) -> {
       if (throwable != null) {
         players.forEach(gamePlayer -> gamePlayer.sendMessage("Das Spiel konnte nicht erstellt werden."));
@@ -69,7 +71,7 @@ public class ArenaManager {
         .arenaTemplate(template)
         .startPoint(new Location(this.arenaContainer.world(), this.getNextFreeX(), HEIGHT, SPACE_Z))
         .build();
-      players.forEach(gamePlayer -> gamePlayer.creatingGame(true).sendMessage("Das Spiel wird erstellt."));
+      players.forEach(gamePlayer -> gamePlayer.sendMessage("Das Spiel wird erstellt."));
       ArenaWriter.generateTemplate(configuration);
       this.arenaContainer.register(players, configuration);
       GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);

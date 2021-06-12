@@ -68,7 +68,7 @@ public class ArenaChoosingInventory implements Listener, Runnable {
     this.createPattern();
     this.createTemplateItems();
 
-    this.players.forEach(gamePlayer -> gamePlayer.player().openInventory(this.inventory));
+    this.players.forEach(gamePlayer -> gamePlayer.creatingGame(true).player().openInventory(this.inventory));
   }
 
   private void createPattern() {
