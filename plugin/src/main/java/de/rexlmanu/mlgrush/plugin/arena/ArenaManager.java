@@ -72,7 +72,7 @@ public class ArenaManager {
         .arenaTemplate(template)
         .startPoint(new Location(this.arenaContainer.world(), this.getNextFreeX(), HEIGHT, SPACE_Z))
         .build();
-
+      players.forEach(gamePlayer -> gamePlayer.sendMessage("Das Spiel wird erstellt."));
       ArenaWriter.generateTemplate(configuration);
       this.arenaContainer.register(players, configuration);
       GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
