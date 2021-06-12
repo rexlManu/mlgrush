@@ -31,10 +31,10 @@ public class LobbyEnvironment implements GameEnvironment {
 
   private static final Environment ENVIRONMENT = Environment.LOBBY;
 
-  private static ItemStack LEAVE_ITEM = ItemStackBuilder.of(Material.IRON_DOOR).name("&8» &eSpiel verlassen").build();
-  private static ItemStack SPECATOR_ITEM = ItemStackBuilder.of(Material.COMPASS).name("&8» &eSpectator").build();
+  public static ItemStack LEAVE_ITEM = ItemStackBuilder.of(Material.IRON_DOOR).name("&8» &eSpiel verlassen").build();
+  public static ItemStack SPECATOR_ITEM = ItemStackBuilder.of(Material.COMPASS).name("&8» &eSpectator").build();
 
-  private static ItemStack CHALLENGER_ITEM = ItemStackBuilder.of(Material.IRON_SWORD).name("&8» &eQueue")
+  public static ItemStack CHALLENGER_ITEM = ItemStackBuilder.of(Material.IRON_SWORD).name("&8» &eQueue")
     .lore("&7<Rechtsklick> &8- &eHerausforderung annehmen",
       "&7<Linksklick> &8- &eSpieler herausfordern").build();
 
@@ -56,7 +56,7 @@ public class LobbyEnvironment implements GameEnvironment {
 
       GameManager.instance().arenaManager().arenaContainer().activeArenas().forEach(arena ->
         arena.players().forEach(gamePlayer -> gamePlayer.player().hidePlayer(player)));
-      this.giveLobbyItems(player);
+      GameManager.instance().giveLobbyItems(player);
     });
     coordinator.add(ENVIRONMENT, AsyncPlayerChatEvent.class, event -> {
       event.target().setCancelled(true);
@@ -82,9 +82,6 @@ public class LobbyEnvironment implements GameEnvironment {
 
       if (BACK_TO_LOBBY_ITEM.equals(event.target().getItem())) {
         GameManager.instance().arenaManager().removeSpectator(event.gamePlayer());
-        PlayerUtils.resetPlayer(player);
-        GameManager.instance().locationProvider().get("spawn").ifPresent(player::teleport);
-        this.giveLobbyItems(player);
         return;
       }
     });
@@ -102,12 +99,6 @@ public class LobbyEnvironment implements GameEnvironment {
         GameManager.instance().arenaManager().create(Arrays.asList(event.gamePlayer(), gamePlayer));
       });
     });
-  }
-
-  private void giveLobbyItems(Player player) {
-    player.getInventory().setItem(8, LEAVE_ITEM);
-    player.getInventory().setItem(4, SPECATOR_ITEM);
-    player.getInventory().setItem(0, CHALLENGER_ITEM);
   }
 
   @EventHandler(priority = EventPriority.LOWEST)

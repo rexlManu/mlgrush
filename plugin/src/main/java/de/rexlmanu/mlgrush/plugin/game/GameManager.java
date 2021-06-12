@@ -22,6 +22,7 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
@@ -144,6 +145,12 @@ public class GameManager {
 
   public void onDisable() {
     this.interactiveMobs.forEach(InteractiveMob::remove);
+    this.arenaManager.arenaContainer().activeArenas().forEach(this.arenaManager::destroy);
   }
 
+  public void giveLobbyItems(Player player) {
+    player.getInventory().setItem(8, LobbyEnvironment.LEAVE_ITEM);
+    player.getInventory().setItem(4, LobbyEnvironment.SPECATOR_ITEM);
+    player.getInventory().setItem(0, LobbyEnvironment.CHALLENGER_ITEM);
+  }
 }

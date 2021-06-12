@@ -81,6 +81,7 @@ public class ArenaManager {
 
   public void destroy(Arena arena) {
     arena.players().forEach(gamePlayer -> gamePlayer.environment(Environment.LOBBY));
+    arena.spectators().forEach(this::removeSpectator);
     Bukkit.getScheduler().runTask(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> {
       arena.players().stream().filter(gamePlayer -> Objects.nonNull(gamePlayer.player()))
         .forEach(gamePlayer -> {
@@ -140,7 +141,11 @@ public class ArenaManager {
   }
 
   public void removeSpectator(GamePlayer gamePlayer) {
+    Player player = gamePlayer.player();
+    PlayerUtils.resetPlayer(player);
+    GameManager.instance().locationProvider().get("spawn").ifPresent(player::teleport);
     gamePlayer.sound(Sound.ORB_PICKUP, 2f);
+    GameManager.instance().giveLobbyItems(player);
     this.arenaContainer
       .activeArenas()
       .stream()
