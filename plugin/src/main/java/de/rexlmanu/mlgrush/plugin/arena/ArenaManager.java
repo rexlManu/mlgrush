@@ -133,11 +133,10 @@ public class ArenaManager {
     player.teleport(RandomElement.of(arena.gameTeams()).spawnLocation());
 
     player.setGameMode(GameMode.SPECTATOR);
-    PlayerUtils.updateGameMode(player, GameMode.SURVIVAL);
     player.setAllowFlight(true);
     player.getInventory().setItem(4, LobbyEnvironment.BACK_TO_LOBBY_ITEM);
     gamePlayer.sound(Sound.LEVEL_UP, 2f);
-    PlayerUtils.updateGameMode(player, GameMode.SURVIVAL);
+    PlayerUtils.updateGameMode(player, GameMode.ADVENTURE);
   }
 
   public void removeSpectator(GamePlayer gamePlayer) {
