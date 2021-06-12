@@ -152,7 +152,7 @@ public class ArenaEnvironment implements GameEnvironment {
         .filter(arena -> arena.spectators().contains(event.gamePlayer()))
         .findAny()
         .ifPresent(arena -> {
-          if (arena.region().contains(to)) {
+          if (!arena.region().contains(to)) {
             // Teleport back to random spawn
             event.gamePlayer().player().teleport(RandomElement.of(arena.gameTeams()).spawnLocation());
           }
