@@ -80,8 +80,8 @@ public class ArenaManager {
 
   public void destroy(Arena arena) {
     arena.players().forEach(gamePlayer -> gamePlayer.creatingGame(false).environment(Environment.LOBBY));
-    arena.spectators().forEach(this::removeSpectator);
     Bukkit.getScheduler().runTask(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> {
+      arena.spectators().forEach(this::removeSpectator);
       arena.players().stream().filter(gamePlayer -> Objects.nonNull(gamePlayer.player()))
         .forEach(gamePlayer -> {
           Player player = gamePlayer.player();
