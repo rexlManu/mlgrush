@@ -110,18 +110,18 @@ public class SpectatorInventory implements Listener, Runnable {
     int[] innerSlots = this.getInnerSlots().toArray();
     for (int slot : innerSlots) {
       if (this.arenaDisplayItems.size() <= index) {
-        this.inventory.setItem(slot, null);
+        this.inventory.setItem(slot - 1, null);
         continue;
       }
       ArenaDisplayItem displayItem = this.arenaDisplayItems.get(index);
-      displayItem.slot(slot);
-      this.inventory.setItem(slot, displayItem.itemStack());
+      displayItem.slot(slot - 1);
+      this.inventory.setItem(displayItem.slot(), displayItem.itemStack());
     }
   }
 
   private IntStream getInnerSlots() {
     return IntStream.range(9, this.inventory.getSize() - 7) // remove the first and last row
-      .filter(value -> value % 9 != 0 && value % 8 != 0) // remove the first and last slot
+      .filter(value -> value % 9 != 0 && value % 9 != 1) // remove the first and last slot
       .map(operand -> operand + 9); // add 9 to every slot because we removed the first row so the count is not correct otherwise
   }
 
