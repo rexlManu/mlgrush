@@ -17,6 +17,8 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
 import java.io.File;
@@ -74,6 +76,9 @@ public class GameManager {
     this.interactiveMobs = new ArrayList<>();
     this.environments = Arrays.asList(new LobbyEnvironment(), new ArenaEnvironment());
     this.scoreboardHandler = new ScoreboardHandler();
+
+    // Sometimes in development it happens when the server don't get nicely shutdown, the 'old' are still there and you can't use the new spawned one.
+    Bukkit.getWorlds().stream().map(World::getLivingEntities).forEach(livingEntities -> livingEntities.forEach(Entity::remove));
 
     this.locationProvider.get("queue-npc").ifPresent(location -> this.interactiveMobs.add(new InteractiveMob(EntityType.WITCH, Arrays.asList(
       "&8» &eQueue",
