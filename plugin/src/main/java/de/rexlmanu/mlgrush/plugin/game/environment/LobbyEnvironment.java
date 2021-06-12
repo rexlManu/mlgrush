@@ -19,6 +19,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
@@ -144,15 +145,23 @@ public class LobbyEnvironment implements GameEnvironment {
       event.setCancelled(true);
       return;
     }
-    Player player = (Player) event.getEntity();
     PlayerProvider.find(event.getEntity().getUniqueId())
       .filter(gamePlayer -> gamePlayer.environment().equals(Environment.LOBBY))
-      .ifPresent(target -> {
-        event.setCancelled(true);
-        PlayerProvider.find(player.getUniqueId()).ifPresent(gamePlayer -> {
-          if (target.challengeRequests().containsKey(player.getUniqueId())) return;
-          target.challengeRequests().put(player.getUniqueId(), System.currentTimeMillis());
-          target.sendMessage(String.format("Du wurdest von &e%s&7 zum Duell herausgefordert.", player.getName()));
+      .ifPresent(target -> event.setCancelled(true));
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  public void handle(EntityDamageByEntityEvent event) {
+    if (!(event.getEntity() instanceof Player)
+      || !(event.getDamager() instanceof Player)) return;
+
+    PlayerProvider.find(event.getDamager().getUniqueId())
+      .filter(gamePlayer -> gamePlayer.environment().equals(Environment.LOBBY))
+      .ifPresent(gamePlayer -> {
+        PlayerProvider.find(event.getEntity().getUniqueId()).ifPresent(target -> {
+          if (target.challengeRequests().containsKey(gamePlayer.uniqueId())) return;
+          target.challengeRequests().put(gamePlayer.uniqueId(), System.currentTimeMillis());
+          target.sendMessage(String.format("Du wurdest von &e%s&7 zum Duell herausgefordert.", gamePlayer.player().getName()));
           gamePlayer.sendMessage(String.format("Du hast &e%s&7 zu einem Duell herausgefordert.", target.player().getName()));
           gamePlayer.sound(Sound.CHICKEN_EGG_POP, 2f);
         });
