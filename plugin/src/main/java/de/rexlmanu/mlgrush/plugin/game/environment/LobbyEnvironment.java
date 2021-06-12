@@ -101,6 +101,12 @@ public class LobbyEnvironment implements GameEnvironment {
         GameManager.instance().arenaManager().create(Arrays.asList(gamePlayer, target));
       });
     });
+    coordinator.add(ENVIRONMENT, PlayerTeleportEvent.class, event -> {
+      if (PlayerTeleportEvent.TeleportCause.SPECTATE.equals(event.target().getCause())) {
+        event.target().setCancelled(true);
+        return;
+      }
+    });
   }
 
   @EventHandler(priority = EventPriority.LOWEST)
