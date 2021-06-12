@@ -6,10 +6,12 @@ import de.rexlmanu.mlgrush.plugin.equipment.BlockEquipment;
 import de.rexlmanu.mlgrush.plugin.equipment.EquipmentMob;
 import de.rexlmanu.mlgrush.plugin.equipment.StickEquipment;
 import de.rexlmanu.mlgrush.plugin.event.EventCoordinator;
+import de.rexlmanu.mlgrush.plugin.event.cancel.EventCancel;
 import de.rexlmanu.mlgrush.plugin.game.environment.ArenaEnvironment;
 import de.rexlmanu.mlgrush.plugin.game.environment.LobbyEnvironment;
 import de.rexlmanu.mlgrush.plugin.game.npc.InteractiveMob;
 import de.rexlmanu.mlgrush.plugin.inventory.ShopInventory;
+import de.rexlmanu.mlgrush.plugin.inventory.SpectatorInventory;
 import de.rexlmanu.mlgrush.plugin.location.LocationProvider;
 import de.rexlmanu.mlgrush.plugin.queue.QueueController;
 import de.rexlmanu.mlgrush.plugin.scoreboard.ScoreboardHandler;
@@ -20,6 +22,14 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.event.block.BlockGrowEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.event.weather.WeatherChangeEvent;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -66,6 +76,8 @@ public class GameManager {
   private List<GameEnvironment> environments;
   private ScoreboardHandler scoreboardHandler;
 
+  private SpectatorInventory spectatorInventory;
+
   private GameManager() {
     GameManager.instance = this;
     File dataFolder = GamePlugin.getPlugin(GamePlugin.class).getDataFolder();
@@ -77,6 +89,7 @@ public class GameManager {
     this.environments = Arrays.asList(new LobbyEnvironment(), new ArenaEnvironment());
     this.scoreboardHandler = new ScoreboardHandler();
 
+    this.spectatorInventory = new SpectatorInventory();
     // Sometimes in development it happens when the server don't get nicely shutdown, the 'old' are still there and you can't use the new spawned one.
     Bukkit.getWorlds().stream().map(World::getLivingEntities).forEach(livingEntities -> livingEntities.forEach(Entity::remove));
 
@@ -110,6 +123,23 @@ public class GameManager {
         )));
 
     this.environments.forEach(gameEnvironment -> Bukkit.getPluginManager().registerEvents(gameEnvironment, GamePlugin.getProvidingPlugin(GamePlugin.class)));
+
+    // Cancel all basic events that are not necessary
+    Arrays.asList(
+      FoodLevelChangeEvent.class,
+      WeatherChangeEvent.class,
+      PlayerDropItemEvent.class,
+      PlayerPickupItemEvent.class,
+      PlayerAchievementAwardedEvent.class,
+      PlayerArmorStandManipulateEvent.class,
+      PlayerBedEnterEvent.class,
+      PlayerItemDamageEvent.class,
+      BlockPhysicsEvent.class,
+      BlockSpreadEvent.class,
+      BlockGrowEvent.class,
+      BlockIgniteEvent.class,
+      EntityCombustEvent.class
+    ).forEach(EventCancel::on);
   }
 
   public void onDisable() {

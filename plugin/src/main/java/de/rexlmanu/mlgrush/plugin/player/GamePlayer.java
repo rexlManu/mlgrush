@@ -13,12 +13,15 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.jodah.expiringmap.ExpiringMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Data
 @Getter
@@ -31,11 +34,20 @@ public class GamePlayer {
   @Setter
   private Environment environment;
 
+  private Map<UUID, Long> challengeRequests;
+
   public GamePlayer(UUID uniqueId) {
     this.uniqueId = uniqueId;
     this.data = GamePlugin.getPlugin(GamePlugin.class).repository().find(Key.wrap(uniqueId)).orElse(new GamePlayerData(this.uniqueId));
     this.fastBoard = new FastBoard(this.player());
     this.environment = Environment.LOBBY;
+
+    this.challengeRequests = ExpiringMap
+      .builder()
+      .expiration(3, TimeUnit.MINUTES)
+      .asyncExpirationListener((key, value) -> PlayerProvider.find((UUID) key)
+        .ifPresent(gamePlayer -> gamePlayer.sendMessage(String.format("Deine Anfrage an &e%s&7 ist ausgelaufen.", this.player().getName()))))
+      .build();
   }
 
   public void save() {

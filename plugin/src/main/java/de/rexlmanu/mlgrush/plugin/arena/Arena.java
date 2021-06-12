@@ -30,7 +30,7 @@ public class Arena {
 
 
   private ArenaConfiguration configuration;
-  private List<GamePlayer> players;
+  private List<GamePlayer> players, spectators;
   private List<GameTeam> gameTeams;
   private long gameStart;
 
@@ -42,6 +42,7 @@ public class Arena {
   public Arena(ArenaConfiguration configuration, List<GamePlayer> players) {
     this.configuration = configuration;
     this.players = players;
+    this.spectators = new ArrayList<>();
     this.gameTeams = new ArrayList<>();
     this.gameStart = System.currentTimeMillis();
 
@@ -56,6 +57,8 @@ public class Arena {
     this.createTeams();
     this.addPlayersToTeams();
     this.setup();
+
+    GameManager.instance().spectatorInventory().addArena(this);
   }
 
   public void resetBlocks() {

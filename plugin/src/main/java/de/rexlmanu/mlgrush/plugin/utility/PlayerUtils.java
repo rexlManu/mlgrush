@@ -17,6 +17,7 @@ public class PlayerUtils {
    * @param player player that should be get reseted
    */
   public static void resetPlayer(Player player) {
+    player.closeInventory();
     player.getInventory().clear();
     player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
     player.setHealth(20);

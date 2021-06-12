@@ -3,6 +3,7 @@ package de.rexlmanu.mlgrush.plugin.arena;
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.arena.configuration.ArenaConfiguration;
 import de.rexlmanu.mlgrush.plugin.arena.world.ChunkArenaGenerator;
+import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -51,5 +52,6 @@ public class ArenaContainer {
   public void remove(Arena arena) {
     arena.region().clear();
     this.activeArenas.remove(arena);
+    GameManager.instance().spectatorInventory().remove(arena);
   }
 }

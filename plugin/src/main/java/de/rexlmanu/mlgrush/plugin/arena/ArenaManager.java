@@ -11,10 +11,12 @@ import de.rexlmanu.mlgrush.plugin.arena.template.ArenaTemplateLoader;
 import de.rexlmanu.mlgrush.plugin.arena.world.ArenaWriter;
 import de.rexlmanu.mlgrush.plugin.game.Environment;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
+import de.rexlmanu.mlgrush.plugin.game.environment.LobbyEnvironment;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import de.rexlmanu.mlgrush.plugin.utility.PlayerUtils;
+import de.rexlmanu.mlgrush.plugin.utility.RandomElement;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
@@ -82,11 +84,11 @@ public class ArenaManager {
     Bukkit.getScheduler().runTask(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> {
       arena.players().stream().filter(gamePlayer -> Objects.nonNull(gamePlayer.player()))
         .forEach(gamePlayer -> {
-        Player player = gamePlayer.player();
-        PlayerUtils.resetPlayer(player);
-        GameManager.instance().locationProvider().get("spawn").ifPresent(player::teleport);
-        Bukkit.getOnlinePlayers().forEach(player::showPlayer);
-      });
+          Player player = gamePlayer.player();
+          PlayerUtils.resetPlayer(player);
+          GameManager.instance().locationProvider().get("spawn").ifPresent(player::teleport);
+          Bukkit.getOnlinePlayers().forEach(player::showPlayer);
+        });
     });
     Bukkit.getScheduler().runTaskLaterAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), () ->
       GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY), 1);
@@ -124,5 +126,28 @@ public class ArenaManager {
     });
     Bukkit.getPluginManager().callEvent(new ArenaTeamWonEvent(arena, winningTeam));
     this.destroy(arena);
+  }
+
+  public void addSpectator(Arena arena, GamePlayer gamePlayer) {
+    Player player = gamePlayer.player();
+    PlayerUtils.resetPlayer(player);
+    arena.spectators().add(gamePlayer);
+    player.teleport(RandomElement.of(arena.gameTeams()).spawnLocation());
+
+    player.setAllowFlight(true);
+    player.getInventory().setItem(4, LobbyEnvironment.BACK_TO_LOBBY_ITEM);
+    gamePlayer.sound(Sound.LEVEL_UP, 2f);
+  }
+
+  public void removeSpectator(GamePlayer gamePlayer) {
+    gamePlayer.sound(Sound.ORB_PICKUP, 2f);
+    this.arenaContainer
+      .activeArenas()
+      .stream()
+      .filter(arena -> arena.spectators().contains(gamePlayer))
+      .findAny()
+      .ifPresent(arena -> {
+        arena.spectators().remove(gamePlayer);
+      });
   }
 }
