@@ -36,7 +36,7 @@ public class PlayerUtils {
 
   public static void updateGameMode(Player player, GameMode gameMode) {
     try {
-      Object nmsPlayer = player.getClass().getMethod("getHandle()").invoke(player);
+      Object nmsPlayer = player.getClass().getMethod("getHandle").invoke(player);
       Object playerConnection = nmsPlayer.getClass().getMethod("playerConnection").invoke(nmsPlayer);
       Method sendPacket = playerConnection.getClass().getMethod("sendPacket", PacketReflection.nmsClass("Packet"));
       Object packetPlayOutGameStateChange = PacketReflection.nmsClass("PacketPlayOutGameStateChange")
