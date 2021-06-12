@@ -138,6 +138,7 @@ public class ArenaManager {
     player.getInventory().setItem(4, LobbyEnvironment.BACK_TO_LOBBY_ITEM);
     gamePlayer.sound(Sound.LEVEL_UP, 2f);
     GameManager.instance().scoreboardHandler().update(gamePlayer);
+    gamePlayer.sendMessage("Du kannst das Spiel mit &eLinksklick&7 wieder verlassen.");
   }
 
   public void removeSpectator(GamePlayer gamePlayer) {

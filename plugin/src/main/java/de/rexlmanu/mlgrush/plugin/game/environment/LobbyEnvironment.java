@@ -71,16 +71,18 @@ public class LobbyEnvironment implements GameEnvironment {
     coordinator.add(ENVIRONMENT, BlockBreakEvent.class, event -> event.target().setCancelled(true));
     coordinator.add(ENVIRONMENT, PlayerInteractEvent.class, event -> {
       Player player = event.gamePlayer().player();
-      if (LEAVE_ITEM.equals(event.target().getItem())) {
-        event.target().setCancelled(true);
-        event.gamePlayer().sound(Sound.LEVEL_UP, 2f);
-        player.kickPlayer("");
-        return;
-      }
-      if (SPECATOR_ITEM.equals(event.target().getItem())) {
-        event.gamePlayer().sound(Sound.CHEST_OPEN, 2f);
-        GameManager.instance().spectatorInventory().open(player);
-        return;
+      if (event.target().getAction().name().contains("RIGHT")) {
+        if (LEAVE_ITEM.equals(event.target().getItem())) {
+          event.target().setCancelled(true);
+          event.gamePlayer().sound(Sound.LEVEL_UP, 2f);
+          player.kickPlayer("");
+          return;
+        }
+        if (SPECATOR_ITEM.equals(event.target().getItem())) {
+          event.gamePlayer().sound(Sound.CHEST_OPEN, 2f);
+          GameManager.instance().spectatorInventory().open(player);
+          return;
+        }
       }
 
       if (BACK_TO_LOBBY_ITEM.equals(event.target().getItem())) {
