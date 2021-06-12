@@ -150,7 +150,7 @@ public class LobbyEnvironment implements GameEnvironment {
       .ifPresent(target -> event.setCancelled(true));
   }
 
-  @EventHandler(ignoreCancelled = true)
+  @EventHandler
   public void handle(EntityDamageByEntityEvent event) {
     if (!(event.getEntity() instanceof Player)
       || !(event.getDamager() instanceof Player)) return;
