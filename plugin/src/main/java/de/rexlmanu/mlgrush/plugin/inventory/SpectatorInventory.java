@@ -146,6 +146,7 @@ public class SpectatorInventory implements Listener, Runnable {
       lore.add(String.format("&8- &7Team %s &8» %s%s &7Punkte", gameTeam.name().displayName(), gameTeam.name().color(), gameTeam.points()));
       gameTeam.members().stream().map(GamePlayer::player).map(HumanEntity::getName).forEach(s -> lore.add("  &8- &7" + s));
     });
+    lore.add("");
     long seconds = (System.currentTimeMillis() - arena.gameStart()) / 1000;
     lore.add(String.format("&eSpiellänge&8: &7%02d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60));
     lore.add("");
