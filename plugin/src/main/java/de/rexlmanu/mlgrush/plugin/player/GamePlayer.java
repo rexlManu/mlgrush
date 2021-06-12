@@ -35,12 +35,14 @@ public class GamePlayer {
   private Environment environment;
 
   private Map<UUID, Long> challengeRequests;
+  private boolean creatingGame;
 
   public GamePlayer(UUID uniqueId) {
     this.uniqueId = uniqueId;
     this.data = GamePlugin.getPlugin(GamePlugin.class).repository().find(Key.wrap(uniqueId)).orElse(new GamePlayerData(this.uniqueId));
     this.fastBoard = new FastBoard(this.player());
     this.environment = Environment.LOBBY;
+    this.creatingGame = false;
 
     this.challengeRequests = ExpiringMap
       .builder()

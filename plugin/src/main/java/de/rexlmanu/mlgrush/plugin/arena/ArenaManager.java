@@ -69,7 +69,7 @@ public class ArenaManager {
         .arenaTemplate(template)
         .startPoint(new Location(this.arenaContainer.world(), this.getNextFreeX(), HEIGHT, SPACE_Z))
         .build();
-      players.forEach(gamePlayer -> gamePlayer.sendMessage("Das Spiel wird erstellt."));
+      players.forEach(gamePlayer -> gamePlayer.creatingGame(true).sendMessage("Das Spiel wird erstellt."));
       ArenaWriter.generateTemplate(configuration);
       this.arenaContainer.register(players, configuration);
       GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
@@ -77,7 +77,7 @@ public class ArenaManager {
   }
 
   public void destroy(Arena arena) {
-    arena.players().forEach(gamePlayer -> gamePlayer.environment(Environment.LOBBY));
+    arena.players().forEach(gamePlayer -> gamePlayer.creatingGame(false).environment(Environment.LOBBY));
     arena.spectators().forEach(this::removeSpectator);
     Bukkit.getScheduler().runTask(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> {
       arena.players().stream().filter(gamePlayer -> Objects.nonNull(gamePlayer.player()))
@@ -133,10 +133,9 @@ public class ArenaManager {
     player.teleport(RandomElement.of(arena.gameTeams()).spawnLocation());
 
     player.setGameMode(GameMode.SPECTATOR);
-    player.setAllowFlight(true);
     player.getInventory().setItem(4, LobbyEnvironment.BACK_TO_LOBBY_ITEM);
     gamePlayer.sound(Sound.LEVEL_UP, 2f);
-    PlayerUtils.updateGameMode(player, GameMode.ADVENTURE);
+    GameManager.instance().scoreboardHandler().update(gamePlayer);
   }
 
   public void removeSpectator(GamePlayer gamePlayer) {
@@ -153,5 +152,6 @@ public class ArenaManager {
       .ifPresent(arena -> {
         arena.spectators().remove(gamePlayer);
       });
+    GameManager.instance().scoreboardHandler().update(gamePlayer);
   }
 }

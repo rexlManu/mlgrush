@@ -26,6 +26,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class LobbyEnvironment implements GameEnvironment {
 
@@ -92,14 +93,17 @@ public class LobbyEnvironment implements GameEnvironment {
         || !CHALLENGER_ITEM.equals(event.target().getPlayer().getItemInHand())) return;
       PlayerProvider.find(event.target().getRightClicked().getUniqueId()).ifPresent(target -> {
         GamePlayer gamePlayer = event.gamePlayer();
-        if (!gamePlayer.challengeRequests().containsKey(target.uniqueId())) return;
+        if (!gamePlayer.challengeRequests().containsKey(target.uniqueId()) || gamePlayer.creatingGame() || target.creatingGame())
+          return;
         gamePlayer.challengeRequests().remove(target.uniqueId());
         gamePlayer.sendMessage(String.format("Du hast zum Duell mit &e%s&7 zugestimmt.", target.player().getName()));
         target.sendMessage(String.format("&e%s&7 hat dem Duell zugestimmt.", gamePlayer.player().getName()));
-        target.sound(Sound.FIREWORK_TWINKLE, 2f);
-        gamePlayer.sound(Sound.FIREWORK_TWINKLE, 2f);
-
-        GameManager.instance().arenaManager().create(Arrays.asList(gamePlayer, target));
+        List<GamePlayer> players = Arrays.asList(gamePlayer, target);
+        players.forEach(player -> {
+          GameManager.instance().queueController().playerQueue().remove(player);
+          player.sound(Sound.FIREWORK_TWINKLE, 2f);
+        });
+        GameManager.instance().arenaManager().create(players);
       });
     });
     coordinator.add(ENVIRONMENT, PlayerTeleportEvent.class, event -> {
@@ -130,6 +134,7 @@ public class LobbyEnvironment implements GameEnvironment {
       gamePlayer.save();
       PlayerProvider.PLAYERS.remove(gamePlayer);
     });
+    PlayerProvider.PLAYERS.forEach(gamePlayer -> gamePlayer.challengeRequests().remove(event.getPlayer().getUniqueId()));
   }
 
   @EventHandler
