@@ -6,11 +6,15 @@ import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.scoreboard.impl.ArenaScoreboardCreator;
 import de.rexlmanu.mlgrush.plugin.scoreboard.impl.LobbyScoreboardCreator;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
+@Accessors(fluent = true)
 public class ScoreboardHandler {
 
   private Map<Environment, ScoreboardCreator> environmentScoreboardCreatorMap;

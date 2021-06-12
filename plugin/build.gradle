@@ -26,6 +26,17 @@ repositories {
   maven {
     url "https://jitpack.io"
   }
+  maven {
+    name "pluginstube"
+    url "http://45.142.114.88:8082/artifactory/pluginstube"
+    credentials {
+      username = "manu"
+      password = "Sm651vIj"
+    }
+    metadataSources {
+      artifact()
+    }
+  }
 }
 
 dependencies {
@@ -33,6 +44,8 @@ dependencies {
   annotationProcessor('org.projectlombok:lombok:1.18.20')
   implementation('org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT')
 //     implementation(files('../libs/spigot-1.8.8.jar')) // for nms
+   implementation('net.pluginstube:library:1.0.2')
+//  implementation(files('../libs/library-1.0.2.jar'))
 
   compile('org.jetbrains:annotations:16.0.2')
   compile('eu.miopowered:packetlistener:1.0') {
@@ -46,7 +59,6 @@ dependencies {
   compile('fr.mrmicky:fastboard:v1.1.0')
   compile('net.jodah:expiringmap:0.5.9')
   compile('xyz.xenondevs:particle:1.6.1')
-
 }
 
 processResources {

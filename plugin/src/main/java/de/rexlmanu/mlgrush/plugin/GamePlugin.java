@@ -4,6 +4,7 @@ import de.rexlmanu.mlgrush.plugin.command.InventoryCommand;
 import de.rexlmanu.mlgrush.plugin.command.MainCommand;
 import de.rexlmanu.mlgrush.plugin.command.QuitCommand;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
+import de.rexlmanu.mlgrush.plugin.integration.IntegrationHandler;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayerData;
 import de.rexlmanu.mlgrush.plugin.task.ArenaActionbarTask;
 import de.rexlmanu.mlgrush.plugin.task.ArenaPlayingTimeExtendCheckerTask;
@@ -38,8 +39,11 @@ public class GamePlugin extends JavaPlugin {
 
     this.repository = GsonRepository.of(playersDirectory, GamePlayerData.class);
 
+    IntegrationHandler.enableIntegration();
+
     // Creates the actually game that handles everything
     GameManager.create();
+    IntegrationHandler.gameInitIntegration();
 
     PluginCommand command = this.getCommand("mlgrush");
     MainCommand executor = new MainCommand();

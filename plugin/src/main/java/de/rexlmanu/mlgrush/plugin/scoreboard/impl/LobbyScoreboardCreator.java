@@ -8,14 +8,19 @@ import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.scoreboard.ScoreboardCreator;
 import de.rexlmanu.mlgrush.plugin.stats.StatsHandler;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Getter
+@Accessors(fluent = true)
 public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
 
   private static final String[][] ADS = {
@@ -25,10 +30,11 @@ public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
   };
 
   private int currentAd;
+  private BukkitTask task;
 
   public LobbyScoreboardCreator() {
     this.currentAd = 0;
-    Bukkit.getScheduler().runTaskTimerAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 20 * 3);
+    this.task = Bukkit.getScheduler().runTaskTimerAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 20 * 3);
   }
 
   @Override
