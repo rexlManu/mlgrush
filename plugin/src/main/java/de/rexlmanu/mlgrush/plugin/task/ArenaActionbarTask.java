@@ -36,9 +36,8 @@ public class ArenaActionbarTask implements Runnable {
           suffix.toString()
         )
       );
-      arena.players().stream().filter(gamePlayer -> gamePlayer.player() != null).forEach(gamePlayer -> {
-        ActionBar.sendActionBar(gamePlayer.player(), message);
-      });
+      arena.players().stream().filter(gamePlayer -> gamePlayer.player() != null).forEach(gamePlayer -> ActionBar.sendActionBar(gamePlayer.player(), message));
+      arena.spectators().forEach(gamePlayer -> ActionBar.sendActionBar(gamePlayer.player(), message));
     });
   }
 }

@@ -88,6 +88,7 @@ public class ArenaManager {
           PlayerUtils.resetPlayer(player);
           GameManager.instance().locationProvider().get("spawn").ifPresent(player::teleport);
           Bukkit.getOnlinePlayers().forEach(player::showPlayer);
+          GameManager.instance().giveLobbyItems(player);
         });
     });
     Bukkit.getScheduler().runTaskLaterAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), () ->

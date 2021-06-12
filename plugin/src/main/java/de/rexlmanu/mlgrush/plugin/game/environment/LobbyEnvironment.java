@@ -133,6 +133,7 @@ public class LobbyEnvironment implements GameEnvironment {
         .findArenaByPlayer(gamePlayer)
         .ifPresent(arena -> Bukkit.getPluginManager().callEvent(new ArenaPlayerLeftEvent(gamePlayer, arena)));
 
+      GameManager.instance().arenaManager().arenaContainer().activeArenas().forEach(arena -> arena.spectators().remove(gamePlayer));
       gamePlayer.save();
       PlayerProvider.PLAYERS.remove(gamePlayer);
     });
