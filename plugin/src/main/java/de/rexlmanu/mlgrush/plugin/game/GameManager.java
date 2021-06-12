@@ -16,6 +16,7 @@ import de.rexlmanu.mlgrush.plugin.scoreboard.ScoreboardHandler;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
 
 import java.io.File;
@@ -86,11 +87,13 @@ public class GameManager {
         this.queueController.playerQueue().remove(player);
         player.sendMessage("Du hast die &eWarteschlange &7verlassen.");
         this.scoreboardHandler.updateAll(Environment.LOBBY);
+        player.sound(Sound.PISTON_RETRACT, 2f);
         return;
       }
       this.queueController.playerQueue().offer(player);
       player.sendMessage("Du hast die &eWarteschlange &7betreten.");
       this.scoreboardHandler.updateAll(Environment.LOBBY);
+      player.sound(Sound.PISTON_EXTEND, 2f);
     }).create(location)));
 
     EQUIPMENT_MOBS
