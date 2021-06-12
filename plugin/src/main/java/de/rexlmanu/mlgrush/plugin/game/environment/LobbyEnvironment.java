@@ -88,15 +88,16 @@ public class LobbyEnvironment implements GameEnvironment {
     coordinator.add(ENVIRONMENT, PlayerInteractAtEntityEvent.class, event -> {
       if (!(event.target().getRightClicked() instanceof Player)
         || !CHALLENGER_ITEM.equals(event.target().getPlayer().getItemInHand())) return;
-      PlayerProvider.find(event.target().getRightClicked().getUniqueId()).ifPresent(gamePlayer -> {
-        if (!gamePlayer.challengeRequests().containsKey(event.gamePlayer().uniqueId())) return;
-        gamePlayer.challengeRequests().remove(event.gamePlayer().uniqueId());
-        gamePlayer.sendMessage(String.format("Du hast zum Duell mit &e%s&7 zugestimmt.", event.gamePlayer().player().getName()));
-        event.gamePlayer().sendMessage(String.format("&e%s&7 hat dem Duell zugestimmt.", gamePlayer.player().getName()));
-        event.gamePlayer().sound(Sound.FIREWORK_TWINKLE, 2f);
+      PlayerProvider.find(event.target().getRightClicked().getUniqueId()).ifPresent(target -> {
+        GamePlayer gamePlayer = event.gamePlayer();
+        if (!gamePlayer.challengeRequests().containsKey(target.uniqueId())) return;
+        gamePlayer.challengeRequests().remove(target.uniqueId());
+        gamePlayer.sendMessage(String.format("Du hast zum Duell mit &e%s&7 zugestimmt.", target.player().getName()));
+        target.sendMessage(String.format("&e%s&7 hat dem Duell zugestimmt.", gamePlayer.player().getName()));
+        target.sound(Sound.FIREWORK_TWINKLE, 2f);
         gamePlayer.sound(Sound.FIREWORK_TWINKLE, 2f);
 
-        GameManager.instance().arenaManager().create(Arrays.asList(event.gamePlayer(), gamePlayer));
+        GameManager.instance().arenaManager().create(Arrays.asList(gamePlayer, target));
       });
     });
   }

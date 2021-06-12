@@ -42,7 +42,8 @@ public class PlayerUtils {
       Object packetPlayOutGameStateChange = PacketReflection.nmsClass("PacketPlayOutGameStateChange")
         .getConstructor(int.class, float.class).newInstance(3, gameMode.getValue());
       sendPacket.invoke(playerConnection, packetPlayOutGameStateChange);
-    } catch (Exception ignored) {
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 

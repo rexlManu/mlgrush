@@ -137,6 +137,7 @@ public class ArenaManager {
     player.setAllowFlight(true);
     player.getInventory().setItem(4, LobbyEnvironment.BACK_TO_LOBBY_ITEM);
     gamePlayer.sound(Sound.LEVEL_UP, 2f);
+    PlayerUtils.updateGameMode(player, GameMode.SURVIVAL);
   }
 
   public void removeSpectator(GamePlayer gamePlayer) {
