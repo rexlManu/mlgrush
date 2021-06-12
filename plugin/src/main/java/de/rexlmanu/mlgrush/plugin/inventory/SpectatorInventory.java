@@ -110,11 +110,11 @@ public class SpectatorInventory implements Listener, Runnable {
     int[] innerSlots = this.getInnerSlots().toArray();
     for (int slot : innerSlots) {
       if (this.arenaDisplayItems.size() <= index) {
-        this.inventory.setItem(slot - 1, null);
+        this.inventory.setItem(slot, null);
         continue;
       }
       ArenaDisplayItem displayItem = this.arenaDisplayItems.get(index);
-      displayItem.slot(slot - 1);
+      displayItem.slot(slot);
       this.inventory.setItem(displayItem.slot(), displayItem.itemStack());
     }
   }
