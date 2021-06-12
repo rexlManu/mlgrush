@@ -6,6 +6,7 @@ import de.rexlmanu.mlgrush.plugin.command.QuitCommand;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayerData;
 import de.rexlmanu.mlgrush.plugin.task.ArenaActionbarTask;
+import de.rexlmanu.mlgrush.plugin.task.ArenaParticleTask;
 import de.rexlmanu.mlgrush.plugin.task.ArenaPlayingTimeExtendCheckerTask;
 import eu.miopowered.repository.Repository;
 import eu.miopowered.repository.impl.GsonRepository;
@@ -58,6 +59,7 @@ public class GamePlugin extends JavaPlugin {
 
     new ArenaActionbarTask();
     new ArenaPlayingTimeExtendCheckerTask();
+    new ArenaParticleTask();
   }
 
   @Override

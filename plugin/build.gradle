@@ -45,6 +45,7 @@ dependencies {
   compile('com.github.cryptomorin:XSeries:7.9.1.1')
   compile('fr.mrmicky:fastboard:v1.1.0')
   compile('net.jodah:expiringmap:0.5.9')
+  compile('xyz.xenondevs:particle:1.6.1')
 
 }
 
@@ -65,6 +66,7 @@ shadowJar {
   relocate 'com.cryptomorin.xseries', 'de.rexlmanu.mlgrush.plugin.libs.xseries'
   relocate 'eu.miopowered.packetlistener', 'de.rexlmanu.mlgrush.plugin.libs.packetlistener'
   relocate 'net.jodah.expiringmap', 'de.rexlmanu.mlgrush.plugin.libs.expiringmap'
+  relocate 'xyz.xenondevs.particle', 'de.rexlmanu.mlgrush.plugin.libs.particle'
 
   configurations = [project.configurations.compile]
   archiveFileName = "mlgrush-${version}.jar"
