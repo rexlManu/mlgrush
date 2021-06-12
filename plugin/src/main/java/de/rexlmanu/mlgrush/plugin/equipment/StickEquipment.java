@@ -14,7 +14,7 @@ import org.bukkit.enchantments.Enchantment;
 public enum StickEquipment implements Equipment, Buyable {
   WOOD(Material.STICK, "&eNormaler Stock", 0),
   BLAZE(Material.BLAZE_ROD, "&eLohenrute", 0),
-  BONE(Material.BONE, "&eKnocken", 2500),
+  BONE(Material.BONE, "&eKnochen", 2500),
   HOE(Material.IRON_HOE, "&eEisenhoe", 2500),
   IRON_SWORD(Material.IRON_SWORD, "&eEisenschwert", 5000),
   DIAMOND_SWORD(Material.DIAMOND_SWORD, "&eDiamantschwert", 7500);

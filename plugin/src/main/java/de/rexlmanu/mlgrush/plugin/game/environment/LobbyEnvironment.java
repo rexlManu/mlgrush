@@ -164,7 +164,8 @@ public class LobbyEnvironment implements GameEnvironment {
   @EventHandler
   public void handle(EntityDamageByEntityEvent event) {
     if (!(event.getEntity() instanceof Player)
-      || !(event.getDamager() instanceof Player)) return;
+      || !(event.getDamager() instanceof Player)
+      || CHALLENGER_ITEM.equals(((Player) event.getDamager()).getItemInHand())) return;
 
     PlayerProvider.find(event.getDamager().getUniqueId())
       .filter(gamePlayer -> gamePlayer.environment().equals(Environment.LOBBY))
