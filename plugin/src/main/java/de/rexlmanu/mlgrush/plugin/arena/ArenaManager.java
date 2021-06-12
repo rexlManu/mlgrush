@@ -19,10 +19,7 @@ import de.rexlmanu.mlgrush.plugin.utility.PlayerUtils;
 import de.rexlmanu.mlgrush.plugin.utility.RandomElement;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -135,6 +132,8 @@ public class ArenaManager {
     arena.spectators().add(gamePlayer);
     player.teleport(RandomElement.of(arena.gameTeams()).spawnLocation());
 
+    player.setGameMode(GameMode.SPECTATOR);
+    PlayerUtils.updateGameMode(player, GameMode.SURVIVAL);
     player.setAllowFlight(true);
     player.getInventory().setItem(4, LobbyEnvironment.BACK_TO_LOBBY_ITEM);
     gamePlayer.sound(Sound.LEVEL_UP, 2f);

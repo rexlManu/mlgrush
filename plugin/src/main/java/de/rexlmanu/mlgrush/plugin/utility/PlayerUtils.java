@@ -1,5 +1,6 @@
 package de.rexlmanu.mlgrush.plugin.utility;
 
+import eu.miopowered.packetlistener.reflection.PacketReflection;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -8,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 
 public class PlayerUtils {
 
@@ -30,6 +32,18 @@ public class PlayerUtils {
     player.setExp(0);
     player.setWalkSpeed(0.2f);
     player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+  }
+
+  public static void updateGameMode(Player player, GameMode gameMode) {
+    try {
+      Object nmsPlayer = player.getClass().getMethod("getHandle()").invoke(player);
+      Object playerConnection = nmsPlayer.getClass().getMethod("playerConnection").invoke(nmsPlayer);
+      Method sendPacket = playerConnection.getClass().getMethod("sendPacket", PacketReflection.nmsClass("Packet"));
+      Object packetPlayOutGameStateChange = PacketReflection.nmsClass("PacketPlayOutGameStateChange")
+        .getConstructor(int.class, float.class).newInstance(3, gameMode.getValue());
+      sendPacket.invoke(playerConnection, packetPlayOutGameStateChange);
+    } catch (Exception ignored) {
+    }
   }
 
   public static Location faceLocation(Entity entity, Location to) {
