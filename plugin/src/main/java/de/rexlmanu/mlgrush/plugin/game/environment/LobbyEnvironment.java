@@ -57,6 +57,7 @@ public class LobbyEnvironment implements GameEnvironment {
       GameManager.instance().arenaManager().arenaContainer().activeArenas().forEach(arena ->
         arena.players().forEach(gamePlayer -> gamePlayer.player().hidePlayer(player)));
       PlayerProvider.getPlayers(ENVIRONMENT).stream().map(GamePlayer::player).forEach(target -> target.showPlayer(player));
+      PlayerProvider.getPlayers(ENVIRONMENT).stream().map(GamePlayer::player).forEach(player::showPlayer);
       GameManager.instance().giveLobbyItems(player);
     });
     coordinator.add(ENVIRONMENT, AsyncPlayerChatEvent.class, event -> {
