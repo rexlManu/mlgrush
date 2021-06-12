@@ -65,7 +65,7 @@ public class SpectatorInventory implements Listener, Runnable {
 
     this.arenaDisplayItems.forEach(arenaDisplayItem -> {
       arenaDisplayItem.itemStack(
-        ItemStackBuilder.of(arenaDisplayItem.itemStack()).lore(this.generateLore(arenaDisplayItem.arena())).build()
+        ItemStackBuilder.of(arenaDisplayItem.itemStack()).clearLore().lore(this.generateLore(arenaDisplayItem.arena())).build()
       );
 
       this.inventory.setItem(arenaDisplayItem.slot(), arenaDisplayItem.itemStack());
