@@ -184,6 +184,6 @@ public class LobbyEnvironment implements GameEnvironment {
     if (!(event.getWhoClicked() instanceof Player)) return;
     PlayerProvider.find(event.getWhoClicked().getUniqueId())
       .filter(gamePlayer -> gamePlayer.environment().equals(Environment.LOBBY))
-      .ifPresent(gamePlayer -> event.setCancelled(true));
+      .ifPresent(gamePlayer -> event.setCancelled(!gamePlayer.buildMode()));
   }
 }
