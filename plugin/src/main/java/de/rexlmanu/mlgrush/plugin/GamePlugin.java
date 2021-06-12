@@ -6,8 +6,9 @@ import de.rexlmanu.mlgrush.plugin.command.QuitCommand;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayerData;
 import de.rexlmanu.mlgrush.plugin.task.ArenaActionbarTask;
-import de.rexlmanu.mlgrush.plugin.task.ArenaParticleTask;
 import de.rexlmanu.mlgrush.plugin.task.ArenaPlayingTimeExtendCheckerTask;
+import de.rexlmanu.mlgrush.plugin.task.particle.FloorParticleTask;
+import de.rexlmanu.mlgrush.plugin.task.particle.QueueParticleTask;
 import eu.miopowered.repository.Repository;
 import eu.miopowered.repository.impl.GsonRepository;
 import lombok.Getter;
@@ -18,6 +19,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.nio.file.Path;
+import java.util.Arrays;
 
 @Accessors(fluent = true)
 public class GamePlugin extends JavaPlugin {
@@ -59,7 +61,13 @@ public class GamePlugin extends JavaPlugin {
 
     new ArenaActionbarTask();
     new ArenaPlayingTimeExtendCheckerTask();
-    new ArenaParticleTask();
+
+    Arrays.asList("queue-npc", "stick-change-npc", "block-change-npc")
+      .forEach(s -> GameManager.instance().locationProvider().get(s)
+        .ifPresent(FloorParticleTask::new));
+    
+    GameManager.instance().locationProvider().get("queue-npc")
+      .ifPresent(QueueParticleTask::new);
   }
 
   @Override
