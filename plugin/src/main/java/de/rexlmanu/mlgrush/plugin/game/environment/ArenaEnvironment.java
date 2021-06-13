@@ -32,6 +32,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.util.Vector;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
@@ -185,7 +186,7 @@ public class ArenaEnvironment implements GameEnvironment {
         .ifPresent(targetPlayer -> {
           GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(gamePlayer).ifPresent(arena -> {
             if (arena.configuration().knockbackOnlyHeight()) {
-              player.setVelocity(player.getVelocity().setY(ThreadLocalRandom.current().nextDouble(0.311)).setX(0).setZ(0));
+              player.setVelocity(new Vector(0, ThreadLocalRandom.current().nextDouble(0.311), 0));
             }
           });
           this.lastHitterCache.put(gamePlayer, targetPlayer);

@@ -8,6 +8,7 @@ import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
+import de.rexlmanu.mlgrush.plugin.utility.RandomElement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -162,6 +163,9 @@ public class ArenaChoosingInventory implements Listener, Runnable {
   }
 
   private VotedTemplate getMostVotedTemplate() {
+    if (votedTemplates.stream().map(votedTemplate -> votedTemplate.voters().size()).reduce(Integer::sum).get() == 0) {
+      return RandomElement.of(this.votedTemplates);
+    }
     return this.votedTemplates.stream().max(Comparator.comparingInt(o -> o.voters.size())).orElse(null);
   }
 
