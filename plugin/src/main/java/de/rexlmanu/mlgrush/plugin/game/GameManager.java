@@ -154,7 +154,8 @@ public class GameManager {
 
   public void giveLobbyItems(Player player) {
     player.getInventory().setItem(8, LobbyEnvironment.LEAVE_ITEM);
-    player.getInventory().setItem(4, LobbyEnvironment.SPECATOR_ITEM);
+    player.getInventory().setItem(3, LobbyEnvironment.SPECTATOR_ITEM);
+    player.getInventory().setItem(5, LobbyEnvironment.SETTINGS_ITEM);
     player.getInventory().setItem(0, LobbyEnvironment.CHALLENGER_ITEM);
   }
 }

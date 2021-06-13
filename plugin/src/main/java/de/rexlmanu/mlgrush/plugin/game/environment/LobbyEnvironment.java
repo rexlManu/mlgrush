@@ -5,6 +5,7 @@ import de.rexlmanu.mlgrush.plugin.event.EventCoordinator;
 import de.rexlmanu.mlgrush.plugin.game.Environment;
 import de.rexlmanu.mlgrush.plugin.game.GameEnvironment;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
+import de.rexlmanu.mlgrush.plugin.inventory.SettingsInventory;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
@@ -33,11 +34,12 @@ public class LobbyEnvironment implements GameEnvironment {
   private static final Environment ENVIRONMENT = Environment.LOBBY;
 
   public static ItemStack LEAVE_ITEM = ItemStackBuilder.of(Material.IRON_DOOR).name("&8» &eSpiel verlassen").build();
-  public static ItemStack SPECATOR_ITEM = ItemStackBuilder.of(Material.COMPASS).name("&8» &eSpectator").build();
+  public static ItemStack SPECTATOR_ITEM = ItemStackBuilder.of(Material.COMPASS).name("&8» &eSpectator").build();
+  public static ItemStack SETTINGS_ITEM = ItemStackBuilder.of(Material.REDSTONE_COMPARATOR).name("&8» &eEinstellungen").build();
 
   public static ItemStack CHALLENGER_ITEM = ItemStackBuilder.of(Material.IRON_SWORD).name("&8» &eQueue")
-    .lore("&7<Rechtsklick> &8- &eHerausforderung annehmen",
-      "&7<Linksklick> &8- &eSpieler herausfordern").build();
+    .lore("&7<Linksklick> &8- &eSpieler herausfordern",
+      "&7<Rechtsklick> &8- &eEigenes Spiel erstellen").build();
 
   public static final ItemStack BACK_TO_LOBBY_ITEM = ItemStackBuilder
     .of(Material.FIREWORK_CHARGE)
@@ -78,9 +80,14 @@ public class LobbyEnvironment implements GameEnvironment {
           player.kickPlayer("");
           return;
         }
-        if (SPECATOR_ITEM.equals(event.target().getItem())) {
+        if (SPECTATOR_ITEM.equals(event.target().getItem())) {
           event.gamePlayer().sound(Sound.CHEST_OPEN, 2f);
           GameManager.instance().spectatorInventory().open(player);
+          return;
+        }
+        if (SETTINGS_ITEM.equals(event.target().getItem())) {
+          event.gamePlayer().sound(Sound.CHEST_OPEN, 2f);
+          new SettingsInventory(event.gamePlayer());
           return;
         }
       }
@@ -90,27 +97,27 @@ public class LobbyEnvironment implements GameEnvironment {
         return;
       }
     });
-    coordinator.add(ENVIRONMENT, PlayerInteractAtEntityEvent.class, event -> {
-      if (!(event.target().getRightClicked() instanceof Player)
-        || !CHALLENGER_ITEM.equals(event.target().getPlayer().getItemInHand())) return;
-      PlayerProvider.find(event.target().getRightClicked().getUniqueId()).ifPresent(target -> {
-        GamePlayer gamePlayer = event.gamePlayer();
-        if (!CHALLENGER_ITEM.equals(event.target().getPlayer().getItemInHand())
-          || !gamePlayer.challengeRequests().containsKey(target.uniqueId())
-          || gamePlayer.creatingGame()
-          || target.creatingGame())
-          return;
-        gamePlayer.challengeRequests().remove(target.uniqueId());
-        gamePlayer.sendMessage(String.format("Du hast zum Duell mit &e%s&7 zugestimmt.", target.player().getName()));
-        target.sendMessage(String.format("&e%s&7 hat dem Duell zugestimmt.", gamePlayer.player().getName()));
-        List<GamePlayer> players = Arrays.asList(gamePlayer, target);
-        players.forEach(player -> {
-          GameManager.instance().queueController().playerQueue().remove(player);
-          player.sound(Sound.FIREWORK_TWINKLE, 2f);
-        });
-        GameManager.instance().arenaManager().create(players);
-      });
-    });
+//    coordinator.add(ENVIRONMENT, PlayerInteractAtEntityEvent.class, event -> {
+//      if (!(event.target().getRightClicked() instanceof Player)
+//        || !CHALLENGER_ITEM.equals(event.target().getPlayer().getItemInHand())) return;
+//      PlayerProvider.find(event.target().getRightClicked().getUniqueId()).ifPresent(target -> {
+//        GamePlayer gamePlayer = event.gamePlayer();
+//        if (!CHALLENGER_ITEM.equals(event.target().getPlayer().getItemInHand())
+//          || !gamePlayer.challengeRequests().containsKey(target.uniqueId())
+//          || gamePlayer.creatingGame()
+//          || target.creatingGame())
+//          return;
+//        gamePlayer.challengeRequests().remove(target.uniqueId());
+//        gamePlayer.sendMessage(String.format("Du hast zum Duell mit &e%s&7 zugestimmt.", target.player().getName()));
+//        target.sendMessage(String.format("&e%s&7 hat dem Duell zugestimmt.", gamePlayer.player().getName()));
+//        List<GamePlayer> players = Arrays.asList(gamePlayer, target);
+//        players.forEach(player -> {
+//          GameManager.instance().queueController().playerQueue().remove(player);
+//          player.sound(Sound.FIREWORK_TWINKLE, 2f);
+//        });
+//        GameManager.instance().arenaManager().create(players);
+//      });
+//    });
     coordinator.add(ENVIRONMENT, PlayerTeleportEvent.class, event -> {
       if (PlayerTeleportEvent.TeleportCause.SPECTATE.equals(event.target().getCause())) {
         event.target().setCancelled(true);
@@ -171,11 +178,24 @@ public class LobbyEnvironment implements GameEnvironment {
       .filter(gamePlayer -> gamePlayer.environment().equals(Environment.LOBBY))
       .ifPresent(gamePlayer -> {
         PlayerProvider.find(event.getEntity().getUniqueId()).ifPresent(target -> {
+          if (target.creatingGame()
+            || gamePlayer.creatingGame()
+          ) return;
+          if (gamePlayer.challengeRequests().containsKey(target.uniqueId())) {
+            gamePlayer.challengeRequests().remove(target.uniqueId());
+            gamePlayer.sound(Sound.ORB_PICKUP, 2f);
+            gamePlayer.sendMessage(String.format("Du hast zum Duell mit &e%s&7 zugestimmt.", target.player().getName()));
+            target.sendMessage(String.format("&e%s&7 hat dem Duell zugestimmt.", gamePlayer.player().getName()));
+            List<GamePlayer> players = Arrays.asList(gamePlayer, target);
+            players.forEach(player -> GameManager.instance().queueController().playerQueue().remove(player));
+            GameManager.instance().arenaManager().create(players);
+            return;
+          }
           if (target.challengeRequests().containsKey(gamePlayer.uniqueId())) return;
           target.challengeRequests().put(gamePlayer.uniqueId(), System.currentTimeMillis());
           target.sendMessage(String.format("Du wurdest von &e%s&7 zum Duell herausgefordert.", gamePlayer.player().getName()));
           gamePlayer.sendMessage(String.format("Du hast &e%s&7 zu einem Duell herausgefordert.", target.player().getName()));
-          gamePlayer.sound(Sound.CHICKEN_EGG_POP, 2f);
+          gamePlayer.sound(Sound.ORB_PICKUP, 2f);
         });
       });
   }

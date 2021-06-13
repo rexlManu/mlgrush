@@ -1,6 +1,7 @@
 package de.rexlmanu.mlgrush.plugin.inventory;
 
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
+import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import org.bukkit.Bukkit;
@@ -64,10 +65,12 @@ public class EditLayoutHandler implements Listener {
   }
 
   public void unregister() {
-    this.gamePlayer.player().closeInventory();
+    Player player = this.gamePlayer.player();
+    player.closeInventory();
     HandlerList.unregisterAll(this);
-    this.gamePlayer.player().setWalkSpeed(0.2f);
-    this.gamePlayer.player().getInventory().clear();
+    player.setWalkSpeed(0.2f);
+    player.getInventory().clear();
+    GameManager.instance().giveLobbyItems(player);
   }
 
   @EventHandler
