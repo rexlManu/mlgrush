@@ -33,8 +33,8 @@ public class UUIDFetcher {
   private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/%s?at=%d";
   private static final String NAME_URL = "https://api.mojang.com/user/profiles/%s/names";
 
-  private static Map<String, UUID> uuidCache = new HashMap<String, UUID>();
-  private static Map<UUID, String> nameCache = new HashMap<UUID, String>();
+  private static Map<String, UUID> uuidCache = new HashMap<>();
+  private static Map<UUID, String> nameCache = new HashMap<>();
 
   private static ExecutorService pool = Executors.newCachedThreadPool();
 
@@ -49,8 +49,8 @@ public class UUIDFetcher {
 
   private static Object getUUIDTypeAdapter() {
     try {
-      return UUID_TYPE_ADAPTER_CLASS.newInstance();
-    } catch (InstantiationException | IllegalAccessException e) {
+      return UUID_TYPE_ADAPTER_CLASS.getConstructor().newInstance();
+    } catch (ReflectiveOperationException e) {
       e.printStackTrace();
       return null;
     }
@@ -154,5 +154,9 @@ public class UUIDFetcher {
     }
 
     return null;
+  }
+
+  public static boolean isCached(String name) {
+    return uuidCache.containsKey(name.toLowerCase());
   }
 }

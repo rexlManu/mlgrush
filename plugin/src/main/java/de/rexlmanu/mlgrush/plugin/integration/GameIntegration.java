@@ -5,6 +5,4 @@ public interface GameIntegration {
   void onEnable();
 
   void onGameInit();
-
-  boolean isAvailable();
 }

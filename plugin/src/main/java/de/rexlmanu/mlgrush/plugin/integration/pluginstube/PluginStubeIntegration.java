@@ -10,7 +10,6 @@ import de.rexlmanu.mlgrush.plugin.scoreboard.impl.LobbyScoreboardCreator;
 import net.pluginstube.library.perk.IPerkAPI;
 import net.pluginstube.library.perk.PerkCategory;
 import net.pluginstube.library.perk.PerkFactory;
-import org.bukkit.Bukkit;
 
 import java.util.Map;
 
@@ -43,10 +42,5 @@ public class PluginStubeIntegration implements GameIntegration {
     map.clear();
     map.put(Environment.LOBBY, new PluginStubeLobbyScoreboard());
     map.put(Environment.ARENA, new PluginStubeArenaScoreboard());
-  }
-
-  @Override
-  public boolean isAvailable() {
-    return Bukkit.getPluginManager().isPluginEnabled("library-spigot-1.0");
   }
 }

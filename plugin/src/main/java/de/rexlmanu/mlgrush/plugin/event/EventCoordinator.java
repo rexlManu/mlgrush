@@ -7,7 +7,6 @@ import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.EventException;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -19,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+@SuppressWarnings("unchecked")
 public class EventCoordinator implements EventExecutor {
 
   private List<EventContainer<?>> containers;
@@ -41,7 +41,7 @@ public class EventCoordinator implements EventExecutor {
   }
 
   @Override
-  public void execute(Listener listener, Event event) throws EventException {
+  public void execute(Listener listener, Event event) {
     if (event instanceof PlayerEvent) {
       this.callEvents(((PlayerEvent) event).getPlayer(), event, listener);
       return;
@@ -52,7 +52,6 @@ public class EventCoordinator implements EventExecutor {
     }
     if (event instanceof BlockBreakEvent) {
       this.callEvents(((BlockBreakEvent) event).getPlayer(), event, listener);
-      return;
     }
   }
 
@@ -62,9 +61,7 @@ public class EventCoordinator implements EventExecutor {
       .filter(eventContainer -> eventContainer.eventClass().equals(event.getClass()))
       .filter(eventContainer -> gamePlayer.environment().equals(eventContainer.environment()))
       .findAny()
-      .ifPresent(eventContainer -> {
-        eventContainer.eventConsumer().accept(new GamePlayerEvent(event, gamePlayer));
-      }));
+      .ifPresent(eventContainer -> eventContainer.eventConsumer().accept(new GamePlayerEvent(event, gamePlayer))));
   }
 
   public void remove(EventContainer<?> eventContainer) {

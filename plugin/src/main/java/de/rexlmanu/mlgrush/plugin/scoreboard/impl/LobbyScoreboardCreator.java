@@ -6,7 +6,6 @@ import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.scoreboard.ScoreboardCreator;
-import de.rexlmanu.mlgrush.plugin.stats.StatsHandler;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -48,21 +47,26 @@ public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
   @Override
   public void updateLines(GamePlayer gamePlayer) {
     String[] ad = ADS[this.currentAd];
-    gamePlayer.fastBoard().updateLines(Stream.of(
-      "",
-      "&8■ &7Dein Ranking",
-      "&8 » &e" + StatsHandler.getRanking(gamePlayer) + ". Platz",
-      "",
-      "&8■ &7Warteschlange",
-      "&8 » &e" + GameManager.instance().queueController().playerQueue().size() + " Spieler",
-      "",
-      "&8■ &7Spieler im Spiel",
-      "&8 » &e" + PlayerProvider.getPlayers(Environment.ARENA).size() + " Spieler",
-      "",
-      "&8■ &7" + ad[0],
-      "&8 » &e" + ad[1],
-      ""
-    ).map(MessageFormat::replaceColors).collect(Collectors.toList()));
+    GameManager.instance().databaseContext().getRanking(gamePlayer.uniqueId()).whenComplete((rank, throwable) -> {
+      if (throwable != null) {
+        rank = -1;
+      }
+      gamePlayer.fastBoard().updateLines(Stream.of(
+        "",
+        "&8■ &7Dein Ranking",
+        "&8 » &e" + rank + ". Platz",
+        "",
+        "&8■ &7Warteschlange",
+        "&8 » &e" + GameManager.instance().queueController().playerQueue().size() + " Spieler",
+        "",
+        "&8■ &7Spieler im Spiel",
+        "&8 » &e" + PlayerProvider.getPlayers(Environment.ARENA).size() + " Spieler",
+        "",
+        "&8■ &7" + ad[0],
+        "&8 » &e" + ad[1],
+        ""
+      ).map(MessageFormat::replaceColors).collect(Collectors.toList()));
+    });
   }
 
   @Override

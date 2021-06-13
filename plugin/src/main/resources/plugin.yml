@@ -4,6 +4,8 @@ author: @author@
 description: @description@
 website: @website@
 main: de.rexlmanu.mlgrush.plugin.GamePlugin
+softdepend:
+  - library-spigot-1.0
 commands:
   mlgrush:
     description: The main command for mlgrush
@@ -18,3 +20,7 @@ commands:
     description: Leave the game
     usage: /quit
     aliases: [ q, surrender, leave, lobby ]
+  stats:
+    description: Show your stats
+    usage: /stats <username>
+    aliases: [ statistics, s ]

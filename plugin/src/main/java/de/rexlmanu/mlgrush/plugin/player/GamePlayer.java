@@ -1,13 +1,12 @@
 package de.rexlmanu.mlgrush.plugin.player;
 
 import de.rexlmanu.mlgrush.plugin.Constants;
-import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.arena.ArenaManager;
 import de.rexlmanu.mlgrush.plugin.equipment.BlockEquipment;
 import de.rexlmanu.mlgrush.plugin.equipment.StickEquipment;
 import de.rexlmanu.mlgrush.plugin.game.Environment;
+import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
-import eu.miopowered.repository.Key;
 import fr.mrmicky.fastboard.FastBoard;
 import lombok.Data;
 import lombok.Getter;
@@ -29,17 +28,16 @@ import java.util.concurrent.TimeUnit;
 public class GamePlayer {
 
   private UUID uniqueId;
-  private GamePlayerData data;
   private FastBoard fastBoard;
   @Setter
   private Environment environment;
 
   private Map<UUID, Long> challengeRequests;
   private boolean creatingGame, buildMode;
+  private GamePlayerData data;
 
   public GamePlayer(UUID uniqueId) {
     this.uniqueId = uniqueId;
-    this.data = GamePlugin.getPlugin(GamePlugin.class).repository().find(Key.wrap(uniqueId)).orElse(new GamePlayerData(this.uniqueId));
     this.fastBoard = new FastBoard(this.player());
     this.environment = Environment.LOBBY;
     this.creatingGame = false;
@@ -51,10 +49,18 @@ public class GamePlayer {
       .asyncExpirationListener((key, value) -> PlayerProvider.find((UUID) key)
         .ifPresent(gamePlayer -> gamePlayer.sendMessage(String.format("Deine Anfrage an &e%s&7 ist ausgelaufen.", this.player().getName()))))
       .build();
+
+    GameManager.instance().databaseContext().loadData(this.uniqueId).whenComplete((gamePlayerData, throwable) -> {
+      if (throwable != null) {
+        this.sendMessage("Wir konnten deine Daten nicht laden.");
+        return;
+      }
+      this.data = gamePlayerData;
+    });
   }
 
   public void save() {
-    GamePlugin.getPlugin(GamePlugin.class).repository().update(this.data);
+    GameManager.instance().databaseContext().saveData(this.data);
   }
 
   public Player player() {

@@ -2,6 +2,9 @@ package de.rexlmanu.mlgrush.plugin.game;
 
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.arena.ArenaManager;
+import de.rexlmanu.mlgrush.plugin.database.DatabaseContext;
+import de.rexlmanu.mlgrush.plugin.database.DatabaseFactory;
+import de.rexlmanu.mlgrush.plugin.database.DatabaseType;
 import de.rexlmanu.mlgrush.plugin.equipment.BlockEquipment;
 import de.rexlmanu.mlgrush.plugin.equipment.EquipmentMob;
 import de.rexlmanu.mlgrush.plugin.equipment.StickEquipment;
@@ -68,7 +71,7 @@ public class GameManager {
   @Getter
   private static GameManager instance;
 
-
+  private DatabaseContext databaseContext;
   private LocationProvider locationProvider;
   private EventCoordinator eventCoordinator;
   private QueueController queueController;
@@ -82,6 +85,7 @@ public class GameManager {
   private GameManager() {
     GameManager.instance = this;
     File dataFolder = GamePlugin.getPlugin(GamePlugin.class).getDataFolder();
+    this.databaseContext = DatabaseFactory.create(DatabaseType.FILE);
     this.locationProvider = new LocationProvider(dataFolder);
     this.eventCoordinator = new EventCoordinator();
     this.queueController = new QueueController();
