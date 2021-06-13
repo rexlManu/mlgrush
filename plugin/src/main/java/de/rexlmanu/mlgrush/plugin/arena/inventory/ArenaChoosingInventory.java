@@ -89,19 +89,11 @@ public class ArenaChoosingInventory implements Listener, Runnable {
       .templates();
     for (int i = 0; i < templates.size(); i++) {
       ArenaTemplate arenaTemplate = templates.get(i);
-//      if (i > 9) break;
-//      int slot = i;
-//      if (slot < 2) slot += 2;
-//      if (slot > 6) slot += 4;
+      int slot = i + 2;
+      if (i > 4) slot += 5;
       ItemStack itemStack = this.createItem(arenaTemplate);
-//      this.inventory.setItem(slot + 9 + 9, itemStack);
-//      this.votedTemplates.add(new VotedTemplate(slot + 9 + 9, itemStack, arenaTemplate, new ArrayList<>()));
-      for (int j = 0; j < inventory.getSize(); j++) {
-        if (inventory.getItem(i) == null || inventory.getItem(i).getType().equals(Material.AIR)) {
-          this.votedTemplates.add(new VotedTemplate(i, itemStack, arenaTemplate, new ArrayList<>()));
-          break;
-        }
-      }
+      this.inventory.setItem(slot + 9 + 9, itemStack);
+      this.votedTemplates.add(new VotedTemplate(slot + 9 + 9, itemStack, arenaTemplate, new ArrayList<>()));
     }
   }
 
