@@ -66,6 +66,22 @@ public class LobbyEnvironment implements GameEnvironment {
       PlayerProvider.getPlayers(ENVIRONMENT).stream().map(GamePlayer::player).forEach(target -> target.showPlayer(player));
       PlayerProvider.getPlayers(ENVIRONMENT).stream().map(GamePlayer::player).forEach(player::showPlayer);
       GameManager.instance().giveLobbyItems(player);
+      Stream.of(
+        String.format(Constants.PREFIX + "Hey, &e%s &7hier findest du einige Informationen:", event.gamePlayer().player().getName()),
+        "&7Commands&8:",
+        "",
+        "  &8■ &e/leave &8× &7Verlasse das laufende Spiel",
+        "  &8■ &e/stats <Name> &8× &7Betrachte deine oder dem Spieler seine Stats",
+        "  &8■ &e/inv &8× &7Passe deine Inventarsortierung an",
+        "",
+        "&7Herausfordern&8:",
+        "",
+        "  &8■ &7Mit dem &eEisenschwert &7kannst du mit &eLinksklick &7andere Spieler herausfordern zu einem &eDuell&7.",
+        "  &8■ &7Mit &eRechtsklick&7 auf einem Spieler, kannst du ein &eeigenes Spiel &7erstellen und einstellen welche &eOptionen &7aktiviert sein sollen.",
+        ""
+      )
+        .map(MessageFormat::replaceColors)
+        .forEach(s -> event.gamePlayer().player().sendMessage(s));
     });
     coordinator.add(ENVIRONMENT, AsyncPlayerChatEvent.class, event -> {
       event.target().setCancelled(true);
@@ -142,23 +158,6 @@ public class LobbyEnvironment implements GameEnvironment {
         .arenaContainer()
         .findArenaByPlayer(gamePlayer)
         .ifPresent(arena -> Bukkit.getPluginManager().callEvent(new ArenaPlayerLeftEvent(gamePlayer, arena)));
-
-      Stream.of(
-        String.format(Constants.PREFIX + "Hey, &e%s &7hier findest du einige Informationen:", gamePlayer.player().getName()),
-        "&7Commands&8:",
-        "",
-        "  &8■ &e/leave &8× &7Verlasse das laufende Spiel",
-        "  &8■ &e/stats <Name> &8× &7Betrachte deine oder dem Spieler seine Stats",
-        "  &8■ &e/inv &8× &7Passe deine Inventarsortierung an",
-        "",
-        "&7Herausfordern&8:",
-        "",
-        "  &8■ &7Mit dem &eEisenschwert &7kannst du mit &eLinksklick &7andere Spieler herausfordern zu einem &eDuell&7.",
-        "  &8■ &7Mit &eRechtsklick&7 auf einem Spieler, kannst du ein &eeigenes Spiel &7erstellen und einstellen welche &eOptionen &7aktiviert sein sollen.",
-        ""
-      )
-        .map(MessageFormat::replaceColors)
-        .forEach(s -> gamePlayer.player().sendMessage(s));
 
       GameManager.instance().queueController().playerQueue().remove(gamePlayer);
       GameManager.instance().arenaManager().arenaContainer().activeArenas().forEach(arena -> arena.spectators().remove(gamePlayer));
