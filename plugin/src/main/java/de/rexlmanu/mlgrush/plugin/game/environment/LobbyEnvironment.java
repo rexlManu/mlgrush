@@ -184,6 +184,7 @@ public class LobbyEnvironment implements GameEnvironment {
             players.forEach(player -> GameManager.instance().queueController().playerQueue().remove(player));
             GameManager.instance().arenaManager().create(players, gamePlayer.challengeRequests().get(target.uniqueId()));
             gamePlayer.challengeRequests().remove(target.uniqueId());
+            target.challengeRequests().remove(gamePlayer.uniqueId());
             return;
           }
           if (target.challengeRequests().containsKey(gamePlayer.uniqueId())) return;
