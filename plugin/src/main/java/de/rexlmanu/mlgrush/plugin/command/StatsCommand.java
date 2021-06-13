@@ -79,16 +79,24 @@ public class StatsCommand implements CommandExecutor {
         "",
         String.format("&e  × &7Kills &8» &e%s", statistics.kills()),
         String.format("&e  × &7Tode &8» &e%s", statistics.deaths()),
-        String.format("&e  × &7KD &8» &e%.2f", (double) statistics.kills() / statistics.deaths()),
+        String.format("&e  × &7KD &8» &e%.2f", checkForNan(statistics.wins(), statistics.games()) * 100),
         "",
         String.format("&e  × &7Platzierte Blöcke &8» &e%s", statistics.blocks()),
         String.format("&e  × &7Siegreiche Spiele &8» &e%s", statistics.wins()),
         String.format("&e  × &7Gespielte Spiele &8» &e%s", statistics.games()),
         "",
-        String.format("&e  × &7Siegesrate &8» &e%.2f%%", (double) statistics.wins() / statistics.games()),
+        String.format("&e  × &7Siegesrate &8» &e%.2f%%", checkForNan(statistics.wins(), statistics.games()) * 100),
         ""
       ).map(MessageFormat::replaceColors).forEach(player::sendMessage);
     });
 
+  }
+
+  private double checkForNan(double divider, double value) {
+    if (divider == 0) {
+      if (value != 0) return value;
+      return 0;
+    }
+    return divider / value;
   }
 }
