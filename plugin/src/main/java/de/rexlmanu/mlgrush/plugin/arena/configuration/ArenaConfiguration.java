@@ -13,7 +13,8 @@ import org.bukkit.Location;
 @Builder
 public class ArenaConfiguration implements Cloneable {
 
-  private int teamAmount, teamSize, maximalPoints, maximalGameLength, spawnProtection;
+  private int teamAmount, teamSize, maximalPoints, maximalGameLength, spawnProtection, buildHeight;
+  private boolean autoBlockBreak, nohitdelay, knockbackOnlyHeight;
   private ArenaTemplate arenaTemplate;
 
   private Location startPoint;

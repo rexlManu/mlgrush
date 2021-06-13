@@ -35,7 +35,7 @@ public class ArenaRegion {
 
   public boolean contains(Location location) {
     return location.getX() > minX && location.getX() < maxX
-      && location.getY() > minY && location.getY() < maxY
+      && location.getY() > minY && location.getY() < 250 // replaced from maxY because we take full max
       && location.getZ() > minZ && location.getZ() < maxZ;
   }
 

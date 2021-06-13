@@ -2,6 +2,7 @@ package de.rexlmanu.mlgrush.plugin.player;
 
 import de.rexlmanu.mlgrush.plugin.Constants;
 import de.rexlmanu.mlgrush.plugin.arena.ArenaManager;
+import de.rexlmanu.mlgrush.plugin.arena.configuration.ArenaConfiguration;
 import de.rexlmanu.mlgrush.plugin.equipment.BlockEquipment;
 import de.rexlmanu.mlgrush.plugin.equipment.StickEquipment;
 import de.rexlmanu.mlgrush.plugin.game.Environment;
@@ -32,7 +33,7 @@ public class GamePlayer {
   @Setter
   private Environment environment;
 
-  private Map<UUID, Long> challengeRequests;
+  private Map<UUID, ArenaConfiguration.ArenaConfigurationBuilder> challengeRequests;
   private boolean creatingGame, buildMode;
   private GamePlayerData data;
 

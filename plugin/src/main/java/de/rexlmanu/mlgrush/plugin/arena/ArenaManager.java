@@ -9,6 +9,7 @@ import de.rexlmanu.mlgrush.plugin.arena.inventory.ArenaChoosingInventory;
 import de.rexlmanu.mlgrush.plugin.arena.team.GameTeam;
 import de.rexlmanu.mlgrush.plugin.arena.template.ArenaTemplateLoader;
 import de.rexlmanu.mlgrush.plugin.arena.world.ArenaWriter;
+import de.rexlmanu.mlgrush.plugin.events.PlayerIngameEvent;
 import de.rexlmanu.mlgrush.plugin.game.Environment;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.game.environment.LobbyEnvironment;
@@ -27,6 +28,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 @Accessors(fluent = true)
 @Getter
@@ -44,12 +46,16 @@ public class ArenaManager {
     .enchant(Enchantment.DIG_SPEED, 1)
     .build();
 
-  private static final ArenaConfiguration.ArenaConfigurationBuilder DEFAULT_CONFIGURATION = ArenaConfiguration.builder()
+  public static final Supplier<ArenaConfiguration.ArenaConfigurationBuilder> DEFAULT_CONFIGURATION = () -> ArenaConfiguration.builder()
     .maximalGameLength(Math.toIntExact(TimeUnit.MINUTES.toSeconds(30)))
     .maximalPoints(10)
     .teamAmount(2)
     .teamSize(1)
-    .spawnProtection(3);
+    .spawnProtection(3)
+    .nohitdelay(false)
+    .buildHeight(4)
+    .autoBlockBreak(false)
+    .knockbackOnlyHeight(false);
 
   private ArenaTemplateLoader templateLoader;
   private ArenaContainer arenaContainer;
@@ -60,14 +66,22 @@ public class ArenaManager {
   }
 
   public void create(List<GamePlayer> players) {
+    this.create(players, DEFAULT_CONFIGURATION.get());
+  }
+
+  public void create(List<GamePlayer> players, ArenaConfiguration.ArenaConfigurationBuilder configurationBuilder) {
     // Prevent dupe arenas, I dont know when could that happen but better to protect against that
     if (players.stream().anyMatch(GamePlayer::creatingGame)) return;
+    players.forEach(gamePlayer -> {
+      gamePlayer.creatingGame(true);
+      Bukkit.getPluginManager().callEvent(new PlayerIngameEvent(gamePlayer.player()));
+    });
     ArenaChoosingInventory.create(players).whenComplete((template, throwable) -> {
       if (throwable != null) {
         players.forEach(gamePlayer -> gamePlayer.sendMessage("Das Spiel konnte nicht erstellt werden."));
         return;
       }
-      ArenaConfiguration configuration = DEFAULT_CONFIGURATION
+      ArenaConfiguration configuration = configurationBuilder
         .arenaTemplate(template)
         .startPoint(new Location(this.arenaContainer.world(), this.getNextFreeX(), HEIGHT, SPACE_Z))
         .build();
