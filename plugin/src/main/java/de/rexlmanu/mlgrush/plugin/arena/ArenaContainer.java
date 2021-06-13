@@ -12,9 +12,9 @@ import org.bukkit.Difficulty;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Accessors(fluent = true)
 @Getter
@@ -22,7 +22,7 @@ public class ArenaContainer {
 
   private static final String ARENA_WORLD = "arena";
 
-  private List<Arena> activeArenas = new ArrayList<>();
+  private List<Arena> activeArenas = new CopyOnWriteArrayList<>();
 
   private World world;
 

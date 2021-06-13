@@ -21,12 +21,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Accessors(fluent = true)
 @Getter
 @Setter
 public class Arena {
-  private List<Block> placedBlocks = new ArrayList<>();
+  private List<Block> placedBlocks = new CopyOnWriteArrayList<>();
 
 
   private ArenaConfiguration configuration;
