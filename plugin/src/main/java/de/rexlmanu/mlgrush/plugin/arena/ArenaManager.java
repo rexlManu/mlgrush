@@ -55,6 +55,7 @@ public class ArenaManager {
     .nohitdelay(false)
     .buildHeight(4)
     .autoBlockBreak(false)
+    .custom(true)
     .knockbackOnlyHeight(false);
 
   private ArenaTemplateLoader templateLoader;
@@ -84,6 +85,7 @@ public class ArenaManager {
       ArenaConfiguration configuration = configurationBuilder
         .arenaTemplate(template)
         .startPoint(new Location(this.arenaContainer.world(), this.getNextFreeX(), HEIGHT, SPACE_Z))
+        .custom(false)
         .build();
       players.forEach(gamePlayer -> gamePlayer.sendMessage("Das Spiel wird erstellt."));
       ArenaWriter.generateTemplate(configuration);

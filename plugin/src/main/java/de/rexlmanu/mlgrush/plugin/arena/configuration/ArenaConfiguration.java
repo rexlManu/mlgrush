@@ -14,7 +14,7 @@ import org.bukkit.Location;
 public class ArenaConfiguration implements Cloneable {
 
   private int teamAmount, teamSize, maximalPoints, maximalGameLength, spawnProtection, buildHeight;
-  private boolean autoBlockBreak, nohitdelay, knockbackOnlyHeight;
+  private boolean autoBlockBreak, nohitdelay, knockbackOnlyHeight, custom;
   private ArenaTemplate arenaTemplate;
 
   private Location startPoint;
