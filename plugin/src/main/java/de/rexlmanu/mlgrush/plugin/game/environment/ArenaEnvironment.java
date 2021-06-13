@@ -32,9 +32,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerVelocityEvent;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class ArenaEnvironment implements GameEnvironment {
@@ -159,11 +159,6 @@ public class ArenaEnvironment implements GameEnvironment {
           }
         });
     });
-    coordinator.add(ENVIRONMENT, PlayerVelocityEvent.class, event -> arenaManager.arenaContainer().findArenaByPlayer(event.gamePlayer()).ifPresent(arena -> {
-      if (arena.configuration().knockbackOnlyHeight()) {
-        event.target().setVelocity(event.target().getVelocity().setX(0).setZ(0));
-      }
-    }));
   }
 
   @EventHandler
@@ -189,7 +184,9 @@ public class ArenaEnvironment implements GameEnvironment {
       .ifPresent(gamePlayer -> PlayerProvider.find(damager.getUniqueId()).filter(t -> t.environment().equals(ENVIRONMENT))
         .ifPresent(targetPlayer -> {
           GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(gamePlayer).ifPresent(arena -> {
-            if (arena.configuration().nohitdelay()) player.setNoDamageTicks(0);
+            if (arena.configuration().knockbackOnlyHeight()) {
+              player.setVelocity(player.getVelocity().setY(ThreadLocalRandom.current().nextDouble(0.311)).setX(0).setZ(0));
+            }
           });
           this.lastHitterCache.put(gamePlayer, targetPlayer);
         }));

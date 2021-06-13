@@ -90,7 +90,7 @@ public class ArenaChoosingInventory implements Listener, Runnable {
     for (int i = 0; i < templates.size(); i++) {
       ArenaTemplate arenaTemplate = templates.get(i);
       int slot = i + 2;
-      if (i > 4) slot += 5;
+      if (i > 4) slot += 4;
       ItemStack itemStack = this.createItem(arenaTemplate);
       this.inventory.setItem(slot + 9 + 9, itemStack);
       this.votedTemplates.add(new VotedTemplate(slot + 9 + 9, itemStack, arenaTemplate, new ArrayList<>()));
