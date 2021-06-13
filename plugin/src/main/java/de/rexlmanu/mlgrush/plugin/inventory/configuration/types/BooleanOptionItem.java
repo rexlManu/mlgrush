@@ -25,11 +25,17 @@ public class BooleanOptionItem implements OptionItem<Boolean> {
     this.slot = slot;
     this.value = value;
 
-    this.itemStack = ItemStackBuilder.of(this.itemStack).lore(this.value ? "&r  &a&lAKTIVIERT" : "&r  &c&lDEAKTIVIERT").build();
+    this.itemStack = ItemStackBuilder.of(this.itemStack).lore(
+      "",
+      "  &8■ &7Linksklick &8× &eUmstellen",
+      "",
+      this.value ? "&8» &a&lAKTIVIERT" : "&8» &c&lDEAKTIVIERT"
+    ).build();
   }
 
   @Override
   public void interact(InventoryClickEvent event) {
+    if (!event.isLeftClick()) return;
     Inventory inventory = event.getClickedInventory();
     Player player = (Player) event.getWhoClicked();
     player.playSound(player.getLocation(), Sound.CLICK, 0.7f, 2f);

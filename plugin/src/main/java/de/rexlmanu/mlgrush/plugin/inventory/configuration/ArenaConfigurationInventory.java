@@ -76,7 +76,7 @@ public class ArenaConfigurationInventory implements Listener {
     23, 4, 250, 4
   ));
   private OptionItem<Boolean> knockbackOnlyHeightOption = this.register(new BooleanOptionItem(
-    ItemStackBuilder.of(Material.LEATHER_BOOTS).color(Color.YELLOW).name("&eKnockback nur nach Oben").lore("&7Nur noch Knockback nach", "&eoben &ewird möglich sein.").build(),
+    ItemStackBuilder.of(Material.LEATHER_BOOTS).color(Color.YELLOW).name("&eKnockback nur nach Oben").lore("&7Nur noch Knockback nach", "&eoben &7wird möglich sein.").build(),
     24, false
   ));
 

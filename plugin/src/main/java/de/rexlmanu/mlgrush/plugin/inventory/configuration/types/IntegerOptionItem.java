@@ -54,12 +54,11 @@ public class IntegerOptionItem implements OptionItem<Integer> {
     }
     if (this.value > this.maximumValue) {
       this.value = this.maximumValue;
-      player.playSound(player.getLocation(), Sound.WOOD_CLICK, 0.7f, 2f);
     }
     if (this.value < this.minimumValue) {
       this.value = this.minimumValue;
-      player.playSound(player.getLocation(), Sound.WOOD_CLICK, 0.7f, 2f);
     }
+    player.playSound(player.getLocation(), Sound.CLICK, 0.7f, 2f);
     inventory.setItem(this.slot, itemStack(ItemStackBuilder.of(itemStack).transformMeta(itemMeta -> {
       List<String> lore = itemMeta.getLore();
       lore.set(lore.size() - 1, MessageFormat.replaceColors("&8» &7Eingestellt&8: &e" + this.value));
