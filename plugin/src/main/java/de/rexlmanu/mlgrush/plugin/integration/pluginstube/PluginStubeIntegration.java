@@ -25,13 +25,16 @@ public class PluginStubeIntegration implements GameIntegration {
   @Override
   public void onGameInit() {
     // Register perks
+    int perkIndex = 5;
     for (int index = 0; index < StickEquipment.values().length; index++) {
       StickEquipment equipment = StickEquipment.values()[index];
-      this.perkAPI.addPerk(new PluginStubePerk(PerkCategory.MLGRUSH_STICK, index + 1, equipment.displayName(), equipment.material(), equipment.cost()));
+      this.perkAPI.addPerk(new PluginStubePerk(PerkCategory.MLGRUSH_STICK, index + perkIndex, equipment.displayName(), equipment.material(), equipment.cost()));
+      perkIndex++;
     }
     for (int index = 0; index < BlockEquipment.values().length; index++) {
       BlockEquipment equipment = BlockEquipment.values()[index];
-      this.perkAPI.addPerk(new PluginStubePerk(PerkCategory.MLGRUSH_BLOCKS, index + 1, equipment.displayName(), equipment.material(), equipment.cost()));
+      this.perkAPI.addPerk(new PluginStubePerk(PerkCategory.MLGRUSH_BLOCKS, index + perkIndex, equipment.displayName(), equipment.material(), equipment.cost()));
+      perkIndex++;
     }
 
     this.perkAPI.initPerkIndex();
