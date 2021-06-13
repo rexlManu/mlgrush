@@ -44,7 +44,7 @@ public class LobbyEnvironment implements GameEnvironment {
   public static ItemStack SPECTATOR_ITEM = ItemStackBuilder.of(Material.COMPASS).name("&8» &eSpectator").build();
   public static ItemStack SETTINGS_ITEM = ItemStackBuilder.of(Material.REDSTONE_COMPARATOR).name("&8» &eEinstellungen").build();
 
-  public static ItemStack CHALLENGER_ITEM = ItemStackBuilder.of(Material.IRON_SWORD).name("&8» &eHerausfordern")
+  public static ItemStack CHALLENGER_ITEM = ItemStackBuilder.of(Material.IRON_SWORD).breakable(false).hideAttributes().name("&8» &eHerausfordern")
     .lore("&7<Linksklick> &8- &eSpieler herausfordern",
       "&7<Rechtsklick> &8- &eEigenes Spiel erstellen").build();
 
