@@ -56,7 +56,7 @@ public class ArenaConfigurationInventory implements Listener {
   private GamePlayer target;
 
   private Inventory inventory;
-  private List<OptionItem<?>> optionItems;
+  private List<OptionItem<?>> optionItems = new ArrayList<>();
 
   private OptionItem<Integer> maximalPointsOption = this.register(new IntegerOptionItem(
     ItemStackBuilder.of(Material.BED).name("&ePunkte").lore("&7Wie viele &ePunkte&7 braucht", "&7man um das Spiel zu-", "&7gewinnen.").build(),
@@ -83,7 +83,6 @@ public class ArenaConfigurationInventory implements Listener {
     this.owner = owner;
     this.target = target;
     this.inventory = Bukkit.createInventory(null, 5 * 9, ChatColor.YELLOW + "Spiel konfigurieren");
-    this.optionItems = new ArrayList<>();
 
     Bukkit.getPluginManager().registerEvents(this, GamePlugin.getProvidingPlugin(GamePlugin.class));
     this.createPattern();
