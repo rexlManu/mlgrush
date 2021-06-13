@@ -36,6 +36,9 @@ public class SpectatorInventory implements Listener, Runnable {
     put('b', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(11).build());
   }};
 
+  private static final ItemStack NO_GAMES = ItemStackBuilder.of(Material.BARRIER).name("&eKeine laufenden Spiele")
+    .lore("", "  &8■ &7Aktuell existieren &ckeine&7 laufende Spiele.", "").build();
+
   private static final char[][] PATTERN = {
     { 'b', 'b', 'b', 'b', 't', 'b', 'b', 'b', 'b' },
     { 'b', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'b' },
@@ -49,7 +52,7 @@ public class SpectatorInventory implements Listener, Runnable {
   private List<ArenaDisplayItem> arenaDisplayItems;
 
   public SpectatorInventory() {
-    this.inventory = Bukkit.createInventory(null, 6 * 9, ChatColor.YELLOW + "Spectator");
+    this.inventory = Bukkit.createInventory(null, 5 * 9, ChatColor.YELLOW + "Spectator");
     this.arenaDisplayItems = new ArrayList<>();
 
     JavaPlugin plugin = GamePlugin.getProvidingPlugin(GamePlugin.class);
@@ -62,6 +65,12 @@ public class SpectatorInventory implements Listener, Runnable {
   @Override
   public void run() {
     if (this.inventory.getViewers().isEmpty()) return;
+    if (this.arenaDisplayItems.isEmpty()) {
+      inventory.setItem(22, NO_GAMES);
+    }
+    if (!this.arenaDisplayItems.isEmpty() && this.inventory.getItem(22).equals(NO_GAMES)) {
+      this.inventory.setItem(22, null);
+    }
 
     this.arenaDisplayItems.forEach(arenaDisplayItem -> {
       arenaDisplayItem.itemStack(
