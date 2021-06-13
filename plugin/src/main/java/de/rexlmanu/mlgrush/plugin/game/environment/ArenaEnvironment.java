@@ -2,6 +2,7 @@ package de.rexlmanu.mlgrush.plugin.game.environment;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.arena.Arena;
 import de.rexlmanu.mlgrush.plugin.arena.ArenaManager;
 import de.rexlmanu.mlgrush.plugin.arena.events.ArenaPlayerBlockPlaceEvent;
@@ -187,6 +188,8 @@ public class ArenaEnvironment implements GameEnvironment {
           GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(gamePlayer).ifPresent(arena -> {
             if (arena.configuration().knockbackOnlyHeight()) {
               player.setVelocity(new Vector(0, ThreadLocalRandom.current().nextDouble(0.311), 0));
+              Bukkit.getScheduler().runTask(GamePlugin.getPlugin(GamePlugin.class), () ->
+                player.setVelocity(new Vector(0, ThreadLocalRandom.current().nextDouble(0.311), 0)));
             }
           });
           this.lastHitterCache.put(gamePlayer, targetPlayer);
