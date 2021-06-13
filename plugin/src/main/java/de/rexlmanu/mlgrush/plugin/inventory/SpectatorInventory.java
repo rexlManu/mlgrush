@@ -43,7 +43,6 @@ public class SpectatorInventory implements Listener, Runnable {
     { 'b', 'b', 'b', 'b', 't', 'b', 'b', 'b', 'b' },
     { 'b', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'b' },
     { 't', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 't' },
-    { 't', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 't' },
     { 'b', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'b' },
     { 'b', 'b', 'b', 'b', 't', 'b', 'b', 'b', 'b' },
   };
