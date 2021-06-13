@@ -82,7 +82,7 @@ public class LobbyEnvironment implements GameEnvironment {
       PlayerProvider.getPlayers(ENVIRONMENT).stream().map(GamePlayer::player).forEach(target -> target.showPlayer(player));
       PlayerProvider.getPlayers(ENVIRONMENT).stream().map(GamePlayer::player).forEach(player::showPlayer);
       GameManager.instance().giveLobbyItems(player);
-      event.gamePlayer().sound(Sound.FIREWORK_TWINKLE, 1.2f);
+      player.getLocation().getWorld().playSound(player.getLocation(), Sound.FIREWORK_TWINKLE, 1f, 1.2f);
       IntStream.range(0, 20).forEach(value -> player.sendMessage(""));
       Stream.of(
         String.format(Constants.PREFIX + "Hey, &e%s &7hier findest du einige Informationen:", event.gamePlayer().player().getName()),
