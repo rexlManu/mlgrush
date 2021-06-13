@@ -35,6 +35,7 @@ public class ArenaCreationProcess implements Listener, Runnable {
   private static final ItemStack SELECT_SECOND_LOCATION = ItemStackBuilder.of(Material.BLAZE_ROD).name("&eZweite Position markieren &7<Rechtsklick>").build();
   private static final ItemStack SELECT_BLUE_TEAM = ItemStackBuilder.of(Material.WOOL).data(11).name("&eSpawn für Team Blau &7<Rechtsklick>").build();
   private static final ItemStack SELECT_RED_TEAM = ItemStackBuilder.of(Material.WOOL).data(14).name("&eSpawn für Team Rot &7<Rechtsklick>").build();
+  private static final ItemStack BUILD_HEIGHT = ItemStackBuilder.of(Material.SANDSTONE).data(14).name("&eStartbauhöhe &7<Rechtsklick>").build();
 
   private final Map<String, Location> locationMap = new HashMap<>();
   private boolean waitForInput = false;
@@ -89,6 +90,13 @@ public class ArenaCreationProcess implements Listener, Runnable {
     if (SELECT_RED_TEAM.equals(event.getItem())) {
       event.setCancelled(true);
       this.locationMap.put(ArenaPosition.RED_SPAWN, this.player.getLocation());
+      this.player.sendMessage(Constants.PREFIX + MessageFormat.replaceColors("Markiere nun den die Grundbauhöhe."));
+      this.player.getInventory().setItem(0, BUILD_HEIGHT);
+      this.player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1f, 2f);
+    }
+    if (BUILD_HEIGHT.equals(event.getItem())) {
+      event.setCancelled(true);
+      this.locationMap.put(ArenaPosition.BUILD_HEIGHT, this.player.getLocation());
       this.player.playSound(player.getLocation(), Sound.LEVEL_UP, 1f, 2f);
       this.player.sendMessage(Constants.PREFIX + "Du bist nun mit den Positionen fertig.");
       this.player.sendMessage(Constants.PREFIX + "Bitte tippe nun den Namen der Map ein:");

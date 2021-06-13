@@ -5,4 +5,5 @@ public interface ArenaPosition {
   String SECOND_CORNER = "second-corner";
   String BLUE_SPAWN = "blue-spawn";
   String RED_SPAWN = "red-spawn";
+  String BUILD_HEIGHT = "build-height";
 }
