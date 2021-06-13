@@ -103,7 +103,7 @@ public class ShopInventory implements Listener {
       || buyable.cost() == 0;
   }
 
-  public void open() {
+  private void open() {
     Player player = this.gamePlayer.player();
     player.openInventory(this.inventory);
     player.playSound(player.getLocation(), Sound.CHEST_OPEN, 0.7f, 1.3f);

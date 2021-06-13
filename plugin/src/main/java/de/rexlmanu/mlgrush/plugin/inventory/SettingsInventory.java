@@ -68,11 +68,11 @@ public class SettingsInventory implements Listener {
     }
     if (STICK_SHOP.equals(event.getCurrentItem())) {
       this.unregister();
-      new ShopInventory(gamePlayer, "&eStick", StickEquipment.values()).open();
+      new ShopInventory(gamePlayer, "&eStick", StickEquipment.values());
     }
     if (BLOCK_SHOP.equals(event.getCurrentItem())) {
       this.unregister();
-      new ShopInventory(gamePlayer, "&eBlöcke", BlockEquipment.values()).open();
+      new ShopInventory(gamePlayer, "&eBlöcke", BlockEquipment.values());
     }
   }
 
