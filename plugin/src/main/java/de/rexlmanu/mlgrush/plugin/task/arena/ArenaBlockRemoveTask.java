@@ -11,15 +11,15 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ArenaBlockRemoveTask implements Runnable {
   private Map<Block, BlockAnimation> blockAnimationMap;
 
   public ArenaBlockRemoveTask() {
-    this.blockAnimationMap = new HashMap<>();
+    this.blockAnimationMap = new ConcurrentHashMap<>();
     Bukkit.getScheduler().runTaskTimerAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 6);
   }
 
@@ -33,17 +33,18 @@ public class ArenaBlockRemoveTask implements Runnable {
           this.blockAnimationMap.put(block, new BlockAnimation(0));
         }
         BlockAnimation animation = this.blockAnimationMap.get(block);
-        if (animation.state >= 9) {
-          arena.placedBlocks().remove(block);
-          Bukkit.getScheduler().runTask(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> block.setType(Material.AIR));
-          return;
-        }
         animation.state++;
         arena
           .players()
           .stream()
           .map(GamePlayer::player)
           .forEach(player -> this.sendBlockAnimation(player, block, animation));
+
+        if (animation.state > 9) {
+          arena.placedBlocks().remove(block);
+          Bukkit.getScheduler().runTask(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> block.setType(Material.AIR));
+          return;
+        }
       });
     });
   }
