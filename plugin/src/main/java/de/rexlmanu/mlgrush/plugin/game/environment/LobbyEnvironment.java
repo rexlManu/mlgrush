@@ -28,9 +28,12 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import xyz.xenondevs.particle.ParticleEffect;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class LobbyEnvironment implements GameEnvironment {
@@ -57,7 +60,20 @@ public class LobbyEnvironment implements GameEnvironment {
     coordinator.add(ENVIRONMENT, PlayerJoinEvent.class, event -> {
       Player player = event.target().getPlayer();
       PlayerUtils.resetPlayer(player);
-      GameManager.instance().locationProvider().get("spawn").ifPresent(player::teleport);
+      GameManager.instance().locationProvider().get("spawn").ifPresent(location -> {
+        player.teleport(location);
+        ParticleEffect.FIREWORKS_SPARK.display(
+          location,
+          0f,
+          0.5f,
+          0f,
+          0.5f,
+          150,
+          null,
+          PlayerProvider.getPlayers(ENVIRONMENT).stream().map(GamePlayer::player).collect(Collectors.toList())
+        );
+      });
+
       event.gamePlayer().fastBoard().updateTitle(MessageFormat.replaceColors("&e&lMLGRush"));
       GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
 
@@ -66,6 +82,8 @@ public class LobbyEnvironment implements GameEnvironment {
       PlayerProvider.getPlayers(ENVIRONMENT).stream().map(GamePlayer::player).forEach(target -> target.showPlayer(player));
       PlayerProvider.getPlayers(ENVIRONMENT).stream().map(GamePlayer::player).forEach(player::showPlayer);
       GameManager.instance().giveLobbyItems(player);
+      event.gamePlayer().sound(Sound.FIREWORK_TWINKLE, 1.2f);
+      IntStream.range(0, 20).forEach(value -> player.sendMessage(""));
       Stream.of(
         String.format(Constants.PREFIX + "Hey, &e%s &7hier findest du einige Informationen:", event.gamePlayer().player().getName()),
         "&7Commands&8:",
