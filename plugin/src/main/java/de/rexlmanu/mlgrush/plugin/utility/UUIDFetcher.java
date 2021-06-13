@@ -2,10 +2,13 @@ package de.rexlmanu.mlgrush.plugin.utility;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
@@ -25,10 +28,15 @@ public class UUIDFetcher {
    */
   public static final long FEBRUARY_2015 = 1422748800000L;
 
-  private static Class<?> UUID_TYPE_ADAPTER_CLASS;
-  private static Method FROM_UUID_METHOD;
+  private static Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new TypeAdapter<UUID>() {
+    public void write(JsonWriter var1, UUID var2) throws IOException {
+      var1.value(fromUUID(var2));
+    }
 
-  private static Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, getUUIDTypeAdapter()).create();
+    public UUID read(JsonReader var1) throws IOException {
+      return fromString(var1.nextString());
+    }
+  }).create();
 
   private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/%s?at=%d";
   private static final String NAME_URL = "https://api.mojang.com/user/profiles/%s/names";
@@ -37,24 +45,6 @@ public class UUIDFetcher {
   private static Map<UUID, String> nameCache = new HashMap<>();
 
   private static ExecutorService pool = Executors.newCachedThreadPool();
-
-  static {
-    try {
-      UUID_TYPE_ADAPTER_CLASS = Class.forName("com.mojang.util.UUIDTypeAdapter");
-      FROM_UUID_METHOD = UUID_TYPE_ADAPTER_CLASS.getMethod("fromUUID", String.class);
-    } catch (ClassNotFoundException | NoSuchMethodException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private static Object getUUIDTypeAdapter() {
-    try {
-      return UUID_TYPE_ADAPTER_CLASS.getConstructor().newInstance();
-    } catch (ReflectiveOperationException e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
 
   private String name;
   private UUID id;
@@ -140,7 +130,7 @@ public class UUIDFetcher {
     }
     try {
 
-      HttpURLConnection connection = (HttpURLConnection) new URL(String.format(NAME_URL, FROM_UUID_METHOD.invoke(null, uuid))).openConnection();
+      HttpURLConnection connection = (HttpURLConnection) new URL(String.format(NAME_URL, fromUUID(uuid))).openConnection();
       connection.setReadTimeout(5000);
       UUIDFetcher[] nameHistory = gson.fromJson(new BufferedReader(new InputStreamReader(connection.getInputStream())), UUIDFetcher[].class);
       UUIDFetcher currentNameData = nameHistory[nameHistory.length - 1];
@@ -158,5 +148,13 @@ public class UUIDFetcher {
 
   public static boolean isCached(String name) {
     return uuidCache.containsKey(name.toLowerCase());
+  }
+
+  public static String fromUUID(UUID var0) {
+    return var0.toString().replace("-", "");
+  }
+
+  public static UUID fromString(String var0) {
+    return UUID.fromString(var0.replaceFirst("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
   }
 }
