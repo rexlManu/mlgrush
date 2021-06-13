@@ -89,7 +89,8 @@ public class Arena {
     gamePlayer.giveEquipment();
     gamePlayer.sound(Sound.ORB_PICKUP, 2f);
     GameManager.instance().scoreboardHandler().update(gamePlayer);
-    player.setMaximumNoDamageTicks(0);
+    if (this.configuration.nohitdelay())
+      player.setMaximumNoDamageTicks(0);
   }
 
   public void resetGame() {
