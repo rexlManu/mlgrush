@@ -8,6 +8,7 @@ import de.rexlmanu.mlgrush.plugin.inventory.configuration.types.BooleanOptionIte
 import de.rexlmanu.mlgrush.plugin.inventory.configuration.types.IntegerOptionItem;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
+import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import org.bukkit.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class ArenaConfigurationInventory implements Listener {
 
@@ -117,7 +119,14 @@ public class ArenaConfigurationInventory implements Listener {
 
     this.owner.player().closeInventory();
     target.challengeRequests().put(this.owner.uniqueId(), configuration);
-    target.sendMessage(String.format("Du wurdest von &e%s&7 zu einem eigenen Spiel gefordert.", this.owner.player().getName()));
+    target.sendMessage(String.format("Du wurdest von &e%s&7 zu einem eigenen Spiel gefordert mit &efolgenden &7Einstellungen:", this.owner.player().getName()));
+    Stream.of("",
+      String.format("  &8■ &7NoHitDelay &8× &e%s", this.nohitdelayOption.value() ? "&eaktiv" : "&7deaktiviert"),
+      String.format("  &8■ &7Knockback nur Oben &8× &e%s", this.knockbackOnlyHeightOption.value() ? "&eaktiv" : "&7deaktiviert"),
+      String.format("  &8■ &7Auto. Block-Entferner &8× &e%s", this.blockBreakOption.value() ? "&eaktiv" : "&7deaktiviert"),
+      String.format("  &8■ &7Maximale Bauhöhe &8× &e%s", this.buildHeightOption.value()),
+      String.format("  &8■ &7Benötigte Siegespunkte &8× &e%s", this.maximalPointsOption.value()),
+      "").map(MessageFormat::replaceColors).forEach(s -> target.player().sendMessage(s));
     this.owner.sendMessage(String.format("Du hast &e%s&7 zu einem eigenen Spiel gefordert.", target.player().getName()));
     this.owner.sound(Sound.LEVEL_UP, 2f);
   }

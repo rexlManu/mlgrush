@@ -18,6 +18,7 @@ import de.rexlmanu.mlgrush.plugin.inventory.SpectatorInventory;
 import de.rexlmanu.mlgrush.plugin.location.LocationProvider;
 import de.rexlmanu.mlgrush.plugin.queue.QueueController;
 import de.rexlmanu.mlgrush.plugin.scoreboard.ScoreboardHandler;
+import de.rexlmanu.mlgrush.plugin.utility.cooldown.Cooldown;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
@@ -82,6 +83,8 @@ public class GameManager {
 
   private SpectatorInventory spectatorInventory;
 
+  private Cooldown queueCooldown;
+
   private GameManager() {
     GameManager.instance = this;
     File dataFolder = GamePlugin.getPlugin(GamePlugin.class).getDataFolder();
@@ -95,6 +98,7 @@ public class GameManager {
     this.scoreboardHandler = new ScoreboardHandler();
 
     this.spectatorInventory = new SpectatorInventory();
+    this.queueCooldown = new Cooldown(1500);
     // Sometimes in development it happens when the server don't get nicely shutdown, the 'old' are still there and you can't use the new spawned one.
     Bukkit.getWorlds().stream().map(World::getLivingEntities).forEach(livingEntities -> livingEntities.forEach(Entity::remove));
 
@@ -106,6 +110,8 @@ public class GameManager {
         player.sendMessage("Du bist bereits in einem Spiel.");
         return;
       }
+      if (this.queueCooldown.currently(player.uniqueId())) return;
+      this.queueCooldown.add(player.uniqueId());
       if (this.queueController.inQueue(player)) {
         this.queueController.playerQueue().remove(player);
         player.sendMessage("Du hast die &eWarteschlange &7verlassen.");
