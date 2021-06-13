@@ -50,7 +50,6 @@ public class ArenaContainer {
   }
 
   public void remove(Arena arena) {
-    arena.region().clear();
     this.activeArenas.remove(arena);
     GameManager.instance().spectatorInventory().remove(arena);
   }

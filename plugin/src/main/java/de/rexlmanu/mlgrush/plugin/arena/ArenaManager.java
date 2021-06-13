@@ -106,6 +106,8 @@ public class ArenaManager {
           Bukkit.getOnlinePlayers().forEach(player::showPlayer);
           GameManager.instance().giveLobbyItems(player);
         });
+      arena.resetBlocks();
+      arena.region().clear(arena.configuration().startPoint());
     });
     Bukkit.getScheduler().runTaskLaterAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), () ->
       GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY), 1);

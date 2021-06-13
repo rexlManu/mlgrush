@@ -39,12 +39,12 @@ public class ArenaRegion {
       && location.getZ() > minZ && location.getZ() < maxZ;
   }
 
-  public void clear() {
+  public void clear(Location location) {
     Bukkit.getScheduler().runTask(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> {
       for (int x = 0; x < (maxX - minX); x++) {
         for (int y = 0; y < (maxY - minY); y++) {
           for (int z = 0; z < (maxZ - minZ); z++) {
-            Location add = this.firstPoint.clone().add(x, y, z);
+            Location add = location.clone().add(x, y, z);
             if (!add.getBlock().getType().equals(Material.AIR)) {
               add.getBlock().setType(Material.AIR);
             }
