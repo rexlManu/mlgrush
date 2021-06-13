@@ -68,7 +68,7 @@ public class ArenaConfigurationInventory implements Listener {
     21, false
   ));
   private OptionItem<Boolean> blockBreakOption = this.register(new BooleanOptionItem(
-    ItemStackBuilder.of(Material.IRON_PICKAXE).name("&eAuto. Block-Entferner").lore("^7Platzierte Blöcke werden nach", "&7einigen Sekunden wieder &eentfernt&7.").build(),
+    ItemStackBuilder.of(Material.IRON_PICKAXE).name("&eAuto. Block-Entferner").lore("&7Platzierte Blöcke werden nach", "&7einigen Sekunden wieder &eentfernt&7.").build(),
     22, false
   ));
   private OptionItem<Integer> buildHeightOption = this.register(new IntegerOptionItem(
@@ -76,7 +76,7 @@ public class ArenaConfigurationInventory implements Listener {
     23, 4, 250, 4
   ));
   private OptionItem<Boolean> knockbackOnlyHeightOption = this.register(new BooleanOptionItem(
-    ItemStackBuilder.of(Material.LEATHER_BOOTS).color(Color.YELLOW).name("&eKnockback nur nach Oben").lore("^7Nur noch Knockback nach", "&eoben &ewird möglich sein.").build(),
+    ItemStackBuilder.of(Material.LEATHER_BOOTS).color(Color.YELLOW).name("&eKnockback nur nach Oben").lore("&7Nur noch Knockback nach", "&eoben &ewird möglich sein.").build(),
     24, false
   ));
 
