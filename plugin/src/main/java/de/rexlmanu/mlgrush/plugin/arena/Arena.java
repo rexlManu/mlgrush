@@ -18,6 +18,8 @@ import lombok.experimental.Accessors;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -89,8 +91,10 @@ public class Arena {
     gamePlayer.giveEquipment();
     gamePlayer.sound(Sound.ORB_PICKUP, 2f);
     GameManager.instance().scoreboardHandler().update(gamePlayer);
-    if (this.configuration.nohitdelay())
+    if (this.configuration.nohitdelay()) {
       player.setMaximumNoDamageTicks(0);
+    }
+    player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 10, 30, false, false));
   }
 
   public void resetGame() {
