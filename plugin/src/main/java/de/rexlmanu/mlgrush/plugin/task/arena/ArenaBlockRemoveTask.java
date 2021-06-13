@@ -55,11 +55,11 @@ public class ArenaBlockRemoveTask implements Runnable {
       Method sendPacket = playerConnection.getClass().getMethod("sendPacket", PacketReflection.nmsClass("Packet"));
       Class<?> blockPosition = PacketReflection.nmsClass("BlockPosition");
       Location location = block.getLocation();
-      Object packetPlayOutBlockBreakAnimation = PacketReflection.nmsClass("PacketPlayOutBlockBreakAnimation");
-      blockPosition
+      Object position = blockPosition.getConstructor(int.class, int.class, int.class)
+        .newInstance(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+      Object packetPlayOutBlockBreakAnimation = PacketReflection.nmsClass("PacketPlayOutBlockBreakAnimation")
         .getConstructor(int.class, blockPosition, int.class)
-        .newInstance(blockAnimation.entityId, blockPosition.getConstructor(int.class, int.class, int.class)
-          .newInstance(location.getBlockX(), location.getBlockY(), location.getBlockZ()), blockAnimation.state);
+        .newInstance(blockAnimation.entityId, position, blockAnimation.state);
       sendPacket.invoke(playerConnection, packetPlayOutBlockBreakAnimation);
     } catch (Exception e) {
       e.printStackTrace();
