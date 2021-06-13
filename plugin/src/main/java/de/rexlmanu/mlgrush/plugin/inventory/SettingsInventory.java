@@ -35,6 +35,7 @@ public class SettingsInventory implements Listener {
   private static final ItemStack INVENTORY_SORTING = ItemStackBuilder.of(Material.BUCKET).name("&eInventarsortierung anpassen").build();
   private static final ItemStack STICK_SHOP = ItemStackBuilder.of(Material.STICK).name("&eStickauswahl öffnen").build();
   private static final ItemStack BLOCK_SHOP = ItemStackBuilder.of(Material.SANDSTONE).name("&eBlockauswahl öffnen").build();
+  private boolean unregistered = false;
 
   private GamePlayer gamePlayer;
   private Inventory inventory;
@@ -48,6 +49,7 @@ public class SettingsInventory implements Listener {
     this.inventory.setItem(4 + 9, INVENTORY_SORTING);
     this.inventory.setItem(2 + 9, STICK_SHOP);
     this.inventory.setItem(6 + 9, BLOCK_SHOP);
+    this.createPattern();
 
     this.gamePlayer.player().openInventory(this.inventory);
   }
@@ -65,11 +67,11 @@ public class SettingsInventory implements Listener {
       gamePlayer.player().chat("/inv");
     }
     if (STICK_SHOP.equals(event.getCurrentItem())) {
-      gamePlayer.player().closeInventory();
+      this.unregister();
       new ShopInventory(gamePlayer, "&eStick", StickEquipment.values()).open();
     }
     if (BLOCK_SHOP.equals(event.getCurrentItem())) {
-      gamePlayer.player().closeInventory();
+      this.unregister();
       new ShopInventory(gamePlayer, "&eBlöcke", BlockEquipment.values()).open();
     }
   }
@@ -80,7 +82,9 @@ public class SettingsInventory implements Listener {
   }
 
   private void unregister() {
+    if (this.unregistered) return;
     HandlerList.unregisterAll(this);
+    this.unregistered = true;
   }
 
   private void createPattern() {
