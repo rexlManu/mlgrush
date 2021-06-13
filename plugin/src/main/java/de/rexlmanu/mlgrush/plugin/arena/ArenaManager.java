@@ -12,7 +12,6 @@ import de.rexlmanu.mlgrush.plugin.arena.world.ArenaWriter;
 import de.rexlmanu.mlgrush.plugin.events.PlayerIngameEvent;
 import de.rexlmanu.mlgrush.plugin.game.Environment;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
-import de.rexlmanu.mlgrush.plugin.game.environment.LobbyEnvironment;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
@@ -154,10 +153,10 @@ public class ArenaManager {
     player.teleport(RandomElement.of(arena.gameTeams()).spawnLocation());
 
     player.setGameMode(GameMode.SPECTATOR);
-    player.getInventory().setItem(4, LobbyEnvironment.BACK_TO_LOBBY_ITEM);
+//    player.getInventory().setItem(4, LobbyEnvironment.BACK_TO_LOBBY_ITEM);
     gamePlayer.sound(Sound.LEVEL_UP, 2f);
     GameManager.instance().scoreboardHandler().update(gamePlayer);
-    gamePlayer.sendMessage("Du kannst das Spiel mit &eLinksklick&7 wieder verlassen.");
+    gamePlayer.sendMessage("Du kannst wieder zur Lobby &ezurückkehren &7mit &8/&eleave&7.");
   }
 
   public void removeSpectator(GamePlayer gamePlayer) {

@@ -141,8 +141,10 @@ public class LobbyEnvironment implements GameEnvironment {
         .findArenaByPlayer(gamePlayer)
         .ifPresent(arena -> Bukkit.getPluginManager().callEvent(new ArenaPlayerLeftEvent(gamePlayer, arena)));
 
+      GameManager.instance().queueController().playerQueue().remove(gamePlayer);
       GameManager.instance().arenaManager().arenaContainer().activeArenas().forEach(arena -> arena.spectators().remove(gamePlayer));
       gamePlayer.save();
+      GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
       PlayerProvider.PLAYERS.remove(gamePlayer);
     });
     PlayerProvider.PLAYERS.forEach(gamePlayer -> gamePlayer.challengeRequests().remove(event.getPlayer().getUniqueId()));

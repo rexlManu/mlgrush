@@ -67,7 +67,7 @@ public class SpectatorInventory implements Listener, Runnable {
     if (this.arenaDisplayItems.isEmpty()) {
       inventory.setItem(22, NO_GAMES);
     }
-    if (!this.arenaDisplayItems.isEmpty() && this.inventory.getItem(22).equals(NO_GAMES)) {
+    if (!this.arenaDisplayItems.isEmpty() && NO_GAMES.equals(this.inventory.getItem(22))) {
       this.inventory.setItem(22, null);
     }
 
