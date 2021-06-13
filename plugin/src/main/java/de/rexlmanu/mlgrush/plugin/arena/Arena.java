@@ -67,7 +67,7 @@ public class Arena {
   }
 
   public int buildHeightLimit() {
-    return this.gameTeams.get(0).spawnLocation().getBlockY();
+    return this.gameTeams.get(0).spawnLocation().getBlockY() - 4 + this.configuration.buildHeight();
   }
 
   public GameTeam getTeam(GamePlayer gamePlayer) {

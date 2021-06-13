@@ -26,6 +26,8 @@ import java.util.Map;
 
 public class ArenaConfigurationInventory implements Listener {
 
+  private static final ItemStack FINISH = ItemStackBuilder.of(Material.INK_SACK).name("&aAnfrage senden").data(10).build();
+
   private static Map<Character, ItemStack> PATTERN_ITEM = new HashMap<Character, ItemStack>() {{
     put('t', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(9).build());
     put('b', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(11).build());
@@ -40,7 +42,6 @@ public class ArenaConfigurationInventory implements Listener {
     { 'b', 'b', 'b', 'b', 'f', 'b', 'b', 'b', 'b' },
   };
 
-  private static final ItemStack FINISH = ItemStackBuilder.of(Material.INK_SACK).name("&aAnfrage senden").data(10).build();
 
   /*
   settings:
@@ -72,11 +73,11 @@ public class ArenaConfigurationInventory implements Listener {
   ));
   private OptionItem<Integer> buildHeightOption = this.register(new IntegerOptionItem(
     ItemStackBuilder.of(Material.SANDSTONE).name("&eMaximale Bauhöhe").build(),
-    23, 4, 4, 250
+    23, 4, 250, 4
   ));
   private OptionItem<Boolean> knockbackOnlyHeightOption = this.register(new BooleanOptionItem(
     ItemStackBuilder.of(Material.LEATHER_BOOTS).color(Color.YELLOW).name("&eKnockback nur nach Oben").lore("^7Nur noch Knockback nach", "&eoben &ewird möglich sein.").build(),
-    22, false
+    24, false
   ));
 
   public ArenaConfigurationInventory(GamePlayer owner, GamePlayer target) {

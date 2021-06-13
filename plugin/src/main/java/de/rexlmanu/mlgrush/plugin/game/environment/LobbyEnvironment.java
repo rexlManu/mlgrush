@@ -173,12 +173,10 @@ public class LobbyEnvironment implements GameEnvironment {
       || CHALLENGER_ITEM.equals(((Player) event.getDamager()).getItemInHand())) return;
 
     PlayerProvider.find(event.getDamager().getUniqueId())
-      .filter(gamePlayer -> gamePlayer.environment().equals(Environment.LOBBY))
+      .filter(gamePlayer -> gamePlayer.environment().equals(Environment.LOBBY) || !gamePlayer.creatingGame())
       .ifPresent(gamePlayer -> {
-        PlayerProvider.find(event.getEntity().getUniqueId()).ifPresent(target -> {
-          if (target.creatingGame()
-            || gamePlayer.creatingGame()
-          ) return;
+        PlayerProvider.find(event.getEntity().getUniqueId()).filter(g -> !g.creatingGame()).ifPresent(target -> {
+          System.out.println("get called");
           if (gamePlayer.challengeRequests().containsKey(target.uniqueId())) {
             gamePlayer.sound(Sound.ORB_PICKUP, 2f);
             gamePlayer.sendMessage(String.format("Du hast zum Duell mit &e%s&7 zugestimmt.", target.player().getName()));
