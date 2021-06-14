@@ -27,7 +27,7 @@ repositories {
     url "https://jitpack.io"
   }
   maven {
-    name "pluginstube"
+    name "pluginstube-repo"
     url "http://45.142.114.88:8082/artifactory/pluginstube"
     credentials {
       username = "manu"
@@ -39,14 +39,25 @@ repositories {
   }
 }
 
+configurations.all {
+  resolutionStrategy {
+    cacheChangingModulesFor 0, 'seconds'
+  }
+}
+
 dependencies {
   implementation('org.projectlombok:lombok:1.18.20')
   annotationProcessor('org.projectlombok:lombok:1.18.20')
   implementation('org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT')
 //     implementation(files('../libs/spigot-1.8.8.jar')) // for nms
-  implementation('net.pluginstube:library:1.0.2')
   implementation group: 'io.netty', name: 'netty-all', version: '4.1.65.Final'
-//  implementation(files('../libs/library-1.0.2.jar'))
+
+  /*
+  implementation('net.pluginstube:library:1.0.2')
+  This dont work because intellij still wants to check for version 1.0.2 and the repository sucks hard balls.
+   */
+
+  implementation(files('../libs/library-1.0.2.jar'))
 
   compile('org.jetbrains:annotations:16.0.2')
   compile('eu.miopowered:packetlistener:1.0') {
