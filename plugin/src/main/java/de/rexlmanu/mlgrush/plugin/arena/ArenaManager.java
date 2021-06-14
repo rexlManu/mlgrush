@@ -147,7 +147,7 @@ public class ArenaManager {
       gamePlayer.sound(Sound.LEVEL_UP, 1f);
       gamePlayer.sendMessage(String.format("Team %s &7hat das Spiel gewonnen!", winningTeam.name().displayName()));
       // Setting stats
-
+      if (arena.configuration().custom()) return;
       gamePlayer.sendMessage("Deine Statistiken haben sich folgend verändert:");
       ArenaStatistics arenaStatistics = arena.statsFromPlayer(gamePlayer);
       Statistics statistics = gamePlayer.data().statistics();
