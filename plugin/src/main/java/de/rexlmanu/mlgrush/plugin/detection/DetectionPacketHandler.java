@@ -20,6 +20,7 @@ public class DetectionPacketHandler implements PacketReceive, PacketSent {
   @Override
   public void handle(ChannelHandlerContext context, WrappedPacket packet) {
     Detection detection = gamePlayer.detection();
+    System.out.println(packet.packetName() + " " + packet.packet());
     switch (packet.packetName()) {
       case "PacketPlayInBlockDig":
         String type = this.getDigType(packet.packet());
