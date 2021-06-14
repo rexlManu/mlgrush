@@ -88,9 +88,6 @@ public class DetectionPacketHandler implements PacketReceive, PacketSent {
         break;
       default:
         break;
-      case "PacketPlayOutBlockChange":
-        System.out.println("PacketPlayOutBlockChange");
-        break;
     }
   }
 

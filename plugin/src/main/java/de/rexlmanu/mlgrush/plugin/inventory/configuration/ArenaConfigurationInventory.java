@@ -141,6 +141,9 @@ public class ArenaConfigurationInventory implements Listener {
       String.format("  &8■ &7Auto. Block-Entferner &8× &e%s", this.blockBreakOption.value() ? "&eaktiv" : "&7deaktiviert"),
       String.format("  &8■ &7Maximale Bauhöhe &8× &e%s", this.buildHeightOption.value()),
       String.format("  &8■ &7Benötigte Siegespunkte &8× &e%s", this.maximalPointsOption.value()),
+      String.format("  &8■ &7Fallschaden &8× &e%s", this.fallDamageOption.value() ? "&eaktiv" : "&7deaktiviert"),
+      String.format("  &8■ &7Unlimiterte Blöcke &8× &e%s", this.unlimitedBlocksOption.value() ? "&eaktiv" : "&7deaktiviert"),
+      String.format("  &8■ &7CPS anzeigen &8× &e%s", this.showCpsOption.value() ? "&eaktiv" : "&7deaktiviert"),
       "").map(MessageFormat::replaceColors).forEach(s -> target.player().sendMessage(s));
     this.owner.sendMessage(String.format("Du hast &e%s&7 zu einem eigenen Spiel gefordert.", target.player().getName()));
     this.owner.sound(Sound.LEVEL_UP, 2f);
