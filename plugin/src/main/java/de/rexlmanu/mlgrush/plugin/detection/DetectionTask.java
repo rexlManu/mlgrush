@@ -16,7 +16,7 @@ public class DetectionTask implements Runnable {
       detection.lastClicks(detection.clicks());
       detection.clickHistory().add(detection.clicks());
       detection.clickAverageSecondly(detection.clickHistory().stream().mapToDouble(Integer::doubleValue).average().orElse(0));
-      if (detection.clickHistory().size() >= 10) {
+      if (detection.clickHistory().size() >= 3) {
         detection.clickAverage(detection.clickHistory().stream().mapToDouble(Integer::doubleValue).average().getAsDouble());
         detection.clickHistory().clear();
       }
@@ -24,7 +24,7 @@ public class DetectionTask implements Runnable {
       detection.lastPlaces(detection.places());
       detection.placeHistory().add(detection.places());
       detection.placeAverageSecondly(detection.placeHistory().stream().mapToDouble(Integer::doubleValue).average().orElse(0));
-      if (detection.placeHistory().size() >= 10) {
+      if (detection.placeHistory().size() >= 3) {
         detection.placeAverage(detection.placeHistory().stream().mapToDouble(Integer::doubleValue).average().getAsDouble());
         detection.placeHistory().clear();
       }

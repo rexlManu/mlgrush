@@ -75,17 +75,17 @@ public class StatsCommand implements CommandExecutor {
       Statistics statistics = data.statistics();
       Stream.of(
         "",
-        String.format("&e  × &7Ranking &8» &e%s", rank),
+        String.format("&8  ■ &7Ranking &8× &e%s", rank),
         "",
-        String.format("&e  × &7Kills &8» &e%s", statistics.kills()),
-        String.format("&e  × &7Tode &8» &e%s", statistics.deaths()),
-        String.format("&e  × &7KD &8» &e%.2f", checkForNan(statistics.wins(), statistics.games()) * 100),
+        String.format("&8  ■ &7Kills &8× &e%s", statistics.kills()),
+        String.format("&8  ■ &7Tode &8× &e%s", statistics.deaths()),
+        String.format("&8  ■ &7KD &8× &e%.2f", checkForNan(statistics.wins(), statistics.games()) * 100),
         "",
-        String.format("&e  × &7Platzierte Blöcke &8» &e%s", statistics.blocks()),
-        String.format("&e  × &7Siegreiche Spiele &8» &e%s", statistics.wins()),
-        String.format("&e  × &7Gespielte Spiele &8» &e%s", statistics.games()),
+        String.format("&8  ■ &7Platzierte Blöcke &8× &e%s", statistics.blocks()),
+        String.format("&8  ■ &7Siegreiche Spiele &8× &e%s", statistics.wins()),
+        String.format("&8  ■ &7Gespielte Spiele &8× &e%s", statistics.games()),
         "",
-        String.format("&e  × &7Siegesrate &8» &e%.2f%%", checkForNan(statistics.wins(), statistics.games()) * 100),
+        String.format("&8  ■ &7Siegesrate &8× &e%.1f%%", checkForNan(statistics.wins(), statistics.games()) * 100),
         ""
       ).map(MessageFormat::replaceColors).forEach(player::sendMessage);
     });

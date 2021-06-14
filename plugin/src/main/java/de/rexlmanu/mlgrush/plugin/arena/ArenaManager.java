@@ -13,6 +13,7 @@ import de.rexlmanu.mlgrush.plugin.events.PlayerIngameEvent;
 import de.rexlmanu.mlgrush.plugin.game.Environment;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
+import de.rexlmanu.mlgrush.plugin.player.Statistics;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import de.rexlmanu.mlgrush.plugin.utility.PlayerUtils;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 @Accessors(fluent = true)
 @Getter
@@ -144,6 +146,38 @@ public class ArenaManager {
       );
       gamePlayer.sound(Sound.LEVEL_UP, 1f);
       gamePlayer.sendMessage(String.format("Team %s &7hat das Spiel gewonnen!", winningTeam.name().displayName()));
+      // Setting stats
+
+      gamePlayer.sendMessage("Deine Statistiken haben sich folgend verändert:");
+      ArenaStatistics arenaStatistics = arena.statsFromPlayer(gamePlayer);
+      Statistics statistics = gamePlayer.data().statistics();
+      double oldKd = checkForNan(statistics.kills(), statistics.deaths()) * 100;
+      double newKd = checkForNan(statistics.kills() + arenaStatistics.kills(), statistics.deaths() + arenaStatistics.deaths()) * 100;
+      double kdDifference = newKd - oldKd;
+      double oldWinrate = checkForNan(statistics.wins(), statistics.games()) * 100;
+      double newWinrate = checkForNan(statistics.wins() + (winningTeam.members().contains(gamePlayer) ? 1 : 0), statistics.games() + 1) * 100;
+      double winrateDifference = oldWinrate - newWinrate;
+      Stream.of(
+        "",
+        String.format("&8  ■ &7Kills &8× &e%s &8(&e+%s&7&8)", statistics.kills(), arenaStatistics.kills()),
+        String.format("&8  ■ &7Tode &8× &e%s &8(&e+%s&7&8)", statistics.deaths(), arenaStatistics.deaths()),
+        String.format("&8  ■ &7KD &8× &e%.2f &8(&e%s%.2f&7&8)", oldKd, kdDifference > 0 ? "+" : "", kdDifference),
+        "",
+        String.format("&8  ■ &7Platzierte Blöcke &8× &e%s &8(&e+%s&7&8)", statistics.blocks(), arenaStatistics.blocks()),
+        String.format("&8  ■ &7Siegreiche Spiele &8× &e%s &8(&e+%s&7&8)", statistics.wins(), winningTeam.members().contains(gamePlayer) ? 1 : 0),
+        String.format("&8  ■ &7Gespielte Spiele &8× &e%s &8(&e+%s&7&8)", statistics.games() + 1),
+        "",
+        String.format("&8  ■ &7Siegesrate &8× &e%.1f%% &8(&e%s%s&7&8)", oldWinrate, winrateDifference > 0 ? "+" : "", winrateDifference),
+        ""
+      ).map(MessageFormat::replaceColors).forEach(player::sendMessage);
+
+      if (winningTeam.members().contains(gamePlayer)) {
+        statistics.addWin();
+      }
+      statistics.addKills(arenaStatistics.kills())
+        .addDeaths(arenaStatistics.deaths())
+        .blocks(arenaStatistics.blocks())
+        .addGame();
     });
     Bukkit.getPluginManager().callEvent(new ArenaTeamWonEvent(arena, winningTeam));
     this.destroy(arena);
@@ -177,5 +211,13 @@ public class ArenaManager {
         arena.spectators().remove(gamePlayer);
       });
     GameManager.instance().scoreboardHandler().update(gamePlayer);
+  }
+
+  private double checkForNan(double divider, double value) {
+    if (divider == 0) {
+      if (value != 0) return value;
+      return 0;
+    }
+    return divider / value;
   }
 }
