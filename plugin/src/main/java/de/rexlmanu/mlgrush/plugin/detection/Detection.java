@@ -11,22 +11,26 @@ import java.util.List;
 public class Detection {
 
   private boolean digging;
-  private long lastDiggingAction, lastTransactionPing, startTransactionPing;
+  private long lastDiggingAction, transactionPing, startTransactionTime;
 
-  private int clicks, transactionId, lastClicks;
-  private double average, standardDeviation, averageSecondly;
-  private List<Integer> clickHistory;
+  private int clicks, transactionId, lastClicks, places, lastPlaces;
+  private double clickAverage, clickAverageSecondly, placeAverage, placeAverageSecondly;
+  private List<Integer> clickHistory, placeHistory;
 
   public Detection() {
     this.digging = false;
     this.lastDiggingAction = 0;
-    this.startTransactionPing = 0;
+    this.startTransactionTime = 0;
     this.clicks = 0;
     this.transactionId = 0;
     this.lastClicks = 0;
-    this.average = 0;
-    this.averageSecondly = 0;
-    this.standardDeviation = 0;
+    this.places = 0;
+    this.lastPlaces = 0;
+    this.clickAverage = 0;
+    this.clickAverageSecondly = 0;
+    this.placeAverage = 0;
+    this.placeAverageSecondly = 0;
     this.clickHistory = new ArrayList<>();
+    this.placeHistory = new ArrayList<>();
   }
 }

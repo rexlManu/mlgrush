@@ -37,7 +37,7 @@ public class DetectionPacketHandler implements PacketReceive, PacketSent {
         }
         break;
       case "PacketPlayInArmAnimation":
-        if (!detection.digging() || System.currentTimeMillis() - detection.lastDiggingAction() > 1000L) {
+        if (!detection.digging() && System.currentTimeMillis() - detection.lastDiggingAction() > 1000L) {
           detection.clicks(detection.clicks() + 1);
         }
         break;
@@ -46,14 +46,17 @@ public class DetectionPacketHandler implements PacketReceive, PacketSent {
           Field b = packet.packet().getClass().getDeclaredField("b");
           b.setAccessible(true);
           if (((short) b.get(packet.packet())) == detection.transactionId()) {
-            detection.lastTransactionPing(System.currentTimeMillis() - detection.startTransactionPing());
+            detection.transactionPing(System.currentTimeMillis() - detection.startTransactionTime());
           }
         } catch (ReflectiveOperationException e) {
           e.printStackTrace();
         }
         break;
+      case "PacketPlayInBlockPlace":
+        detection.places(detection.places() + 1);
+        break;
       case "PacketPlayOutKeepAlive":
-        detection.startTransactionPing(System.currentTimeMillis());
+        detection.startTransactionTime(System.currentTimeMillis());
         detection.transactionId(ThreadLocalRandom.current().nextInt(1000, Short.MAX_VALUE));
         try {
           Player player = gamePlayer.player();
