@@ -83,15 +83,19 @@ public class ArenaConfigurationInventory implements Listener {
   ));
   private OptionItem<Boolean> unlimitedBlocksOption = this.register(new BooleanOptionItem(
     ItemStackBuilder.of(Material.BEDROCK).name("&eUnlimiterte Blöcke").build(),
-    30, false
+    12, false
   ));
   private OptionItem<Boolean> fallDamageOption = this.register(new BooleanOptionItem(
     ItemStackBuilder.of(Material.DIAMOND_BOOTS).name("&eFallschaden").build(),
-    31, false
+    13, false
   ));
   private OptionItem<Boolean> showCpsOption = this.register(new BooleanOptionItem(
     ItemStackBuilder.of(Material.WOOD_SWORD).lore("&7Du siehst wie viele", "&eKlicks per Sekunde &7dein", "&7Gegner aktuell hat.").name("&eCPS anzeigen").build(),
-    32, false
+    14, false
+  ));
+  private OptionItem<Integer> spawnProtectionOption = this.register(new IntegerOptionItem(
+    ItemStackBuilder.of(Material.BEACON).name("&eSpawnProtection").lore("&7In der SpawnProtection", "&7kann man &ekeine&7", "&7Blöcke platzieren.").build(),
+    31, 3, 3, 0
   ));
 
   public ArenaConfigurationInventory(GamePlayer owner, GamePlayer target) {
@@ -130,6 +134,7 @@ public class ArenaConfigurationInventory implements Listener {
       .fallDamage(this.fallDamageOption.value())
       .showCps(this.showCpsOption.value())
       .unlimitedBlocks(this.unlimitedBlocksOption.value())
+      .spawnProtection(this.spawnProtectionOption.value())
       .knockbackOnlyHeight(this.knockbackOnlyHeightOption.value());
 
     this.owner.player().closeInventory();
@@ -140,6 +145,7 @@ public class ArenaConfigurationInventory implements Listener {
       String.format("  &8■ &7Knockback nur Oben &8× &e%s", this.knockbackOnlyHeightOption.value() ? "&eaktiv" : "&7deaktiviert"),
       String.format("  &8■ &7Auto. Block-Entferner &8× &e%s", this.blockBreakOption.value() ? "&eaktiv" : "&7deaktiviert"),
       String.format("  &8■ &7Maximale Bauhöhe &8× &e%s", this.buildHeightOption.value()),
+      String.format("  &8■ &7SpawnProtection &8× &e%s", this.spawnProtectionOption.value()),
       String.format("  &8■ &7Benötigte Siegespunkte &8× &e%s", this.maximalPointsOption.value()),
       String.format("  &8■ &7Fallschaden &8× &e%s", this.fallDamageOption.value() ? "&eaktiv" : "&7deaktiviert"),
       String.format("  &8■ &7Unlimiterte Blöcke &8× &e%s", this.unlimitedBlocksOption.value() ? "&eaktiv" : "&7deaktiviert"),

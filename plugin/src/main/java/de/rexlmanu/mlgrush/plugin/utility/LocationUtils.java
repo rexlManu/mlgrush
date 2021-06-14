@@ -13,6 +13,7 @@ public class LocationUtils {
    * @return if the location is inside the range
    */
   public static boolean rangeContains(Location center, Location target, int range) {
+    if (range == 0) return false;
     return target.getX() > Math.min(center.getX() + range, center.getX() - range)
       && target.getX() < Math.max(center.getX() + range, center.getX() - range)
       && target.getZ() > Math.min(center.getZ() + range, center.getZ() - range)
