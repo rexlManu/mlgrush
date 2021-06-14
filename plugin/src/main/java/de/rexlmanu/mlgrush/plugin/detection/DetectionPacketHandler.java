@@ -20,7 +20,6 @@ public class DetectionPacketHandler implements PacketReceive, PacketSent {
   @Override
   public void handle(ChannelHandlerContext context, WrappedPacket packet) {
     Detection detection = gamePlayer.detection();
-    System.out.println(packet.packetName() + " " + packet.packet());
     switch (packet.packetName()) {
       case "PacketPlayInBlockDig":
         String type = this.getDigType(packet.packet());
@@ -44,7 +43,7 @@ public class DetectionPacketHandler implements PacketReceive, PacketSent {
         break;
       case "PacketPlayInTransaction":
         try {
-          Field b = packet.packet().getClass().getField("b");
+          Field b = packet.packet().getClass().getDeclaredField("b");
           b.setAccessible(true);
           if (((short) b.get(packet.packet())) == detection.transactionId()) {
             detection.lastTransactionPing(System.currentTimeMillis() - detection.startTransactionPing());
@@ -76,7 +75,7 @@ public class DetectionPacketHandler implements PacketReceive, PacketSent {
 
   private String getDigType(Object packet) {
     try {
-      Field c = packet.getClass().getField("c");
+      Field c = packet.getClass().getDeclaredField("c");
       c.setAccessible(true);
       return (String) c.get(packet).getClass().getMethod("name").invoke(c);
     } catch (ReflectiveOperationException e) {
