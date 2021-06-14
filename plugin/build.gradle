@@ -44,7 +44,8 @@ dependencies {
   annotationProcessor('org.projectlombok:lombok:1.18.20')
   implementation('org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT')
 //     implementation(files('../libs/spigot-1.8.8.jar')) // for nms
-   implementation('net.pluginstube:library:1.0.2')
+  implementation('net.pluginstube:library:1.0.2')
+  implementation group: 'io.netty', name: 'netty-all', version: '4.1.65.Final'
 //  implementation(files('../libs/library-1.0.2.jar'))
 
   compile('org.jetbrains:annotations:16.0.2')

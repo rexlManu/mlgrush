@@ -164,7 +164,9 @@ public class LobbyEnvironment implements GameEnvironment {
   public void handle(PlayerJoinEvent event) {
     event.setJoinMessage(null);
     Player player = event.getPlayer();
-    PlayerProvider.PLAYERS.add(new GamePlayer(player.getUniqueId()));
+    GamePlayer gamePlayer = new GamePlayer(player.getUniqueId());
+    PlayerProvider.PLAYERS.add(gamePlayer);
+    GameManager.instance().detectionController().register(gamePlayer);
   }
 
   @EventHandler(priority = EventPriority.LOWEST)
@@ -180,6 +182,7 @@ public class LobbyEnvironment implements GameEnvironment {
       GameManager.instance().queueController().playerQueue().remove(gamePlayer);
       GameManager.instance().arenaManager().arenaContainer().activeArenas().forEach(arena -> arena.spectators().remove(gamePlayer));
       gamePlayer.save();
+      GameManager.instance().detectionController().unregister(gamePlayer);
       GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
       PlayerProvider.PLAYERS.remove(gamePlayer);
     });

@@ -5,6 +5,7 @@ import de.rexlmanu.mlgrush.plugin.arena.ArenaManager;
 import de.rexlmanu.mlgrush.plugin.database.DatabaseContext;
 import de.rexlmanu.mlgrush.plugin.database.DatabaseFactory;
 import de.rexlmanu.mlgrush.plugin.database.DatabaseType;
+import de.rexlmanu.mlgrush.plugin.detection.DetectionController;
 import de.rexlmanu.mlgrush.plugin.equipment.BlockEquipment;
 import de.rexlmanu.mlgrush.plugin.equipment.EquipmentMob;
 import de.rexlmanu.mlgrush.plugin.equipment.StickEquipment;
@@ -78,6 +79,7 @@ public class GameManager {
   private QueueController queueController;
   private ArenaManager arenaManager;
   private List<InteractiveMob> interactiveMobs;
+  private DetectionController detectionController;
   private List<GameEnvironment> environments;
   private ScoreboardHandler scoreboardHandler;
 
@@ -94,6 +96,7 @@ public class GameManager {
     this.queueController = new QueueController();
     this.arenaManager = new ArenaManager();
     this.interactiveMobs = new ArrayList<>();
+    this.detectionController = new DetectionController();
     this.environments = Arrays.asList(new LobbyEnvironment(), new ArenaEnvironment());
     this.scoreboardHandler = new ScoreboardHandler();
 

@@ -3,6 +3,7 @@ package de.rexlmanu.mlgrush.plugin.player;
 import de.rexlmanu.mlgrush.plugin.Constants;
 import de.rexlmanu.mlgrush.plugin.arena.ArenaManager;
 import de.rexlmanu.mlgrush.plugin.arena.configuration.ArenaConfiguration;
+import de.rexlmanu.mlgrush.plugin.detection.Detection;
 import de.rexlmanu.mlgrush.plugin.equipment.BlockEquipment;
 import de.rexlmanu.mlgrush.plugin.equipment.StickEquipment;
 import de.rexlmanu.mlgrush.plugin.game.Environment;
@@ -34,7 +35,8 @@ public class GamePlayer {
   private Environment environment;
 
   private Map<UUID, ArenaConfiguration.ArenaConfigurationBuilder> challengeRequests;
-  private boolean creatingGame, buildMode;
+  private boolean creatingGame, buildMode, inspectionMode;
+  private Detection detection;
   private GamePlayerData data;
 
   public GamePlayer(UUID uniqueId) {
@@ -43,6 +45,8 @@ public class GamePlayer {
     this.environment = Environment.LOBBY;
     this.creatingGame = false;
     this.buildMode = false;
+    this.inspectionMode = false;
+    this.detection = new Detection();
 
     this.challengeRequests = ExpiringMap
       .builder()
