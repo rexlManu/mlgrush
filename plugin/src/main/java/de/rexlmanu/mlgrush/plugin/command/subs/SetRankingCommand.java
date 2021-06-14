@@ -9,7 +9,11 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class SetRankingCommand implements SubCommand {
   @Override
@@ -28,5 +32,13 @@ public class SetRankingCommand implements SubCommand {
     }
     GameManager.instance().locationProvider().set("ranking-" + ranking, targetBlock.getLocation());
     gamePlayer.sendMessage(String.format("Du hast den Ranking Kopf für &e%s &7gesetzt.", ranking));
+  }
+
+  @Override
+  public @NotNull List<String> suggestions(GamePlayer gamePlayer, String[] arguments) {
+    if (arguments.length == 1) {
+      return IntStream.range(1, 5).mapToObj(String::valueOf).collect(Collectors.toList());
+    }
+    return new ArrayList<>();
   }
 }

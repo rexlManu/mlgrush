@@ -30,6 +30,7 @@ public class MainCommand implements CommandExecutor, TabExecutor {
     this.commands.add(new BuildCommand());
     this.commands.add(new SetRankingCommand());
     this.commands.add(new InspectionCommand());
+    this.commands.add(new UpdateStatsWallCommand());
   }
 
   @Override
@@ -62,7 +63,7 @@ public class MainCommand implements CommandExecutor, TabExecutor {
   public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
     if (!(sender instanceof Player) || args.length == 0) return new ArrayList<>();
     if (args.length == 1) {
-      return this.commands.stream().map(SubCommand::name).collect(Collectors.toList());
+      return this.commands.stream().map(SubCommand::name).filter(s -> s.startsWith(args[0].toLowerCase())).collect(Collectors.toList());
     }
     String targetName = args[0];
     Optional<GamePlayer> gamePlayer = PlayerProvider.find(((Player) sender).getUniqueId());
