@@ -77,7 +77,8 @@ public class DetectionPacketHandler implements PacketReceive, PacketSent {
     try {
       Field c = packet.getClass().getDeclaredField("c");
       c.setAccessible(true);
-      return (String) c.get(packet).getClass().getMethod("name").invoke(packet);
+      Object enumValue = c.get(packet);
+      return (String) enumValue.getClass().getMethod("name").invoke(enumValue);
     } catch (ReflectiveOperationException e) {
       e.printStackTrace();
       return "";

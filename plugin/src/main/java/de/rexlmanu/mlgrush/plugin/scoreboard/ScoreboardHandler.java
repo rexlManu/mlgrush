@@ -26,6 +26,7 @@ public class ScoreboardHandler {
   }
 
   public void update(GamePlayer gamePlayer) {
+    if (gamePlayer.player() == null) return;
     ScoreboardCreator creator = this.environmentScoreboardCreatorMap.get(gamePlayer.environment());
     creator.updateLines(gamePlayer);
     Bukkit.getScheduler().runTask(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> {
