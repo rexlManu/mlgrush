@@ -58,6 +58,8 @@ public class ArenaActionbarTask implements Runnable {
       .append("&7cps&8, &e")
       .append(detection.clicks())
       .append("&7c&8, &e")
+      .append(detection.places())
+      .append("&7p&8, &e")
       .append(String.format("%.1f", detection.placeAverageSecondly()))
       .append("&7pps&8, &e")
       .append(String.format("%.1f", detection.clickAverage()))

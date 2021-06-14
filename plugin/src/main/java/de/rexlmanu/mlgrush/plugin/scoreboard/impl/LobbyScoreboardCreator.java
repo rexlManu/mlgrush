@@ -72,6 +72,7 @@ public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
   @Override
   public void updateTablist(GamePlayer gamePlayer) {
     Player player = gamePlayer.player();
+    if (player == null) return;
     Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
     Team teamLobby = scoreboard.registerNewTeam("1-lobby");

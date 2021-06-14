@@ -48,6 +48,7 @@ public class ArenaScoreboardCreator implements ScoreboardCreator {
   public void updateTablist(GamePlayer gamePlayer) {
     GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(gamePlayer).ifPresent(arena -> {
       Player player = gamePlayer.player();
+      if (player == null) return;
       Scoreboard scoreboard = player.getScoreboard();
       scoreboard.getTeams().forEach(Team::unregister);
       arena.gameTeams().forEach(gameTeam -> {
