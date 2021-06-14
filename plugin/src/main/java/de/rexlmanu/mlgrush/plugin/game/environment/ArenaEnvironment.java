@@ -36,13 +36,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class ArenaEnvironment implements GameEnvironment {
 
   public static final Environment ENVIRONMENT = Environment.ARENA;
-  private Map<GamePlayer, GamePlayer> lastHitterMap;
+  private Map<UUID, UUID> lastHitterMap;
 
   public ArenaEnvironment() {
     this.lastHitterMap = ExpiringMap.builder()
@@ -75,7 +76,6 @@ public class ArenaEnvironment implements GameEnvironment {
         if (arena.configuration().unlimitedBlocks()) {
           ItemStack item = event.gamePlayer().player().getItemInHand();
           item.setAmount(item.getMaxStackSize());
-//          event.gamePlayer().player().setItemInHand(item);
         }
 
         arena.placedBlocks().add(block);
@@ -120,8 +120,11 @@ public class ArenaEnvironment implements GameEnvironment {
           && to.getY() == from.getY()
           && to.getZ() == from.getZ()) return;
         if (!arena.region().contains(to)) {
-          Bukkit.getPluginManager().callEvent(new ArenaPlayerDiedEvent(event.gamePlayer(), this.lastHitterMap.get(event.gamePlayer())));
-          this.lastHitterMap.remove(event.gamePlayer());
+          Bukkit.getPluginManager().callEvent(new ArenaPlayerDiedEvent(
+            event.gamePlayer(),
+            PlayerProvider.find(this.lastHitterMap.get(event.gamePlayer().uniqueId())).orElse(null))
+          );
+          this.lastHitterMap.remove(event.gamePlayer().uniqueId());
           arena.respawnPlayer(event.gamePlayer());
         }
       }));
@@ -141,6 +144,7 @@ public class ArenaEnvironment implements GameEnvironment {
       .findArenaByPlayer(event.gamePlayer()).ifPresent(arena -> {
         arena.statsFromPlayer(event.gamePlayer()).addDeath();
         GamePlayer killer = event.target().killer();
+
         if (killer != null) {
           arena.statsFromPlayer(killer).addKill();
           killer.sound(Sound.ORB_PICKUP, 1f);
@@ -198,7 +202,7 @@ public class ArenaEnvironment implements GameEnvironment {
                 player.setVelocity(new Vector(0, ThreadLocalRandom.current().nextDouble(0.311), 0)));
             }
           });
-          this.lastHitterMap.put(gamePlayer, targetPlayer);
+          this.lastHitterMap.put(gamePlayer.uniqueId(), targetPlayer.uniqueId());
         }));
   }
 

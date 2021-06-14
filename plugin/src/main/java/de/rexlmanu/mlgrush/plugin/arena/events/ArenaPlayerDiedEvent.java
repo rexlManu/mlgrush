@@ -20,7 +20,7 @@ public class ArenaPlayerDiedEvent extends PlayerEvent {
   public ArenaPlayerDiedEvent(GamePlayer gamePlayer, GamePlayer killer) {
     super(gamePlayer.player());
     this.gamePlayer = gamePlayer;
-    this.killer = gamePlayer.equals(killer) ? null : killer;
+    this.killer = killer;
   }
 
   @Override
