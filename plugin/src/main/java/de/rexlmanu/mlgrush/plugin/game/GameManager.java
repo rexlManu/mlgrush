@@ -17,8 +17,10 @@ import de.rexlmanu.mlgrush.plugin.game.npc.InteractiveMob;
 import de.rexlmanu.mlgrush.plugin.inventory.ShopInventory;
 import de.rexlmanu.mlgrush.plugin.inventory.SpectatorInventory;
 import de.rexlmanu.mlgrush.plugin.location.LocationProvider;
+import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.queue.QueueController;
 import de.rexlmanu.mlgrush.plugin.scoreboard.ScoreboardHandler;
+import de.rexlmanu.mlgrush.plugin.stats.StatsHologramManager;
 import de.rexlmanu.mlgrush.plugin.utility.cooldown.Cooldown;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -85,6 +87,7 @@ public class GameManager {
 
   private SpectatorInventory spectatorInventory;
 
+  private StatsHologramManager statsHologramManager;
   private Cooldown queueCooldown;
 
   private GameManager() {
@@ -101,6 +104,7 @@ public class GameManager {
     this.scoreboardHandler = new ScoreboardHandler();
 
     this.spectatorInventory = new SpectatorInventory();
+    this.statsHologramManager = new StatsHologramManager();
     this.queueCooldown = new Cooldown(1500);
     // Sometimes in development it happens when the server don't get nicely shutdown, the 'old' are still there and you can't use the new spawned one.
     Bukkit.getWorlds().stream().map(World::getLivingEntities).forEach(livingEntities -> livingEntities.forEach(Entity::remove));
@@ -166,5 +170,7 @@ public class GameManager {
     player.getInventory().setItem(3, LobbyEnvironment.SPECTATOR_ITEM);
     player.getInventory().setItem(5, LobbyEnvironment.SETTINGS_ITEM);
     player.getInventory().setItem(0, LobbyEnvironment.CHALLENGER_ITEM);
+
+    PlayerProvider.find(player.getUniqueId()).ifPresent(gamePlayer -> GameManager.instance().statsHologramManager().show(gamePlayer));
   }
 }

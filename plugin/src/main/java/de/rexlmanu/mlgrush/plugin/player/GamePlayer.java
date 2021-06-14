@@ -61,6 +61,7 @@ public class GamePlayer {
         return;
       }
       this.data = gamePlayerData;
+      GameManager.instance().statsHologramManager().show(this);
     });
   }
 

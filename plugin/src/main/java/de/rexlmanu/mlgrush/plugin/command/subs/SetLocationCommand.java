@@ -37,7 +37,7 @@ public class SetLocationCommand implements SubCommand {
   @Override
   public @NotNull List<String> suggestions(GamePlayer gamePlayer, String[] arguments) {
     if (arguments.length != 1) return new ArrayList<>();
-    return Stream.of("stick-change-npc", "block-change-npc", "queue-npc", "spawn")
+    return Stream.of("stick-change-npc", "block-change-npc", "queue-npc", "spawn", "hologram", "npc-ranking-1", "npc-ranking-2", "npc-ranking-3")
       .filter(s -> s.startsWith(arguments[0].toLowerCase())).collect(Collectors.toList());
   }
 }

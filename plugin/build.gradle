@@ -20,7 +20,7 @@ repositories {
     url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
   }
   maven {
-    name "bungeecord-repo"
+    name "ossrh"
     url "https://oss.sonatype.org/content/repositories/snapshots"
   }
   maven {
@@ -49,7 +49,7 @@ dependencies {
   implementation('org.projectlombok:lombok:1.18.20')
   annotationProcessor('org.projectlombok:lombok:1.18.20')
   implementation('org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT')
-//     implementation(files('../libs/spigot-1.8.8.jar')) // for nms
+//     implementation(files('../testserver/spigot-1.8.8.jar')) // for nms
   implementation group: 'io.netty', name: 'netty-all', version: '4.1.65.Final'
 
   /*
@@ -63,7 +63,6 @@ dependencies {
   compile('eu.miopowered:packetlistener:1.0') {
     transitive = false
   }
-  //  compile('eu.miopowered:repository:java8-SNAPSHOT')
   compile(project(':arenalib')) {
     transitive = false
   }

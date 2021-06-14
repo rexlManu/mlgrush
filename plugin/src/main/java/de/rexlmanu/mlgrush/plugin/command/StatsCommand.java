@@ -93,7 +93,7 @@ public class StatsCommand implements CommandExecutor {
 
   }
 
-  private double checkForNan(double divider, double value) {
+  public static double checkForNan(double divider, double value) {
     if (divider == 0) {
       return 0;
     }

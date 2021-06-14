@@ -33,7 +33,6 @@ public class PlayerUtils {
     player.setWalkSpeed(0.2f);
     player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
   }
-
   public static void updateGameMode(Player player, GameMode gameMode) {
     try {
       Object nmsPlayer = player.getClass().getMethod("getHandle").invoke(player);
@@ -42,7 +41,7 @@ public class PlayerUtils {
       Object packetPlayOutGameStateChange = PacketReflection.nmsClass("PacketPlayOutGameStateChange")
         .getConstructor(int.class, float.class).newInstance(3, gameMode.getValue());
       sendPacket.invoke(playerConnection, packetPlayOutGameStateChange);
-    } catch (Exception e) {
+    } catch (ReflectiveOperationException e) {
       e.printStackTrace();
     }
   }
@@ -71,12 +70,14 @@ public class PlayerUtils {
     return loc;
   }
 
-  private static void sendPacket(Player player, Object packet) {
+  public static void sendPacket(Player player, Object packet) {
     try {
-      Object handle = player.getClass().getMethod("getHandle").invoke(player);
-      Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
-      playerConnection.getClass().getMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection, packet);
+      Object nmsPlayer = player.getClass().getMethod("getHandle").invoke(player);
+      Object playerConnection = nmsPlayer.getClass().getField("playerConnection").get(nmsPlayer);
+      Method sendPacket = playerConnection.getClass().getMethod("sendPacket", PacketReflection.nmsClass("Packet"));
+      sendPacket.invoke(playerConnection, packet);
     } catch (Exception ex) {
+      ex.printStackTrace();
     }
   }
 

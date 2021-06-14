@@ -78,6 +78,7 @@ public class ArenaManager {
     // Prevent dupe arenas, I dont know when could that happen but better to protect against that
     if (players.stream().anyMatch(GamePlayer::creatingGame)) return;
     players.forEach(gamePlayer -> {
+      GameManager.instance().statsHologramManager().destroy(gamePlayer);
       gamePlayer.creatingGame(true);
       Bukkit.getPluginManager().callEvent(new PlayerIngameEvent(gamePlayer.player()));
     });
@@ -187,6 +188,7 @@ public class ArenaManager {
 
   public void addSpectator(Arena arena, GamePlayer gamePlayer) {
     Player player = gamePlayer.player();
+    GameManager.instance().statsHologramManager().destroy(gamePlayer);
     PlayerUtils.resetPlayer(player);
     arena.spectators().add(gamePlayer);
     player.teleport(RandomElement.of(arena.gameTeams()).spawnLocation());
