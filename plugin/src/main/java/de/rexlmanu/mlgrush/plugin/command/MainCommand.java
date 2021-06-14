@@ -29,6 +29,7 @@ public class MainCommand implements CommandExecutor, TabExecutor {
     this.commands.add(new DebugCommand());
     this.commands.add(new BuildCommand());
     this.commands.add(new SetRankingCommand());
+    this.commands.add(new InspectionCommand());
   }
 
   @Override

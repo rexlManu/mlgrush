@@ -4,7 +4,7 @@ import de.rexlmanu.mlgrush.plugin.command.SubCommand;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import org.jetbrains.annotations.NotNull;
 
-public class BuildInspectionCommand implements SubCommand {
+public class InspectionCommand implements SubCommand {
   @Override
   public @NotNull String name() {
     return "inspection";
