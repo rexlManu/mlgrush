@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 public class Statistics {
-  private int kills, deaths, wins, games, blocks;
+  private int kills, deaths, wins, games, blocks, destroyedBeds;
 
   public Statistics() {
     this.kills = 0;
@@ -18,6 +18,7 @@ public class Statistics {
     this.wins = 0;
     this.games = 0;
     this.blocks = 0;
+    this.destroyedBeds = 0;
   }
 
   public Statistics addKills(int kills) {
@@ -32,6 +33,11 @@ public class Statistics {
 
   public Statistics addBlocks(int blocks) {
     this.blocks += blocks;
+    return this;
+  }
+
+  public Statistics addDestroyedBeds(int destroyedBeds) {
+    this.destroyedBeds += destroyedBeds;
     return this;
   }
 

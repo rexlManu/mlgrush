@@ -98,6 +98,7 @@ public class ArenaEnvironment implements GameEnvironment {
           return;
         }
         team.addPoint();
+        arena.statsFromPlayer(event.gamePlayer()).addDestroyedBed();
         event.target().setCancelled(true);
         Bukkit.getPluginManager().callEvent(new ArenaTeamBedDestroyedEvent(event.gamePlayer(), destroyedBedTeam));
         return;

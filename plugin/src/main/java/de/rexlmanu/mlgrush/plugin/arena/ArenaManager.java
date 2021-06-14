@@ -163,6 +163,7 @@ public class ArenaManager {
         String.format("&8  ■ &7Tode &8× &e%s &8(&e+%s&7&8)", statistics.deaths(), arenaStatistics.deaths()),
         String.format("&8  ■ &7KD &8× &e%.2f &8(&e%s%.2f&7&8)", oldKd, kdDifference > 0 ? "+" : "", kdDifference),
         "",
+        String.format("&8  ■ &7Abgebaute Betten &8× &e%s &8(&e+%s&7&8)", statistics.destroyedBeds(), arenaStatistics.destroyedBeds()),
         String.format("&8  ■ &7Platzierte Blöcke &8× &e%s &8(&e+%s&7&8)", statistics.blocks(), arenaStatistics.blocks()),
         String.format("&8  ■ &7Siegreiche Spiele &8× &e%s &8(&e+%s&7&8)", statistics.wins(), winningTeam.members().contains(gamePlayer) ? 1 : 0),
         String.format("&8  ■ &7Gespielte Spiele &8× &e%s &8(&e+%s&7&8)", statistics.games(), 1),
@@ -176,7 +177,8 @@ public class ArenaManager {
       }
       statistics.addKills(arenaStatistics.kills())
         .addDeaths(arenaStatistics.deaths())
-        .blocks(arenaStatistics.blocks())
+        .addBlocks(arenaStatistics.blocks())
+        .addDestroyedBeds(arenaStatistics.destroyedBeds())
         .addGame();
     });
     Bukkit.getPluginManager().callEvent(new ArenaTeamWonEvent(arena, winningTeam));
