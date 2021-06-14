@@ -54,10 +54,10 @@ public class ArenaActionbarTask implements Runnable {
   private String format(Detection detection) {
     // averageSecondly, average,
     return new StringBuilder().append("&e")
-      .append(String.format("%.1f", detection.clickAverageSecondly()))
-      .append("&7cps&8, &e")
       .append(detection.clicks())
       .append("&7c&8, &e")
+      .append(String.format("%.1f", detection.clickAverageSecondly()))
+      .append("&7cps&8, &e")
       .append(detection.places())
       .append("&7p&8, &e")
       .append(String.format("%.1f", detection.placeAverageSecondly()))

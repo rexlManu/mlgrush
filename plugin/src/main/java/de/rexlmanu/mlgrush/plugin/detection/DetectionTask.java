@@ -13,26 +13,26 @@ public class DetectionTask implements Runnable {
   public void run() {
     PlayerProvider.PLAYERS.forEach(gamePlayer -> {
       Detection detection = gamePlayer.detection();
-      if (detection.clicks() > 1) {
-        detection.lastClicks(detection.clicks());
-        detection.clickHistory().add(detection.clicks());
-        detection.clickAverageSecondly(detection.clickHistory().stream().mapToDouble(Integer::doubleValue).average().orElse(0));
-        if (detection.clickHistory().size() >= 10) {
-          detection.clickAverage(detection.clickHistory().stream().mapToDouble(Integer::doubleValue).average().getAsDouble());
-          detection.clickHistory().clear();
-        }
-        detection.clicks(0);
+//      if (detection.clicks() > 1) {
+      detection.lastClicks(detection.clicks());
+      detection.clickHistory().add(detection.clicks());
+      detection.clickAverageSecondly(detection.clickHistory().stream().mapToDouble(Integer::doubleValue).average().orElse(0));
+      if (detection.clickHistory().size() >= 10) {
+        detection.clickAverage(detection.clickHistory().stream().mapToDouble(Integer::doubleValue).average().getAsDouble());
+        detection.clickHistory().clear();
       }
-      if (detection.places() > 1) {
-        detection.lastPlaces(detection.places());
-        detection.placeHistory().add(detection.places());
-        detection.placeAverageSecondly(detection.placeHistory().stream().mapToDouble(Integer::doubleValue).average().orElse(0));
-        if (detection.placeHistory().size() >= 10) {
-          detection.placeAverage(detection.placeHistory().stream().mapToDouble(Integer::doubleValue).average().getAsDouble());
-          detection.placeHistory().clear();
-        }
-        detection.places(0);
+      detection.clicks(0);
+//      }
+//      if (detection.places() > 1) {
+      detection.lastPlaces(detection.places());
+      detection.placeHistory().add(detection.places());
+      detection.placeAverageSecondly(detection.placeHistory().stream().mapToDouble(Integer::doubleValue).average().orElse(0));
+      if (detection.placeHistory().size() >= 10) {
+        detection.placeAverage(detection.placeHistory().stream().mapToDouble(Integer::doubleValue).average().getAsDouble());
+        detection.placeHistory().clear();
       }
+      detection.places(0);
+//      }
     });
   }
 
