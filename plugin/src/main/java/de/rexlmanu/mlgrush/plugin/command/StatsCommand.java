@@ -79,7 +79,7 @@ public class StatsCommand implements CommandExecutor {
         "",
         String.format("&8  ■ &7Kills &8× &e%s", statistics.kills()),
         String.format("&8  ■ &7Tode &8× &e%s", statistics.deaths()),
-        String.format("&8  ■ &7KD &8× &e%.2f", checkForNan(statistics.kills(), statistics.wins())),
+        String.format("&8  ■ &7KD &8× &e%.2f", checkForNan(statistics.kills(), statistics.deaths())),
         "",
         String.format("&8  ■ &7Abgebaute Betten &8× &e%s", statistics.destroyedBeds()),
         String.format("&8  ■ &7Platzierte Blöcke &8× &e%s", statistics.blocks()),
