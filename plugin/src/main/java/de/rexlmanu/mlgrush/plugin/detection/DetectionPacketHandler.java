@@ -6,16 +6,18 @@ import eu.miopowered.packetlistener.context.PacketSent;
 import eu.miopowered.packetlistener.reflection.PacketReflection;
 import eu.miopowered.packetlistener.reflection.WrappedPacket;
 import io.netty.channel.ChannelHandlerContext;
-import lombok.AllArgsConstructor;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.concurrent.ThreadLocalRandom;
 
-@AllArgsConstructor
 public class DetectionPacketHandler implements PacketReceive, PacketSent {
   private GamePlayer gamePlayer;
+
+  public DetectionPacketHandler(GamePlayer gamePlayer) {
+    this.gamePlayer = gamePlayer;
+  }
 
   @Override
   public void handle(ChannelHandlerContext context, WrappedPacket packet) {
@@ -37,15 +39,17 @@ public class DetectionPacketHandler implements PacketReceive, PacketSent {
         }
         break;
       case "PacketPlayInArmAnimation":
+        if (detection.placing()) {
+          detection.placing(false);
+          break;
+        }
         if (!detection.digging() && System.currentTimeMillis() - detection.lastDiggingAction() > 1000L) {
           detection.clicks(detection.clicks() + 1);
         }
         break;
       case "PacketPlayInTransaction":
         try {
-          Field b = packet.packet().getClass().getDeclaredField("b");
-          b.setAccessible(true);
-          if (((short) b.get(packet.packet())) == detection.transactionId()) {
+          if ((short) this.getPrivateField(packet.packet(), "b") == detection.transactionId()) {
             detection.transactionPing(System.currentTimeMillis() - detection.startTransactionTime());
           }
         } catch (ReflectiveOperationException e) {
@@ -53,7 +57,18 @@ public class DetectionPacketHandler implements PacketReceive, PacketSent {
         }
         break;
       case "PacketPlayInBlockPlace":
-        detection.places(detection.places() + 1);
+        try {
+          detection.places(detection.places() + 1);
+
+          Object blockPosition = this.getPrivateField(packet.packet(), "b");
+          int x = (int) this.getPrivateField(PacketReflection.nmsClass("BaseBlockPosition"), blockPosition, "a");
+          int y = (int) this.getPrivateField(PacketReflection.nmsClass("BaseBlockPosition"), blockPosition, "c");
+          int z = (int) this.getPrivateField(PacketReflection.nmsClass("BaseBlockPosition"), blockPosition, "d");
+          if (x == -1 && y == -1 && z == -1) break; // Thats a item not a block :)
+          detection.placing(true);
+        } catch (ReflectiveOperationException e) {
+          e.printStackTrace();
+        }
         break;
       case "PacketPlayOutKeepAlive":
         detection.startTransactionTime(System.currentTimeMillis());
@@ -73,14 +88,27 @@ public class DetectionPacketHandler implements PacketReceive, PacketSent {
         break;
       default:
         break;
+      case "PacketPlayOutBlockChange":
+        System.out.println("PacketPlayOutBlockChange");
+        break;
     }
+  }
+
+  private Object getPrivateField(Class<?> targetClass, Object object, String name) throws NoSuchFieldException, IllegalAccessException {
+    Field declaredField = targetClass.getDeclaredField(name);
+    declaredField.setAccessible(true);
+    return declaredField.get(object);
+  }
+
+  private Object getPrivateField(Object object, String name) throws NoSuchFieldException, IllegalAccessException {
+    Field declaredField = object.getClass().getDeclaredField(name);
+    declaredField.setAccessible(true);
+    return declaredField.get(object);
   }
 
   private String getDigType(Object packet) {
     try {
-      Field c = packet.getClass().getDeclaredField("c");
-      c.setAccessible(true);
-      Object enumValue = c.get(packet);
+      Object enumValue = this.getPrivateField(packet, "c");
       return (String) enumValue.getClass().getMethod("name").invoke(enumValue);
     } catch (ReflectiveOperationException e) {
       e.printStackTrace();

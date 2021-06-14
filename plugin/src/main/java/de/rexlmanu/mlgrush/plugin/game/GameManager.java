@@ -158,7 +158,7 @@ public class GameManager {
 
   public void onDisable() {
     this.interactiveMobs.forEach(InteractiveMob::remove);
-    this.arenaManager.arenaContainer().activeArenas().forEach(this.arenaManager::destroy);
+    // this.arenaManager.arenaContainer().activeArenas().forEach(this.arenaManager::destroy);
   }
 
   public void giveLobbyItems(Player player) {
