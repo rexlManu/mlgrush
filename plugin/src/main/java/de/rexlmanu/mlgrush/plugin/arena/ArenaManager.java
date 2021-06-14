@@ -151,12 +151,12 @@ public class ArenaManager {
       gamePlayer.sendMessage("Deine Statistiken haben sich folgend verändert:");
       ArenaStatistics arenaStatistics = arena.statsFromPlayer(gamePlayer);
       Statistics statistics = gamePlayer.data().statistics();
-      double oldKd = checkForNan(statistics.kills(), statistics.deaths()) * 100;
-      double newKd = checkForNan(statistics.kills() + arenaStatistics.kills(), statistics.deaths() + arenaStatistics.deaths()) * 100;
+      double oldKd = checkForNan(statistics.kills(), statistics.deaths());
+      double newKd = checkForNan(statistics.kills() + arenaStatistics.kills(), statistics.deaths() + arenaStatistics.deaths());
       double kdDifference = newKd - oldKd;
       double oldWinrate = checkForNan(statistics.wins(), statistics.games()) * 100;
       double newWinrate = checkForNan(statistics.wins() + (winningTeam.members().contains(gamePlayer) ? 1 : 0), statistics.games() + 1) * 100;
-      double winrateDifference = oldWinrate - newWinrate;
+      double winrateDifference = newWinrate - oldWinrate;
       Stream.of(
         "",
         String.format("&8  ■ &7Kills &8× &e%s &8(&e+%s&7&8)", statistics.kills(), arenaStatistics.kills()),
@@ -168,7 +168,7 @@ public class ArenaManager {
         String.format("&8  ■ &7Siegreiche Spiele &8× &e%s &8(&e+%s&7&8)", statistics.wins(), winningTeam.members().contains(gamePlayer) ? 1 : 0),
         String.format("&8  ■ &7Gespielte Spiele &8× &e%s &8(&e+%s&7&8)", statistics.games(), 1),
         "",
-        String.format("&8  ■ &7Siegesrate &8× &e%.1f%% &8(&e%s%s&7&8)", oldWinrate, winrateDifference > 0 ? "+" : "", winrateDifference),
+        String.format("&8  ■ &7Siegesrate &8× &e%.1f%% &8(&e%s%s%%&7&8)", oldWinrate, winrateDifference > 0 ? "+" : "", winrateDifference),
         ""
       ).map(MessageFormat::replaceColors).forEach(player::sendMessage);
 
