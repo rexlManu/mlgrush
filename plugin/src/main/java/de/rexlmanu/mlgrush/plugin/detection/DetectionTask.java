@@ -15,7 +15,7 @@ public class DetectionTask implements Runnable {
       Detection detection = gamePlayer.detection();
       if (detection.clicks() < 2) return;
       detection.lastClicks(detection.clicks());
-      detection.averageSecondly(detection.clickHistory().stream().mapToDouble(Integer::doubleValue).average().getAsDouble());
+      detection.averageSecondly(detection.clickHistory().stream().mapToDouble(Integer::doubleValue).average().orElse(0));
       detection.clickHistory().add(detection.clicks());
       if (detection.clickHistory().size() >= 10) {
         detection.average(detection.clickHistory().stream().mapToDouble(Integer::doubleValue).average().getAsDouble());
