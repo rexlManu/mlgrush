@@ -3,3 +3,4 @@ rootProject.name = 'mlgrush'
 include('plugin')
 include 'arenacreator'
 include 'arenalib'
+

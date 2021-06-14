@@ -22,7 +22,7 @@ public class StatsHologramManager {
   public StatsHologramManager() {
     this.hologramMap = new HashMap<>();
     this.location = GameManager.instance().locationProvider().get("hologram").orElse(null);
-    if (this.location != null) this.location.add(0, 1.5, 0);
+    if (this.location != null) this.location.add(0, 0.5, 0);
   }
 
   private CompletableFuture<VirtualHologram> create(GamePlayer gamePlayer) {

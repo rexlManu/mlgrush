@@ -37,6 +37,10 @@ repositories {
       artifact()
     }
   }
+  maven {
+    name 'minecraft-repo'
+    url 'https://libraries.minecraft.net/'
+  }
 }
 
 configurations.all {
@@ -58,8 +62,9 @@ dependencies {
    */
 
   implementation(files('../libs/library-1.0.2.jar'))
+  implementation 'com.mojang:authlib:1.5.21'
 
-  compile('org.jetbrains:annotations:16.0.2')
+  compile('org.jetbrains:annotations:21.0.1')
   compile('eu.miopowered:packetlistener:1.0') {
     transitive = false
   }
@@ -70,6 +75,7 @@ dependencies {
   compile('fr.mrmicky:fastboard:v1.1.0')
   compile('net.jodah:expiringmap:0.5.9')
   compile('xyz.xenondevs:particle:1.6.1')
+  compile('net.jitse:npclib-plugin:2.11.1-SNAPSHOT')
 }
 
 processResources {

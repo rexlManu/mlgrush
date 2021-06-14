@@ -88,6 +88,7 @@ public class GameManager {
   private SpectatorInventory spectatorInventory;
 
   private StatsHologramManager statsHologramManager;
+//  private StatsNPCProvider statsNPCProvider;
   private Cooldown queueCooldown;
 
   private GameManager() {
@@ -105,6 +106,7 @@ public class GameManager {
 
     this.spectatorInventory = new SpectatorInventory();
     this.statsHologramManager = new StatsHologramManager();
+//    this.statsNPCProvider = new StatsNPCProvider();
     this.queueCooldown = new Cooldown(1500);
     // Sometimes in development it happens when the server don't get nicely shutdown, the 'old' are still there and you can't use the new spawned one.
     Bukkit.getWorlds().stream().map(World::getLivingEntities).forEach(livingEntities -> livingEntities.forEach(Entity::remove));

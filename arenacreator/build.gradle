@@ -31,7 +31,7 @@ dependencies {
   implementation('org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT')
 //    compileOnly (files('../libs/spigot-1.8.8.jar')) // for nms
 
-  compile('org.jetbrains:annotations:16.0.2')
+  compile('org.jetbrains:annotations:21.0.1')
   compile(project(':arenalib')) {
     transitive = false
   }
