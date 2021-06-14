@@ -81,6 +81,18 @@ public class ArenaConfigurationInventory implements Listener {
     ItemStackBuilder.of(Material.LEATHER_BOOTS).color(Color.YELLOW).name("&eKnockback nur nach Oben").lore("&7Nur noch Knockback nach", "&eoben &7wird möglich sein.").build(),
     24, false
   ));
+  private OptionItem<Boolean> unlimitedBlocksOption = this.register(new BooleanOptionItem(
+    ItemStackBuilder.of(Material.BEDROCK).name("&eUnlimiterte Blöcke").build(),
+    30, false
+  ));
+  private OptionItem<Boolean> fallDamageOption = this.register(new BooleanOptionItem(
+    ItemStackBuilder.of(Material.DIAMOND_BOOTS).name("&eFallschaden").build(),
+    31, false
+  ));
+  private OptionItem<Boolean> showCpsOption = this.register(new BooleanOptionItem(
+    ItemStackBuilder.of(Material.WOOD_SWORD).lore("&7Du siehst wie viele", "&eKlicks per Sekunde &7dein", "&7Gegner aktuell hat.").name("&eCPS anzeigen").build(),
+    32, false
+  ));
 
   public ArenaConfigurationInventory(GamePlayer owner, GamePlayer target) {
     this.owner = owner;
@@ -114,7 +126,10 @@ public class ArenaConfigurationInventory implements Listener {
     ArenaConfiguration.ArenaConfigurationBuilder configuration = ArenaManager.DEFAULT_CONFIGURATION.get().maximalPoints(this.maximalPointsOption.value())
       .autoBlockBreak(this.blockBreakOption.value())
       .buildHeight(this.buildHeightOption.value())
-      .nohitdelay(nohitdelayOption.value())
+      .nohitdelay(this.nohitdelayOption.value())
+      .fallDamage(this.fallDamageOption.value())
+      .showCps(this.showCpsOption.value())
+      .unlimitedBlocks(this.unlimitedBlocksOption.value())
       .knockbackOnlyHeight(this.knockbackOnlyHeightOption.value());
 
     this.owner.player().closeInventory();

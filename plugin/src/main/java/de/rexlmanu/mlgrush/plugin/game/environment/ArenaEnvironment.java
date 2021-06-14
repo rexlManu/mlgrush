@@ -32,6 +32,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.concurrent.ExecutionException;
@@ -70,6 +71,11 @@ public class ArenaEnvironment implements GameEnvironment {
           || LocationUtils.rangeContains(team.spawnLocation(), location, arena.configuration().spawnProtection())) {
           event.target().setCancelled(true);
           return;
+        }
+        if (arena.configuration().unlimitedBlocks()) {
+          ItemStack item = event.gamePlayer().player().getItemInHand();
+          item.setAmount(item.getMaxStackSize());
+//          event.gamePlayer().player().setItemInHand(item);
         }
 
         arena.placedBlocks().add(block);
@@ -167,10 +173,11 @@ public class ArenaEnvironment implements GameEnvironment {
     Player player = (Player) event.getEntity();
     PlayerProvider.find(player.getUniqueId()).filter(gamePlayer -> gamePlayer.environment().equals(ENVIRONMENT))
       .ifPresent(gamePlayer -> {
-        if (event.getCause().equals(EntityDamageEvent.DamageCause.FALL)) {
-          event.setCancelled(true);
-          return;
-        }
+        GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(gamePlayer).ifPresent(arena -> {
+          if (event.getCause().equals(EntityDamageEvent.DamageCause.FALL) && !arena.configuration().fallDamage()) {
+            event.setCancelled(true);
+          }
+        });
         event.setDamage(0);
       });
   }

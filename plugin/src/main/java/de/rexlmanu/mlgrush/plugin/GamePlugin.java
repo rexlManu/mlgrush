@@ -10,6 +10,7 @@ import de.rexlmanu.mlgrush.plugin.task.ArenaActionbarTask;
 import de.rexlmanu.mlgrush.plugin.task.ArenaPlayingTimeExtendCheckerTask;
 import de.rexlmanu.mlgrush.plugin.task.UpdateStatsWallTask;
 import de.rexlmanu.mlgrush.plugin.task.arena.ArenaBlockRemoveTask;
+import de.rexlmanu.mlgrush.plugin.task.arena.ArenaShowCpsTask;
 import de.rexlmanu.mlgrush.plugin.task.particle.FloorParticleTask;
 import de.rexlmanu.mlgrush.plugin.task.particle.QueueParticleTask;
 import lombok.experimental.Accessors;
@@ -59,6 +60,7 @@ public class GamePlugin extends JavaPlugin {
     new ArenaPlayingTimeExtendCheckerTask();
     new UpdateStatsWallTask();
     new ArenaBlockRemoveTask();
+    new ArenaShowCpsTask();
 
     Arrays.asList("queue-npc", "stick-change-npc", "block-change-npc")
       .forEach(s -> GameManager.instance().locationProvider().get(s)

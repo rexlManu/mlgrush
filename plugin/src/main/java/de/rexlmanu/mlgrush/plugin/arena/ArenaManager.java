@@ -55,6 +55,9 @@ public class ArenaManager {
     .buildHeight(4)
     .autoBlockBreak(false)
     .custom(true)
+    .fallDamage(false)
+    .unlimitedBlocks(false)
+    .showCps(false)
     .knockbackOnlyHeight(false);
 
   private ArenaTemplateLoader templateLoader;
