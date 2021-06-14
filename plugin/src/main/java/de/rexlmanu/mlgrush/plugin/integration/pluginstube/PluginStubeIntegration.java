@@ -6,6 +6,7 @@ import de.rexlmanu.mlgrush.plugin.game.Environment;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.integration.GameIntegration;
 import de.rexlmanu.mlgrush.plugin.scoreboard.ScoreboardCreator;
+import de.rexlmanu.mlgrush.plugin.scoreboard.impl.ArenaScoreboardCreator;
 import de.rexlmanu.mlgrush.plugin.scoreboard.impl.LobbyScoreboardCreator;
 import net.pluginstube.library.perk.IPerkAPI;
 import net.pluginstube.library.perk.PerkCategory;
@@ -41,7 +42,12 @@ public class PluginStubeIntegration implements GameIntegration {
 
     // Replace scoreboard
     Map<Environment, ScoreboardCreator> map = GameManager.instance().scoreboardHandler().environmentScoreboardCreatorMap();
-    map.values().stream().filter(scoreboardCreator -> scoreboardCreator instanceof LobbyScoreboardCreator).map(scoreboardCreator -> ((LobbyScoreboardCreator) scoreboardCreator)).forEach(lobbyScoreboardCreator -> lobbyScoreboardCreator.task().cancel());
+    map.values().stream().forEach(scoreboardCreator -> {
+      if (scoreboardCreator instanceof LobbyScoreboardCreator)
+        ((LobbyScoreboardCreator) scoreboardCreator).task().cancel();
+      if (scoreboardCreator instanceof ArenaScoreboardCreator)
+        ((ArenaScoreboardCreator) scoreboardCreator).task().cancel();
+    });
     map.clear();
     map.put(Environment.LOBBY, new PluginStubeLobbyScoreboard());
     map.put(Environment.ARENA, new PluginStubeArenaScoreboard());

@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 @Accessors(fluent = true)
 public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
 
-  private static final String[][] ADS = {
+  public static final String[][] ADS = {
     { "Twitter", "@rexlManu" },
     { "Discord", "rexlManu#1337" },
     { "Github", "rexlManu" },
