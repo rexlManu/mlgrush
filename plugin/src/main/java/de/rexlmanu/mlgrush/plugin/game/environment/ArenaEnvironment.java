@@ -1,7 +1,5 @@
 package de.rexlmanu.mlgrush.plugin.game.environment;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.arena.Arena;
 import de.rexlmanu.mlgrush.plugin.arena.ArenaManager;
@@ -19,9 +17,11 @@ import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.utility.LocationUtils;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import de.rexlmanu.mlgrush.plugin.utility.RandomElement;
+import net.jodah.expiringmap.ExpiringMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -35,18 +35,18 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import java.util.concurrent.ExecutionException;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class ArenaEnvironment implements GameEnvironment {
 
   public static final Environment ENVIRONMENT = Environment.ARENA;
-  private Cache<GamePlayer, GamePlayer> lastHitterCache;
+  private Map<GamePlayer, GamePlayer> lastHitterMap;
 
   public ArenaEnvironment() {
-    this.lastHitterCache = CacheBuilder.newBuilder()
-      .expireAfterWrite(25, TimeUnit.SECONDS)
+    this.lastHitterMap = ExpiringMap.builder()
+      .expiration(25, TimeUnit.SECONDS)
       .build();
     EventCoordinator coordinator = GameManager.instance().eventCoordinator();
     ArenaManager arenaManager = GameManager.instance().arenaManager();
@@ -120,11 +120,8 @@ public class ArenaEnvironment implements GameEnvironment {
           && to.getY() == from.getY()
           && to.getZ() == from.getZ()) return;
         if (!arena.region().contains(to)) {
-          try {
-            Bukkit.getPluginManager().callEvent(new ArenaPlayerDiedEvent(event.gamePlayer(), this.lastHitterCache.get(event.gamePlayer(), event::gamePlayer)));
-          } catch (ExecutionException e) {
-            e.printStackTrace();
-          }
+          Bukkit.getPluginManager().callEvent(new ArenaPlayerDiedEvent(event.gamePlayer(), this.lastHitterMap.get(event.gamePlayer())));
+          this.lastHitterMap.remove(event.gamePlayer());
           arena.respawnPlayer(event.gamePlayer());
         }
       }));
@@ -143,8 +140,11 @@ public class ArenaEnvironment implements GameEnvironment {
     coordinator.add(ENVIRONMENT, ArenaPlayerDiedEvent.class, event -> arenaManager.arenaContainer()
       .findArenaByPlayer(event.gamePlayer()).ifPresent(arena -> {
         arena.statsFromPlayer(event.gamePlayer()).addDeath();
-        if (event.target().killer() != null)
-          arena.statsFromPlayer(event.target().killer()).addKill();
+        GamePlayer killer = event.target().killer();
+        if (killer != null) {
+          arena.statsFromPlayer(killer).addKill();
+          killer.sound(Sound.ORB_PICKUP, 1f);
+        }
       }));
     coordinator.add(Environment.LOBBY, PlayerMoveEvent.class, event -> {
       Location to = event.target().getTo();
@@ -198,7 +198,7 @@ public class ArenaEnvironment implements GameEnvironment {
                 player.setVelocity(new Vector(0, ThreadLocalRandom.current().nextDouble(0.311), 0)));
             }
           });
-          this.lastHitterCache.put(gamePlayer, targetPlayer);
+          this.lastHitterMap.put(gamePlayer, targetPlayer);
         }));
   }
 
