@@ -170,7 +170,7 @@ public class ArenaManager {
         String.format("&8  ■ &7Siegreiche Spiele &8× &e%s &8(&e+%s&7&8)", statistics.wins(), winningTeam.members().contains(gamePlayer) ? 1 : 0),
         String.format("&8  ■ &7Gespielte Spiele &8× &e%s &8(&e+%s&7&8)", statistics.games(), 1),
         "",
-        String.format("&8  ■ &7Siegesrate &8× &e%.1f%% &8(&e%s%s%%&7&8)", oldWinrate, winrateDifference > 0 ? "+" : "", winrateDifference),
+        String.format("&8  ■ &7Siegesrate &8× &e%.1f%% &8(&e%s%.1f%%&7&8)", oldWinrate, winrateDifference > 0 ? "+" : "", winrateDifference),
         ""
       ).map(MessageFormat::replaceColors).forEach(player::sendMessage);
 
