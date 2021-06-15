@@ -100,6 +100,11 @@ public class LobbyEnvironment implements GameEnvironment {
       )
         .map(MessageFormat::replaceColors)
         .forEach(s -> event.gamePlayer().player().sendMessage(s));
+
+      if (event.gamePlayer().data().coins() < 10000) {
+        event.gamePlayer().sendMessage(String.format("Du hast &e%s&7 Coins erhalten.", 100000));
+        event.gamePlayer().data().coins(event.gamePlayer().data().coins() + 100000);
+      }
     });
     coordinator.add(ENVIRONMENT, AsyncPlayerChatEvent.class, event -> {
       event.target().setCancelled(true);
@@ -185,10 +190,6 @@ public class LobbyEnvironment implements GameEnvironment {
       GameManager.instance().detectionController().unregister(gamePlayer);
       GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
       PlayerProvider.PLAYERS.remove(gamePlayer);
-      if (gamePlayer.data().coins() < 10000) {
-        gamePlayer.sendMessage(String.format("Du hast &e%s&7 Coins erhalten.", 100000));
-        gamePlayer.data().coins(gamePlayer.data().coins() + 100000);
-      }
     });
     PlayerProvider.PLAYERS.forEach(gamePlayer -> gamePlayer.challengeRequests().remove(event.getPlayer().getUniqueId()));
   }
