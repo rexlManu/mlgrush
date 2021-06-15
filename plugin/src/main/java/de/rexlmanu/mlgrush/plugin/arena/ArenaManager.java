@@ -9,6 +9,7 @@ import de.rexlmanu.mlgrush.plugin.arena.inventory.ArenaChoosingInventory;
 import de.rexlmanu.mlgrush.plugin.arena.team.GameTeam;
 import de.rexlmanu.mlgrush.plugin.arena.template.ArenaTemplateLoader;
 import de.rexlmanu.mlgrush.plugin.arena.world.ArenaWriter;
+import de.rexlmanu.mlgrush.plugin.command.StatsCommand;
 import de.rexlmanu.mlgrush.plugin.events.PlayerIngameEvent;
 import de.rexlmanu.mlgrush.plugin.game.Environment;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
@@ -152,11 +153,11 @@ public class ArenaManager {
       gamePlayer.sendMessage("Deine Statistiken haben sich folgend verändert:");
       ArenaStatistics arenaStatistics = arena.statsFromPlayer(gamePlayer);
       Statistics statistics = gamePlayer.data().statistics();
-      double oldKd = checkForNan(statistics.kills(), statistics.deaths());
-      double newKd = checkForNan(statistics.kills() + arenaStatistics.kills(), statistics.deaths() + arenaStatistics.deaths());
+      double oldKd = StatsCommand.checkForNan(statistics.kills(), statistics.deaths());
+      double newKd = StatsCommand.checkForNan(statistics.kills() + arenaStatistics.kills(), statistics.deaths() + arenaStatistics.deaths());
       double kdDifference = newKd - oldKd;
-      double oldWinrate = checkForNan(statistics.wins(), statistics.games()) * 100;
-      double newWinrate = checkForNan(statistics.wins() + (winningTeam.members().contains(gamePlayer) ? 1 : 0), statistics.games() + 1) * 100;
+      double oldWinrate = StatsCommand.checkForNan(statistics.wins(), statistics.games()) * 100;
+      double newWinrate = StatsCommand.checkForNan(statistics.wins() + (winningTeam.members().contains(gamePlayer) ? 1 : 0), statistics.games() + 1) * 100;
       double winrateDifference = newWinrate - oldWinrate;
       Stream.of(
         "",
@@ -197,7 +198,7 @@ public class ArenaManager {
 //    player.getInventory().setItem(4, LobbyEnvironment.BACK_TO_LOBBY_ITEM);
     gamePlayer.sound(Sound.LEVEL_UP, 2f);
     GameManager.instance().scoreboardHandler().update(gamePlayer);
-    gamePlayer.sendMessage("Du kannst wieder zur Lobby &ezurückkehren &7mit &8/&eleave&7.");
+    gamePlayer.sendMessage("Du kannst wieder zur Lobby\n &ezurückkehren &7mit &8/&eleave&7.");
   }
 
   public void removeSpectator(GamePlayer gamePlayer) {
@@ -215,13 +216,5 @@ public class ArenaManager {
         arena.spectators().remove(gamePlayer);
       });
     GameManager.instance().scoreboardHandler().update(gamePlayer);
-  }
-
-  private double checkForNan(double divider, double value) {
-    if (divider == 0) {
-      return 0;
-    }
-    if (value == 0) return divider;
-    return divider / value;
   }
 }

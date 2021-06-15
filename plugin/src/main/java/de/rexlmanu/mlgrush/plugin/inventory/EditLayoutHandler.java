@@ -16,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -34,9 +35,11 @@ public class EditLayoutHandler implements Listener {
   }};
 
   private GamePlayer gamePlayer;
+  private Player player;
 
   public EditLayoutHandler(GamePlayer gamePlayer) {
     this.gamePlayer = gamePlayer;
+    this.player = gamePlayer.player();
 
     Bukkit.getPluginManager().registerEvents(this, GamePlugin.getProvidingPlugin(GamePlugin.class));
 
@@ -136,6 +139,13 @@ public class EditLayoutHandler implements Listener {
   @EventHandler
   public void handle(InventoryCloseEvent event) {
     if (event.getInventory().equals(gamePlayer.player().getInventory())) {
+      this.unregister();
+    }
+  }
+
+  @EventHandler
+  public void handle(PlayerQuitEvent event) {
+    if (event.getPlayer().getUniqueId().equals(this.player.getUniqueId())) {
       this.unregister();
     }
   }
