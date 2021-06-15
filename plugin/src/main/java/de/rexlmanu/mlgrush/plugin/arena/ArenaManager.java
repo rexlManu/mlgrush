@@ -72,7 +72,7 @@ public class ArenaManager {
   }
 
   public void create(List<GamePlayer> players) {
-    this.create(players, DEFAULT_CONFIGURATION.get());
+    this.create(players, DEFAULT_CONFIGURATION.get().custom(false));
   }
 
   public void create(List<GamePlayer> players, ArenaConfiguration.ArenaConfigurationBuilder configurationBuilder) {
@@ -91,7 +91,6 @@ public class ArenaManager {
       ArenaConfiguration configuration = configurationBuilder
         .arenaTemplate(template)
         .startPoint(new Location(this.arenaContainer.world(), this.getNextFreeX(), HEIGHT, SPACE_Z))
-        .custom(false)
         .build();
       players.forEach(gamePlayer -> gamePlayer.sendMessage("Das Spiel wird erstellt."));
       ArenaWriter.generateTemplate(configuration);
