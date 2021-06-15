@@ -46,9 +46,12 @@ public class StatsHologramManager {
   }
 
   public void show(GamePlayer gamePlayer) {
-    if (this.location == null || gamePlayer.data() == null || this.hologramMap.containsKey(gamePlayer.uniqueId()))
+    if (this.location == null || gamePlayer.data() == null)
       return;
     this.create(gamePlayer).thenAccept(virtualHologram -> {
+      if (this.hologramMap.containsKey(gamePlayer.uniqueId())) {
+        this.hologramMap.get(gamePlayer.uniqueId()).destroy(gamePlayer.player());
+      }
       this.hologramMap.put(gamePlayer.uniqueId(), virtualHologram);
       virtualHologram.send(gamePlayer.player());
     });
