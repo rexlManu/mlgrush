@@ -65,8 +65,7 @@ public class InteractiveMob implements Runnable, Listener {
           Object nmsPlayer = player.getClass().getMethod("getHandle").invoke(player);
           Object playerConnection = nmsPlayer.getClass().getField("playerConnection").get(nmsPlayer);
 
-
-          Object packet = PacketReflection.nmsClass("PacketPlayOutEntity$PacketPlayOutEntityLook")
+          Object entityLookPacket = PacketReflection.nmsClass("PacketPlayOutEntity$PacketPlayOutEntityLook")
             .getConstructor(int.class, byte.class, byte.class, boolean.class
             ).newInstance(
               this.entity.getEntityId(),
@@ -74,7 +73,23 @@ public class InteractiveMob implements Runnable, Listener {
               toPackedByte((float) (90 - Math.toDegrees(Math.acos(direction.getY())))),
               true
             );
-          playerConnection.getClass().getMethod("sendPacket", PacketReflection.nmsClass("Packet")).invoke(playerConnection, packet);
+          Location location = entity.getLocation();
+          location.setDirection(direction);
+          location.setYaw((float) (180 - Math.toDegrees(Math.atan2(direction.getX(), direction.getZ()))));
+          location.setPitch((float) (90 - Math.toDegrees(Math.acos(direction.getY()))));
+          Object packetPlayOutEntityTeleport = PacketReflection.nmsClass("PacketPlayOutEntityTeleport")
+            .getConstructor(int.class, int.class, int.class, int.class, byte.class, byte.class, boolean.class)
+            .newInstance(
+              this.entity.getEntityId(),
+              floor(location.getX() * 32D),
+              floor(location.getY()),
+              floor(location.getZ()),
+              toPackedByte(location.getYaw()),
+              toPackedByte(location.getPitch()),
+              true
+            );
+          playerConnection.getClass().getMethod("sendPacket", PacketReflection.nmsClass("Packet")).invoke(playerConnection, packetPlayOutEntityTeleport);
+          playerConnection.getClass().getMethod("sendPacket", PacketReflection.nmsClass("Packet")).invoke(playerConnection, entityLookPacket);
 
         } catch (Exception e) {
           e.printStackTrace();
@@ -92,6 +107,11 @@ public class InteractiveMob implements Runnable, Listener {
 
   private byte toPackedByte(float f) {
     return (byte) ((int) (f * 256.0F / 360.0F));
+  }
+
+  public static int floor(double var0) {
+    int var2 = (int) var0;
+    return var0 < (double) var2 ? var2 - 1 : var2;
   }
 
 }
