@@ -25,9 +25,8 @@ import de.rexlmanu.mlgrush.plugin.utility.cooldown.Cooldown;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
+import org.bukkit.Difficulty;
 import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockGrowEvent;
@@ -88,7 +87,7 @@ public class GameManager {
   private SpectatorInventory spectatorInventory;
 
   private StatsHologramManager statsHologramManager;
-//  private StatsNPCProvider statsNPCProvider;
+  //  private StatsNPCProvider statsNPCProvider;
   private Cooldown queueCooldown;
 
   private GameManager() {
@@ -109,7 +108,8 @@ public class GameManager {
 //    this.statsNPCProvider = new StatsNPCProvider();
     this.queueCooldown = new Cooldown(1500);
     // Sometimes in development it happens when the server don't get nicely shutdown, the 'old' are still there and you can't use the new spawned one.
-    Bukkit.getWorlds().stream().map(World::getLivingEntities).forEach(livingEntities -> livingEntities.forEach(Entity::remove));
+    // Bukkit.getWorlds().stream().map(World::getLivingEntities).forEach(livingEntities -> livingEntities.forEach(Entity::remove));
+    Bukkit.getWorlds().forEach(world -> world.setDifficulty(Difficulty.EASY));
 
     this.locationProvider.get("queue-npc").ifPresent(location -> this.interactiveMobs.add(new InteractiveMob(EntityType.WITCH, Arrays.asList(
       "&8» &eQueue",
