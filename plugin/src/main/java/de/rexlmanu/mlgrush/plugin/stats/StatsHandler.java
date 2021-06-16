@@ -26,6 +26,7 @@ public class StatsHandler {
           int rank = i + 1;
           int finalI = i;
           GameManager.instance().locationProvider().get("ranking-" + rank).ifPresent(location -> {
+            if(!(location.getBlock().getState() instanceof Sign)) return;
             GamePlayerData data = new GamePlayerData(UUID.randomUUID());
             String owner = "MHF_QUESTION";
             String name = "???";
