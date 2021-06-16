@@ -82,8 +82,8 @@ public class InteractiveMob implements Runnable, Listener {
             .newInstance(
               this.entity.getEntityId(),
               floor(location.getX() * 32D),
-              floor(location.getY()),
-              floor(location.getZ()),
+              floor(location.getY() * 32D),
+              floor(location.getZ() * 32D),
               toPackedByte(location.getYaw()),
               toPackedByte(location.getPitch()),
               true
