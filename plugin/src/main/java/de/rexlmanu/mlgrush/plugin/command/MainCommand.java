@@ -31,6 +31,7 @@ public class MainCommand implements CommandExecutor, TabExecutor {
     this.commands.add(new SetRankingCommand());
     this.commands.add(new InspectionCommand());
     this.commands.add(new UpdateStatsWallCommand());
+    this.commands.add(new RespawnMobCommand());
   }
 
   @Override

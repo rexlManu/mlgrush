@@ -24,6 +24,7 @@ public class InteractiveMob implements Runnable, Listener {
   private Entity entity;
   private BukkitTask viewTask;
   private Hologram hologram;
+  private Location location;
 
   private final EntityType type;
   private List<String> lines;
@@ -36,6 +37,11 @@ public class InteractiveMob implements Runnable, Listener {
   }
 
   public InteractiveMob create(Location location) {
+    this.location = location;
+    return this.spawn();
+  }
+
+  public InteractiveMob spawn() {
     this.entity = location.getWorld().spawnEntity(location, this.type);
     NoAI.setEntityAi(this.entity, false);
     this.hologram = new Hologram(this.lines, location.clone().add(0, 0.6, 0));
