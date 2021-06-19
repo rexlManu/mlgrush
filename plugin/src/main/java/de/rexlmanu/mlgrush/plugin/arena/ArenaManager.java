@@ -94,6 +94,9 @@ public class ArenaManager {
         .build();
       players.forEach(gamePlayer -> gamePlayer.sendMessage("Das Spiel wird erstellt."));
       ArenaWriter.generateTemplate(configuration);
+      if (configuration.custom()) {
+        players.forEach(gamePlayer -> gamePlayer.sendMessage("In dieser Runde werden &ekeine&7 Statistiken gewertet."));
+      }
       this.arenaContainer.register(players, configuration);
       GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
     });
