@@ -32,6 +32,7 @@ public class PlayerUtils {
     player.setExp(0);
     player.setWalkSpeed(0.2f);
     player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+    player.setMaximumNoDamageTicks(20);
   }
   public static void updateGameMode(Player player, GameMode gameMode) {
     try {

@@ -93,6 +93,8 @@ public class Arena {
     GameManager.instance().scoreboardHandler().update(gamePlayer);
     if (this.configuration.nohitdelay()) {
       player.setMaximumNoDamageTicks(0);
+    }else {
+      player.setMaximumNoDamageTicks(20);
     }
     player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 10, 30, false, false));
   }
