@@ -42,7 +42,7 @@ public class BooleanOptionItem implements OptionItem<Boolean> {
     this.value = !this.value;
     inventory.setItem(this.slot, itemStack(ItemStackBuilder.of(itemStack).transformMeta(itemMeta -> {
       List<String> lore = itemMeta.getLore();
-      lore.set(lore.size() - 1, MessageFormat.replaceColors(this.value ? "&r  &a&lAKTIVIERT" : "&r  &c&lDEAKTIVIERT"));
+      lore.set(lore.size() - 1, MessageFormat.replaceColors(this.value ? "&8» &a&lAKTIVIERT" : "&8» &c&lDEAKTIVIERT"));
       itemMeta.setLore(lore);
     }).build()).itemStack());
   }
