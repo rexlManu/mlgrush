@@ -234,7 +234,7 @@ public class LobbyEnvironment implements GameEnvironment {
             return;
           }
           if (target.challengeRequests().containsKey(gamePlayer.uniqueId())) return;
-          target.challengeRequests().put(gamePlayer.uniqueId(), ArenaManager.DEFAULT_CONFIGURATION.get());
+          target.challengeRequests().put(gamePlayer.uniqueId(), ArenaManager.DEFAULT_CONFIGURATION.get().custom(false));
           target.sendMessage(String.format("Du wurdest von &e%s&7 zum Duell herausgefordert.", gamePlayer.player().getName()));
           gamePlayer.sendMessage(String.format("Du hast &e%s&7 zu einem Duell herausgefordert.", target.player().getName()));
           gamePlayer.sound(Sound.ORB_PICKUP, 2f);
