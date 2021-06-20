@@ -78,8 +78,9 @@ public class LobbyEnvironment implements GameEnvironment {
       event.gamePlayer().fastBoard().updateTitle(MessageFormat.replaceColors("&e&lMLGRush"));
       GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
 
-      GameManager.instance().arenaManager().arenaContainer().activeArenas().forEach(arena ->
-        arena.players().forEach(gamePlayer -> gamePlayer.player().hidePlayer(player)));
+      PlayerProvider.getPlayers(Environment.ARENA).forEach(gamePlayer -> gamePlayer.player().hidePlayer(player));
+//      GameManager.instance().arenaManager().arenaContainer().activeArenas().forEach(arena ->
+//        arena.players().forEach(gamePlayer -> gamePlayer.player().hidePlayer(player)));
       PlayerProvider.getPlayers(ENVIRONMENT).stream().map(GamePlayer::player).forEach(target -> target.showPlayer(player));
       PlayerProvider.getPlayers(ENVIRONMENT).stream().map(GamePlayer::player).forEach(player::showPlayer);
       GameManager.instance().giveLobbyItems(player);
