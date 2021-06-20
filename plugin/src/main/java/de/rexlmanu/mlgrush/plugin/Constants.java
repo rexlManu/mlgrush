@@ -4,6 +4,6 @@ import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 
 public interface Constants {
 
-  String PREFIX = MessageFormat.replaceColors("&8» &eMLGRush &8■ &7");
+  String PREFIX = MessageFormat.replaceColors("&8« &d&lMLGRush &8»");
 
 }

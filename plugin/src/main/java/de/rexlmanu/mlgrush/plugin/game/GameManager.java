@@ -56,16 +56,16 @@ public class GameManager {
   private static final List<EquipmentMob> EQUIPMENT_MOBS = Arrays.asList(
     EquipmentMob.builder()
       .entityType(EntityType.ZOMBIE)
-      .lines(Arrays.asList("&8» &eBlock", "&7Ändere den Typ deiner Blöcke."))
-      .inventoryName("&eBlöcke")
+      .lines(Arrays.asList("&8» &dBlock", "&7Ändere den Typ deiner Blöcke."))
+      .inventoryName("&dBlöcke")
       .armorStandName(MessageFormat.replaceColors("&d&lBlöcke"))
       .locationName("block-change-npc")
       .elements(BlockEquipment.values())
       .build(),
     EquipmentMob.builder()
       .entityType(EntityType.VILLAGER)
-      .lines(Arrays.asList("&8» &eStick", "&7Ändere den Stick, mit dem du kämpfst."))
-      .inventoryName("&eStick")
+      .lines(Arrays.asList("&8» &dStick", "&7Ändere den Stick, mit dem du kämpfst."))
+      .inventoryName("&dStick")
       .armorStandName(MessageFormat.replaceColors("&d&lSticks"))
       .locationName("stick-change-npc")
       .elements(StickEquipment.values())
@@ -125,19 +125,19 @@ public class GameManager {
       this.queueCooldown.add(player.uniqueId());
       if (this.queueController.inQueue(player)) {
         this.queueController.playerQueue().remove(player);
-        player.sendMessage("Du hast die &eWarteschlange &7verlassen.");
+        player.sendMessage("Du hast die &dWarteschlange &7verlassen.");
         this.scoreboardHandler.updateAll(Environment.LOBBY);
         player.sound(Sound.PISTON_RETRACT, 2f);
         return;
       }
       this.queueController.playerQueue().offer(player);
-      player.sendMessage("Du hast die &eWarteschlange &7betreten.");
+      player.sendMessage("Du hast die &dWarteschlange &7betreten.");
       this.scoreboardHandler.updateAll(Environment.LOBBY);
       player.sound(Sound.PISTON_EXTEND, 2f);
     };
 //    this.locationProvider.get("queue-npc").ifPresent(location -> {
 //      this.interactiveMobs.add(new InteractiveMob(EntityType.WITCH, Arrays.asList(
-//        "&8» &eQueue",
+//        "&8» &dQueue",
 //        "&7Suche nach einem Gegner."
 //      ), queueInteractionHandler).create(location));
 //    });

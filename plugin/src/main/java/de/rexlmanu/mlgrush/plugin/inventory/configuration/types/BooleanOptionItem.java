@@ -27,7 +27,7 @@ public class BooleanOptionItem implements OptionItem<Boolean> {
 
     this.itemStack = ItemStackBuilder.of(this.itemStack).lore(
       "",
-      "  &8■ &7Linksklick &8× &eUmstellen",
+      "  &8▶ &7Linksklick &8● &dUmstellen",
       "",
       this.value ? "&8» &a&lAKTIVIERT" : "&8» &c&lDEAKTIVIERT"
     ).build();

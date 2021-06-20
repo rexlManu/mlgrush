@@ -57,17 +57,17 @@ public class ArenaScoreboardCreator implements ScoreboardCreator, Runnable {
         .orElse("Unbekannt");
       gamePlayer.fastBoard().updateLines(Stream.of(
         "",
-        "&8■ &7Dein Gegner",
-        "&8 » &e" + enemy,
+        "&7Dein Gegner&8:",
+        "&8 » &d" + enemy,
         "",
-        "&8■ &7Deine Punkte",
-        "&8 » &e" + team.points(),
+        "&7Deine Punkte&8:",
+        "&8 » &d" + team.points(),
         "",
-        "&8■ &7Arena",
-        "&8 » &e" + arena.configuration().arenaTemplate().name(),
+        "&7Arena&8:",
+        "&8 » &d" + arena.configuration().arenaTemplate().name(),
         "",
-        "&8■ &7" + ad[0],
-        "&8 » &e" + ad[1],
+        "&7" + ad[0] + "&8:",
+        "&8 » &d" + ad[1],
         ""
       ).map(MessageFormat::replaceColors).collect(Collectors.toList()));
     });

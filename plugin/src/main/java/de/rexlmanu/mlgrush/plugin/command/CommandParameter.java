@@ -7,7 +7,7 @@ public interface CommandParameter {
 
   static void require(String name, int position, String[] arguments) throws CommandParameterMissingException {
     if (arguments.length < (position + 1)) throw new CommandParameterMissingException(
-      String.format("Der Parameter &8'&e%s&8' &7fehlt.", name)
+      String.format("Der Parameter &8'&d%s&8' &7fehlt.", name)
     );
   }
 
@@ -17,7 +17,7 @@ public interface CommandParameter {
       return (T) type.getMethod("valueOf", String.class).invoke(null, arguments[position]);
     } catch (Exception e) {
       throw new CommandParameterMissingException(
-        String.format("Der Parameter &8'&e%s&8' &7muss Type &8'&e%s&8' &7sein.", name, type.getName())
+        String.format("Der Parameter &8'&d%s&8' &7muss Type &8'&d%s&8' &7sein.", name, type.getName())
       );
     }
   }

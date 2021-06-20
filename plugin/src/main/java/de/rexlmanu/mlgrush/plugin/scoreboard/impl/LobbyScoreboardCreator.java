@@ -26,9 +26,8 @@ import java.util.stream.Stream;
 public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
 
   public static final String[][] ADS = {
-    { "Twitter", "@rexlManu" },
-    { "Discord", "rexlManu#1337" },
-    { "Github", "rexlManu" },
+    { "Twitter", "&b@PluginStubeNW" },
+    { "TeamSpeak", "&3PluginStube.net" },
   };
 
   private int currentAd;
@@ -56,17 +55,17 @@ public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
       }
       gamePlayer.fastBoard().updateLines(Stream.of(
         "",
-        "&8■ &7Dein Ranking",
-        "&8 » &e" + rank + ". Platz",
+        "&7Dein Ranking&8:",
+        "&8 » &d" + rank + ". Platz",
         "",
-        "&8■ &7Warteschlange",
-        "&8 » &e" + GameManager.instance().queueController().playerQueue().size() + " Spieler",
+        "&7Warteschlange&8:",
+        "&8 » &d" + GameManager.instance().queueController().playerQueue().size() + " Spieler",
         "",
-        "&8■ &7Spieler im Spiel",
-        "&8 » &e" + PlayerProvider.getPlayers(Environment.ARENA).size() + " Spieler",
+        "&7Spieler im Spiel&8:",
+        "&8 » &d" + PlayerProvider.getPlayers(Environment.ARENA).size() + " Spieler",
         "",
-        "&8■ &7" + ad[0],
-        "&8 » &e" + ad[1],
+        "&7" + ad[0] + "&8:",
+        "&8 » &d" + ad[1],
         ""
       ).map(MessageFormat::replaceColors).collect(Collectors.toList()));
     });

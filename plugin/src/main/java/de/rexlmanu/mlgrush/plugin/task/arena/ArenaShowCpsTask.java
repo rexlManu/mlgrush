@@ -35,7 +35,7 @@ public class ArenaShowCpsTask implements Runnable {
           if (objective == null) {
             objective = scoreboard.registerNewObjective(OBJECTIVE_NAME, "dummy");
             objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
-            objective.setDisplayName(ChatColor.YELLOW + "cps");
+            objective.setDisplayName(ChatColor.LIGHT_PURPLE + "cps");
           }
           Objective finalObjective = objective;
           arena.players().forEach(target -> {

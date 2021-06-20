@@ -41,17 +41,17 @@ public class LobbyEnvironment implements GameEnvironment {
 
   private static final Environment ENVIRONMENT = Environment.LOBBY;
 
-  public static ItemStack LEAVE_ITEM = ItemStackBuilder.of(Material.IRON_DOOR).name("&8» &eSpiel verlassen").build();
-  public static ItemStack SPECTATOR_ITEM = ItemStackBuilder.of(Material.COMPASS).name("&8» &eSpectator").build();
-  public static ItemStack SETTINGS_ITEM = ItemStackBuilder.of(Material.REDSTONE_COMPARATOR).name("&8» &eEinstellungen").build();
+  public static ItemStack LEAVE_ITEM = ItemStackBuilder.of(Material.IRON_DOOR).name("&8● &dSpiel verlassen &8▶ &7Rechtsklick &8●").build();
+  public static ItemStack SPECTATOR_ITEM = ItemStackBuilder.of(Material.COMPASS).name("&8● &dSpectator &8▶ &7Rechtsklick &8●").build();
+  public static ItemStack SETTINGS_ITEM = ItemStackBuilder.of(Material.REDSTONE_COMPARATOR).name("&8● &dEinstellungen &8▶ &7Rechtsklick &8●").build();
 
-  public static ItemStack CHALLENGER_ITEM = ItemStackBuilder.of(Material.IRON_SWORD).breakable(false).hideAttributes().name("&8» &eHerausfordern")
-    .lore("&7<Linksklick> &8- &eSpieler herausfordern",
-      "&7<Rechtsklick> &8- &eEigenes Spiel erstellen").build();
+  public static ItemStack CHALLENGER_ITEM = ItemStackBuilder.of(Material.IRON_SWORD).breakable(false).hideAttributes().name("&8● &dHerausfordern &8▶ &7Rechtsklick &8●")
+    .lore("&7<Linksklick> &8- &dSpieler herausfordern",
+      "&7<Rechtsklick> &8- &dEigenes Spiel erstellen").build();
 
   public static final ItemStack BACK_TO_LOBBY_ITEM = ItemStackBuilder
     .of(Material.FIREWORK_CHARGE)
-    .name("&8» &eZurück zur Lobby")
+    .name("&8» &dZurück zur Lobby")
     .build();
 
   public LobbyEnvironment() {
@@ -75,7 +75,7 @@ public class LobbyEnvironment implements GameEnvironment {
         );
       });
 
-      event.gamePlayer().fastBoard().updateTitle(MessageFormat.replaceColors("&e&lMLGRush"));
+      event.gamePlayer().fastBoard().updateTitle(MessageFormat.replaceColors("&8« &d&lMLGRush &8»"));
       GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
 
       PlayerProvider.getPlayers(Environment.ARENA).forEach(gamePlayer -> gamePlayer.player().hidePlayer(player));
@@ -87,30 +87,30 @@ public class LobbyEnvironment implements GameEnvironment {
       player.getLocation().getWorld().playSound(player.getLocation(), Sound.FIREWORK_TWINKLE, 1f, 1.2f);
       IntStream.range(0, 20).forEach(value -> player.sendMessage(""));
       Stream.of(
-        String.format(Constants.PREFIX + "Hey, &e%s &7hier findest du einige Informationen:", event.gamePlayer().player().getName()),
+        String.format(Constants.PREFIX + "Hey, &d%s &7hier findest du einige Informationen:", event.gamePlayer().player().getName()),
         "&7Commands&8:",
         "",
-        "  &8■ &e/quit &8× &7Verlasse das laufende Spiel",
-        "  &8■ &e/stats <Name> &8× &7Betrachte deine oder dem Spieler seine Stats",
-        "  &8■ &e/inv &8× &7Passe deine Inventarsortierung an",
+        "  &8▶ &d/quit &8● &7Verlasse das laufende Spiel",
+        "  &8▶ &d/stats <Name> &8● &7Betrachte deine oder dem Spieler seine Stats",
+        "  &8▶ &d/inv &8● &7Passe deine Inventarsortierung an",
         "",
         "&7Herausfordern&8:",
         "",
-        "  &8■ &7Mit dem &eEisenschwert &7kannst du mit &eLinksklick &7andere Spieler herausfordern zu einem &eDuell&7.",
-        "  &8■ &7Mit &eRechtsklick&7 auf einem Spieler, kannst du ein &eeigenes Spiel &7erstellen und einstellen welche &eOptionen &7aktiviert sein sollen.",
+        "  &8▶ &7Mit dem &dEisenschwert &7kannst du mit &dLinksklick &7andere Spieler herausfordern zu einem &dDuell&7.",
+        "  &8▶ &7Mit &dRechtsklick&7 auf einem Spieler, kannst du ein &deigenes Spiel &7erstellen und einstellen welche &dOptionen &7aktiviert sein sollen.",
         ""
       )
         .map(MessageFormat::replaceColors)
         .forEach(s -> event.gamePlayer().player().sendMessage(s));
 
       if (event.gamePlayer().data().coins() < 10000) {
-        event.gamePlayer().sendMessage(String.format("Du hast &e%s&7 Coins erhalten.", 100000));
+        event.gamePlayer().sendMessage(String.format("Du hast &d%s&7 Coins erhalten.", 100000));
         event.gamePlayer().data().coins(event.gamePlayer().data().coins() + 100000);
       }
     });
     coordinator.add(ENVIRONMENT, AsyncPlayerChatEvent.class, event -> {
       event.target().setCancelled(true);
-      String message = MessageFormat.replaceColors(String.format("&e%s &8» &7", event.gamePlayer().player().getName())) + event.target().getMessage();
+      String message = MessageFormat.replaceColors(String.format("&d%s &8» &7", event.gamePlayer().player().getName())) + event.target().getMessage();
 
       PlayerProvider.getPlayers(ENVIRONMENT).forEach(gamePlayer -> gamePlayer.player().sendMessage(message));
     });
@@ -152,7 +152,7 @@ public class LobbyEnvironment implements GameEnvironment {
           || target.creatingGame())
           return;
         if (target.challengeRequests().containsKey(event.gamePlayer().uniqueId())) {
-          gamePlayer.sendMessage(String.format("Du hast &e%s&7 bereits eine Anfrage gesendet.", target.player().getName()));
+          gamePlayer.sendMessage(String.format("Du hast &d%s&7 bereits eine Anfrage gesendet.", target.player().getName()));
           return;
         }
         new ArenaConfigurationInventory(gamePlayer, target);
@@ -233,8 +233,8 @@ public class LobbyEnvironment implements GameEnvironment {
         PlayerProvider.find(event.getEntity().getUniqueId()).filter(g -> !g.creatingGame()).ifPresent(target -> {
           if (gamePlayer.challengeRequests().containsKey(target.uniqueId())) {
             gamePlayer.sound(Sound.ORB_PICKUP, 2f);
-            gamePlayer.sendMessage(String.format("Du hast zum Duell mit &e%s&7 zugestimmt.", target.player().getName()));
-            target.sendMessage(String.format("&e%s&7 hat dem Duell zugestimmt.", gamePlayer.player().getName()));
+            gamePlayer.sendMessage(String.format("Du hast zum Duell mit &d%s&7 zugestimmt.", target.player().getName()));
+            target.sendMessage(String.format("&d%s&7 hat dem Duell zugestimmt.", gamePlayer.player().getName()));
             List<GamePlayer> players = Arrays.asList(gamePlayer, target);
             players.forEach(player -> GameManager.instance().queueController().playerQueue().remove(player));
             GameManager.instance().arenaManager().create(players, gamePlayer.challengeRequests().get(target.uniqueId()));
@@ -244,8 +244,8 @@ public class LobbyEnvironment implements GameEnvironment {
           }
           if (target.challengeRequests().containsKey(gamePlayer.uniqueId())) return;
           target.challengeRequests().put(gamePlayer.uniqueId(), ArenaManager.DEFAULT_CONFIGURATION.get().custom(false));
-          target.sendMessage(String.format("Du wurdest von &e%s&7 zum Duell herausgefordert.", gamePlayer.player().getName()));
-          gamePlayer.sendMessage(String.format("Du hast &e%s&7 zu einem Duell herausgefordert.", target.player().getName()));
+          target.sendMessage(String.format("Du wurdest von &d%s&7 zum Duell herausgefordert.", gamePlayer.player().getName()));
+          gamePlayer.sendMessage(String.format("Du hast &d%s&7 zu einem Duell herausgefordert.", target.player().getName()));
           gamePlayer.sound(Sound.ORB_PICKUP, 2f);
         });
       });

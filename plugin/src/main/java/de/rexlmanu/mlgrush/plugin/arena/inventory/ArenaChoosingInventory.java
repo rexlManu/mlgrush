@@ -63,7 +63,7 @@ public class ArenaChoosingInventory implements Listener, Runnable {
     this.future = new CompletableFuture<>();
     JavaPlugin plugin = GamePlugin.getProvidingPlugin(GamePlugin.class);
     this.task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this, 0, 20);
-    this.inventory = Bukkit.createInventory(null, 6 * 9, MessageFormat.replaceColors("&eMapauswahl"));
+    this.inventory = Bukkit.createInventory(null, 6 * 9, MessageFormat.replaceColors("&dMapauswahl"));
 
     Bukkit.getPluginManager().registerEvents(this, plugin);
     this.createPattern();
@@ -101,15 +101,15 @@ public class ArenaChoosingInventory implements Listener, Runnable {
   private ItemStack createItem(ArenaTemplate template) {
     return ItemStackBuilder
       .of(Material.valueOf(template.displayMaterial().toUpperCase()))
-      .name(ChatColor.YELLOW + template.name())
+      .name(ChatColor.LIGHT_PURPLE + template.name())
       .amount(1)
-      .lore("", "&7Builder: &e" + template.description(), "&7Votes: &e0")
+      .lore("", "&7Builder: &d" + template.description(), "&7Votes: &d0")
       .build();
   }
 
   private void updateVotes() {
     this.votedTemplates.forEach(votedTemplate -> {
-      votedTemplate.itemStack = ItemStackBuilder.of(votedTemplate.itemStack).clearLore().lore("", "&7Builder: &e" + votedTemplate.template.description(), "&7Votes: &e" + votedTemplate.voters.size()).build();
+      votedTemplate.itemStack = ItemStackBuilder.of(votedTemplate.itemStack).clearLore().lore("", "&7Builder: &d" + votedTemplate.template.description(), "&7Votes: &d" + votedTemplate.voters.size()).build();
       this.inventory.setItem(votedTemplate.slot, votedTemplate.itemStack);
     });
   }

@@ -29,18 +29,18 @@ public class ArenaActionbarTask implements Runnable {
           if (halfTeamCount < (i + 1)) {
             suffix.append(team.name().color()).append(team.points());
             if (gamePlayer.inspectionMode()) {
-              suffix.append(" &8× &e").append(this.format(team.members().get(0).detection()));
+              suffix.append(" &8● &d").append(this.format(team.members().get(0).detection()));
             }
           } else {
             if (gamePlayer.inspectionMode()) {
-              prefix.append("&e").append(this.format(team.members().get(0).detection())).append(" &8× ");
+              prefix.append("&d").append(this.format(team.members().get(0).detection())).append(" &8● ");
             }
             prefix.append(team.name().color()).append(team.points());
           }
         }
         String message = MessageFormat.replaceColors(
           String.format(
-            "%s &8■ &7%02d:%02d:%02d &8■ %s",
+            "%s &8▶ &7%02d:%02d:%02d &8▶ %s",
             prefix,
             seconds / 3600, (seconds % 3600) / 60, seconds % 60,
             suffix
@@ -53,19 +53,19 @@ public class ArenaActionbarTask implements Runnable {
 
   private String format(Detection detection) {
     // averageSecondly, average,
-    return new StringBuilder().append("&e")
+    return new StringBuilder().append("&d")
       .append(detection.clicks())
-      .append("&7c&8, &e")
+      .append("&7c&8, &d")
       .append(String.format("%.1f", detection.clickAverageSecondly()))
-      .append("&7cps&8, &e")
+      .append("&7cps&8, &d")
       .append(detection.places())
-      .append("&7p&8, &e")
+      .append("&7p&8, &d")
       .append(String.format("%.1f", detection.placeAverageSecondly()))
-      .append("&7pps&8, &e")
+      .append("&7pps&8, &d")
       .append(String.format("%.1f", detection.clickAverage()))
-      .append("&7acps&8, &e")
+      .append("&7acps&8, &d")
       .append(String.format("%.1f", detection.placeAverage()))
-      .append("&7apps&8, &e")
+      .append("&7apps&8, &d")
       .append(detection.transactionPing())
       .append("&7ms")
       .toString();

@@ -32,11 +32,11 @@ public class ShopInventory implements Listener {
   private static Map<Character, ItemStack> PATTERN_ITEM = new HashMap<Character, ItemStack>() {{
     put('t', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(9).build());
     put('b', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(11).build());
-    put('c', ItemStackBuilder.of(Material.BARRIER).name("&cSchließen").data(11).build());
+    put('c', ItemStackBuilder.of(Material.BARRIER).name("&8» &cSchließen").data(11).build());
   }};
 
-  private static final ItemStack ABORT_ITEM = ItemStackBuilder.of(Material.INK_SACK).data(1).name("&cAbbrechen").build();
-  private static final ItemStack BUY_ITEM = ItemStackBuilder.of(Material.INK_SACK).data(10).name("&aErwerben").build();
+  private static final ItemStack ABORT_ITEM = ItemStackBuilder.of(Material.INK_SACK).data(1).name("&8» &cAbbrechen").build();
+  private static final ItemStack BUY_ITEM = ItemStackBuilder.of(Material.INK_SACK).data(10).name("&8» &aErwerben").build();
 
   private static final char[][] PATTERN = {
     { 't', 'b', 't', 't', 'b', 't', 't', 'b', 't' },
@@ -81,12 +81,12 @@ public class ShopInventory implements Listener {
   }
 
   private ItemStack createItem(Buyable buyable) {
-    ItemStackBuilder builder = ItemStackBuilder.of(buyable.material()).name(buyable.displayName());
+    ItemStackBuilder builder = ItemStackBuilder.of(buyable.material()).name("&8» " + buyable.displayName());
     if (buyable.cost() > 0) {
       if (this.owns(buyable)) {
         builder.lore("", "&a&lIN BESITZ");
       } else {
-        builder.lore("", String.format("&7Kosten: &e%s Coins", buyable.cost()));
+        builder.lore("", String.format("&7Kosten: &d%s Coins", buyable.cost()));
       }
     }
     if (buyable.name().toLowerCase().equals(this.gamePlayer.data().selectedStick())
@@ -130,7 +130,7 @@ public class ShopInventory implements Listener {
     if (item.getType().equals(Material.STAINED_GLASS_PANE)) return;
     if (item.equals(BUY_ITEM)) {
       if (gamePlayer.data().coins() < this.currentBoughtItem.cost()) {
-        this.gamePlayer.sendMessage(String.format("Dir fehlen noch &e%s &7Coins dafür.", this.currentBoughtItem.cost() - gamePlayer.data().coins()));
+        this.gamePlayer.sendMessage(String.format("Dir fehlen noch &d%s &7Coins dafür.", this.currentBoughtItem.cost() - gamePlayer.data().coins()));
         return;
       }
 

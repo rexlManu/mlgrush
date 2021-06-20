@@ -54,7 +54,7 @@ public class ArenaEnvironment implements GameEnvironment {
 
     coordinator.add(ENVIRONMENT, AsyncPlayerChatEvent.class, event -> {
       event.target().setCancelled(true);
-      String message = MessageFormat.replaceColors(String.format("&e%s &8» &7", event.gamePlayer().player().getName())) + event.target().getMessage();
+      String message = MessageFormat.replaceColors(String.format("&d%s &8» &7", event.gamePlayer().player().getName())) + event.target().getMessage();
 
       arenaManager
         .arenaContainer()

@@ -31,11 +31,11 @@ import java.util.stream.Collectors;
 @Getter
 public class ArenaCreationProcess implements Listener, Runnable {
 
-  private static final ItemStack SELECT_FIRST_LOCATION = ItemStackBuilder.of(Material.STICK).name("&eErste Position markieren &7<Rechtsklick>").build();
-  private static final ItemStack SELECT_SECOND_LOCATION = ItemStackBuilder.of(Material.BLAZE_ROD).name("&eZweite Position markieren &7<Rechtsklick>").build();
-  private static final ItemStack SELECT_BLUE_TEAM = ItemStackBuilder.of(Material.WOOL).data(11).name("&eSpawn für Team Blau &7<Rechtsklick>").build();
-  private static final ItemStack SELECT_RED_TEAM = ItemStackBuilder.of(Material.WOOL).data(14).name("&eSpawn für Team Rot &7<Rechtsklick>").build();
-  private static final ItemStack BUILD_HEIGHT = ItemStackBuilder.of(Material.SANDSTONE).data(14).name("&eStartbauhöhe &7<Rechtsklick>").build();
+  private static final ItemStack SELECT_FIRST_LOCATION = ItemStackBuilder.of(Material.STICK).name("&dErste Position markieren &7<Rechtsklick>").build();
+  private static final ItemStack SELECT_SECOND_LOCATION = ItemStackBuilder.of(Material.BLAZE_ROD).name("&dZweite Position markieren &7<Rechtsklick>").build();
+  private static final ItemStack SELECT_BLUE_TEAM = ItemStackBuilder.of(Material.WOOL).data(11).name("&dSpawn für Team Blau &7<Rechtsklick>").build();
+  private static final ItemStack SELECT_RED_TEAM = ItemStackBuilder.of(Material.WOOL).data(14).name("&dSpawn für Team Rot &7<Rechtsklick>").build();
+  private static final ItemStack BUILD_HEIGHT = ItemStackBuilder.of(Material.SANDSTONE).data(14).name("&dStartbauhöhe &7<Rechtsklick>").build();
 
   private final Map<String, Location> locationMap = new HashMap<>();
   private boolean waitForInput = false;

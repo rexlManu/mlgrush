@@ -31,7 +31,7 @@ public class SetLocationCommand implements SubCommand {
     location.setX(location.getBlockX() + 0.5);
     location.setZ(location.getBlockZ() + 0.5);
     GameManager.instance().locationProvider().set(arguments[0], location);
-    gamePlayer.sendMessage(String.format("Die Location &e%s &7wurde gesetzt.", arguments[0]));
+    gamePlayer.sendMessage(String.format("Die Location &d%s &7wurde gesetzt.", arguments[0]));
   }
 
   @Override

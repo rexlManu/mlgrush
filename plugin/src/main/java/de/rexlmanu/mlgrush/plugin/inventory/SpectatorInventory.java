@@ -7,12 +7,12 @@ import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
+import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -36,8 +36,8 @@ public class SpectatorInventory implements Listener, Runnable {
     put('b', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(11).build());
   }};
 
-  private static final ItemStack NO_GAMES = ItemStackBuilder.of(Material.BARRIER).name("&eKeine laufenden Spiele")
-    .lore("", "  &8■ &7Aktuell existieren &ckeine&7 laufende Spiele.", "").build();
+  private static final ItemStack NO_GAMES = ItemStackBuilder.of(Material.BARRIER).name("&8» &dKeine laufenden Spiele")
+    .lore("", "  &8▶ &7Aktuell existieren &ckeine&7 laufende Spiele.", "").build();
 
   private static final char[][] PATTERN = {
     { 'b', 'b', 'b', 'b', 't', 'b', 'b', 'b', 'b' },
@@ -51,7 +51,7 @@ public class SpectatorInventory implements Listener, Runnable {
   private List<ArenaDisplayItem> arenaDisplayItems;
 
   public SpectatorInventory() {
-    this.inventory = Bukkit.createInventory(null, 5 * 9, ChatColor.YELLOW + "Spectator");
+    this.inventory = Bukkit.createInventory(null, 5 * 9, MessageFormat.replaceColors("&8● &dSpectator"));
     this.arenaDisplayItems = new ArrayList<>();
 
     JavaPlugin plugin = GamePlugin.getProvidingPlugin(GamePlugin.class);
@@ -144,7 +144,7 @@ public class SpectatorInventory implements Listener, Runnable {
   private ItemStack createDisplayItemStack(Arena arena) {
     ArenaTemplate template = arena.configuration().arenaTemplate();
     return ItemStackBuilder.of(Material.valueOf(template.displayMaterial().toUpperCase()))
-      .name(template.name())
+      .name("&8»" + template.name())
       .lore(this.generateLore(arena))
       .build();
   }
@@ -152,14 +152,14 @@ public class SpectatorInventory implements Listener, Runnable {
   private List<String> generateLore(Arena arena) {
     ArrayList<String> lore = new ArrayList<>();
     lore.add("");
-    lore.add("&eSpieler&8:");
+    lore.add("&8» &dSpieler&8:");
     arena.gameTeams().forEach(gameTeam -> {
       lore.add(String.format("&8- &7Team %s &8» %s%s &7Punkte", gameTeam.name().displayName(), gameTeam.name().color(), gameTeam.points()));
       gameTeam.members().stream().map(GamePlayer::player).map(HumanEntity::getName).forEach(s -> lore.add("  &8- &7" + s));
     });
     lore.add("");
     long seconds = (System.currentTimeMillis() - arena.gameStart()) / 1000;
-    lore.add(String.format("&eSpiellänge&8: &7%02d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60));
+    lore.add(String.format("&8» &dSpiellänge&8: &7%02d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60));
     lore.add("");
     return lore;
   }

@@ -42,7 +42,7 @@ public class ArenaManager {
 
   public static final ItemStack PICKAXE = ItemStackBuilder
     .of(Material.STONE_PICKAXE)
-    .name("&eSpitzhacke")
+    .name("&dSpitzhacke")
     .breakable(false)
     .hideAttributes()
     .enchant(Enchantment.DIG_SPEED, 1)
@@ -95,7 +95,7 @@ public class ArenaManager {
       players.forEach(gamePlayer -> gamePlayer.sendMessage("Das Spiel wird erstellt."));
       ArenaWriter.generateTemplate(configuration);
       if (configuration.custom()) {
-        players.forEach(gamePlayer -> gamePlayer.sendMessage("In dieser Runde werden &ekeine&7 Statistiken gewertet."));
+        players.forEach(gamePlayer -> gamePlayer.sendMessage("In dieser Runde werden &dkeine&7 Statistiken gewertet."));
       }
       this.arenaContainer.register(players, configuration);
       GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
@@ -163,16 +163,16 @@ public class ArenaManager {
       double winrateDifference = newWinrate - oldWinrate;
       Stream.of(
         "",
-        String.format("&8  ■ &7Kills &8× &e%s &8(&e+%s&7&8)", statistics.kills(), arenaStatistics.kills()),
-        String.format("&8  ■ &7Tode &8× &e%s &8(&e+%s&7&8)", statistics.deaths(), arenaStatistics.deaths()),
-        String.format("&8  ■ &7KD &8× &e%.2f &8(&e%s%.2f&7&8)", oldKd, kdDifference > 0 ? "+" : "", kdDifference),
+        String.format("&8  ▶ &7Kills &8● &d%s &8(&d+%s&7&8)", statistics.kills(), arenaStatistics.kills()),
+        String.format("&8  ▶ &7Tode &8● &d%s &8(&d+%s&7&8)", statistics.deaths(), arenaStatistics.deaths()),
+        String.format("&8  ▶ &7KD &8● &d%.2f &8(&d%s%.2f&7&8)", oldKd, kdDifference > 0 ? "+" : "", kdDifference),
         "",
-        String.format("&8  ■ &7Abgebaute Betten &8× &e%s &8(&e+%s&7&8)", statistics.destroyedBeds(), arenaStatistics.destroyedBeds()),
-        String.format("&8  ■ &7Platzierte Blöcke &8× &e%s &8(&e+%s&7&8)", statistics.blocks(), arenaStatistics.blocks()),
-        String.format("&8  ■ &7Siegreiche Spiele &8× &e%s &8(&e+%s&7&8)", statistics.wins(), winningTeam.members().contains(gamePlayer) ? 1 : 0),
-        String.format("&8  ■ &7Gespielte Spiele &8× &e%s &8(&e+%s&7&8)", statistics.games(), 1),
+        String.format("&8  ▶ &7Abgebaute Betten &8● &d%s &8(&d+%s&7&8)", statistics.destroyedBeds(), arenaStatistics.destroyedBeds()),
+        String.format("&8  ▶ &7Platzierte Blöcke &8● &d%s &8(&d+%s&7&8)", statistics.blocks(), arenaStatistics.blocks()),
+        String.format("&8  ▶ &7Siegreiche Spiele &8● &d%s &8(&d+%s&7&8)", statistics.wins(), winningTeam.members().contains(gamePlayer) ? 1 : 0),
+        String.format("&8  ▶ &7Gespielte Spiele &8● &d%s &8(&d+%s&7&8)", statistics.games(), 1),
         "",
-        String.format("&8  ■ &7Siegesrate &8× &e%.1f%% &8(&e%s%.1f%%&7&8)", oldWinrate, winrateDifference > 0 ? "+" : "", winrateDifference),
+        String.format("&8  ▶ &7Siegesrate &8● &d%.1f%% &8(&d%s%.1f%%&7&8)", oldWinrate, winrateDifference > 0 ? "+" : "", winrateDifference),
         ""
       ).map(MessageFormat::replaceColors).forEach(player::sendMessage);
 
@@ -200,7 +200,7 @@ public class ArenaManager {
 //    player.getInventory().setItem(4, LobbyEnvironment.BACK_TO_LOBBY_ITEM);
     gamePlayer.sound(Sound.LEVEL_UP, 2f);
     GameManager.instance().scoreboardHandler().update(gamePlayer);
-    gamePlayer.sendMessage("Du kannst wieder zur Lobby\n &ezurückkehren &7mit &8/&equit&7.");
+    gamePlayer.sendMessage("Du kannst wieder zur Lobby\n &dzurückkehren &7mit &8/&dquit&7.");
   }
 
   public void removeSpectator(GamePlayer gamePlayer) {

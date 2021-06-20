@@ -31,12 +31,12 @@ public class IntegerOptionItem implements OptionItem<Integer> {
 
     this.itemStack = ItemStackBuilder.of(this.itemStack).lore(
       "",
-      "  &8■ &7Linksklick &8× &e+1",
-      "  &8■ &7Linksklick+Shift &8× &e+10",
-      "  &8■ &7Rechtsklick &8× &e-1",
-      "  &8■ &7Rechtsklick+Shift &8× &e-10",
+      "  &8▶ &7Linksklick &8● &d+1",
+      "  &8▶ &7Linksklick+Shift &8● &d+10",
+      "  &8▶ &7Rechtsklick &8● &d-1",
+      "  &8▶ &7Rechtsklick+Shift &8● &d-10",
       "",
-      "&8» &7Eingestellt&8: &e" + this.value
+      "&8» &7Eingestellt&8: &d" + this.value
     )
       .build();
 
@@ -61,7 +61,7 @@ public class IntegerOptionItem implements OptionItem<Integer> {
     player.playSound(player.getLocation(), Sound.CLICK, 0.7f, 2f);
     inventory.setItem(this.slot, itemStack(ItemStackBuilder.of(itemStack).transformMeta(itemMeta -> {
       List<String> lore = itemMeta.getLore();
-      lore.set(lore.size() - 1, MessageFormat.replaceColors("&8» &7Eingestellt&8: &e" + this.value));
+      lore.set(lore.size() - 1, MessageFormat.replaceColors("&8» &7Eingestellt&8: &d" + this.value));
       itemMeta.setLore(lore);
     }).build()).itemStack());
   }
