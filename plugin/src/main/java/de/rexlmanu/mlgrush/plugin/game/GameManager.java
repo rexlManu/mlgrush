@@ -23,13 +23,17 @@ import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.queue.QueueController;
 import de.rexlmanu.mlgrush.plugin.scoreboard.ScoreboardHandler;
 import de.rexlmanu.mlgrush.plugin.stats.StatsHologramManager;
+import de.rexlmanu.mlgrush.plugin.utility.FlyingItem;
+import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import de.rexlmanu.mlgrush.plugin.utility.cooldown.Cooldown;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockGrowEvent;
@@ -94,6 +98,7 @@ public class GameManager {
   private StatsHologramManager statsHologramManager;
   //  private StatsNPCProvider statsNPCProvider;
   private Cooldown queueCooldown;
+  private FlyingItem flyingItem;
 
   private GameManager() {
     GameManager.instance = this;
@@ -112,6 +117,8 @@ public class GameManager {
     this.statsHologramManager = new StatsHologramManager();
 //    this.statsNPCProvider = new StatsNPCProvider();
     this.queueCooldown = new Cooldown(1500);
+    this.flyingItem = new FlyingItem();
+    this.flyingItem.setItemStack(ItemStackBuilder.of(Material.STICK).enchant(Enchantment.ARROW_INFINITE, 1).build());
     // Sometimes in development it happens when the server don't get nicely shutdown, the 'old' are still there and you can't use the new spawned one.
     // Bukkit.getWorlds().stream().map(World::getLivingEntities).forEach(livingEntities -> livingEntities.forEach(Entity::remove));
     Bukkit.getWorlds().forEach(world -> world.setDifficulty(Difficulty.EASY));
@@ -135,6 +142,11 @@ public class GameManager {
       this.scoreboardHandler.updateAll(Environment.LOBBY);
       player.sound(Sound.PISTON_EXTEND, 2f);
     };
+    this.locationProvider.get("hologram").ifPresent(location -> {
+      this.flyingItem.setLocation(location);
+      this.flyingItem.setHeight(1);
+      this.flyingItem.spawn();
+    });
 //    this.locationProvider.get("queue-npc").ifPresent(location -> {
 //      this.interactiveMobs.add(new InteractiveMob(EntityType.WITCH, Arrays.asList(
 //        "&8» &aQueue",
@@ -177,6 +189,7 @@ public class GameManager {
 
   public void onDisable() {
     this.interactiveMobs.forEach(InteractiveMob::remove);
+    this.flyingItem.remove();
     // this.arenaManager.arenaContainer().activeArenas().forEach(this.arenaManager::destroy);
   }
 

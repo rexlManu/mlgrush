@@ -131,10 +131,10 @@ public class LobbyEnvironment implements GameEnvironment {
       GameManager.instance().giveLobbyItems(player);
       player.getLocation().getWorld().playSound(player.getLocation(), Sound.FIREWORK_TWINKLE, 1f, 1.2f);
 
-      if (event.gamePlayer().data().coins() < 10000) {
-        event.gamePlayer().sendMessage(String.format("Du hast &a%s&7 Coins erhalten.", 100000));
-        event.gamePlayer().data().coins(event.gamePlayer().data().coins() + 100000);
-      }
+//      if (event.gamePlayer().data().coins() < 10000) {
+//        event.gamePlayer().sendMessage(String.format("Du hast &a%s&7 Coins erhalten.", 100000));
+//        event.gamePlayer().data().coins(event.gamePlayer().data().coins() + 100000);
+//      }
     });
     coordinator.add(ENVIRONMENT, AsyncPlayerChatEvent.class, event -> {
       event.target().setCancelled(true);
