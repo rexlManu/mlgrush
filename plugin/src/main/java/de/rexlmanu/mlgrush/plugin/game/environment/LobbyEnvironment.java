@@ -34,7 +34,6 @@ import xyz.xenondevs.particle.ParticleEffect;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class LobbyEnvironment implements GameEnvironment {
 
@@ -129,7 +128,6 @@ public class LobbyEnvironment implements GameEnvironment {
       PlayerProvider.getPlayers(ENVIRONMENT).stream().map(GamePlayer::player).forEach(player::showPlayer);
       GameManager.instance().giveLobbyItems(player);
       player.getLocation().getWorld().playSound(player.getLocation(), Sound.FIREWORK_TWINKLE, 1f, 1.2f);
-      IntStream.range(0, 20).forEach(value -> player.sendMessage(""));
 
       if (event.gamePlayer().data().coins() < 10000) {
         event.gamePlayer().sendMessage(String.format("Du hast &a%s&7 Coins erhalten.", 100000));
