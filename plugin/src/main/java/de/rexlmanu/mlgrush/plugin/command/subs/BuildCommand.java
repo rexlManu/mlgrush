@@ -19,7 +19,7 @@ public class BuildCommand implements SubCommand {
   @Override
   public void execute(GamePlayer gamePlayer, String[] arguments) throws Exception {
     gamePlayer.buildMode(!gamePlayer.buildMode());
-    gamePlayer.sendMessage(String.format("Du hast den &dBuildMode&7 %s.", gamePlayer.buildMode() ? "aktiviert" : "deaktiviert"));
+    gamePlayer.sendMessage(String.format("Du hast den &aBuildMode&7 %s.", gamePlayer.buildMode() ? "aktiviert" : "deaktiviert"));
     gamePlayer.player().setGameMode(gamePlayer.buildMode() ? GameMode.CREATIVE : GameMode.ADVENTURE);
   }
 }

@@ -86,7 +86,7 @@ public class ShopInventory implements Listener {
       if (this.owns(buyable)) {
         builder.lore("", "&a&lIN BESITZ");
       } else {
-        builder.lore("", String.format("&7Kosten: &d%s Coins", buyable.cost()));
+        builder.lore("", String.format("&7Kosten: &a%s Coins", buyable.cost()));
       }
     }
     if (buyable.name().toLowerCase().equals(this.gamePlayer.data().selectedStick())
@@ -130,7 +130,7 @@ public class ShopInventory implements Listener {
     if (item.getType().equals(Material.STAINED_GLASS_PANE)) return;
     if (item.equals(BUY_ITEM)) {
       if (gamePlayer.data().coins() < this.currentBoughtItem.cost()) {
-        this.gamePlayer.sendMessage(String.format("Dir fehlen noch &d%s &7Coins dafür.", this.currentBoughtItem.cost() - gamePlayer.data().coins()));
+        this.gamePlayer.sendMessage(String.format("Dir fehlen noch &a%s &7Coins dafür.", this.currentBoughtItem.cost() - gamePlayer.data().coins()));
         return;
       }
 

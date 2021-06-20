@@ -55,7 +55,7 @@ public class MainCommand implements CommandExecutor, TabExecutor {
       }));
     if (!optional.isPresent()) {
       sender.sendMessage(MessageFormat.of(Constants.PREFIX
-        + "Es konnte kein Command mit &8'&d%s&8' &7gefunden werden.", targetName));
+        + "Es konnte kein Command mit &8'&a%s&8' &7gefunden werden.", targetName));
     }
     return true;
   }

@@ -59,27 +59,27 @@ public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
           statsValue = String.valueOf(gamePlayer.data().statistics().kills());
           break;
         case 1:
-          statsName = "Siege";
-          statsValue = String.valueOf(gamePlayer.data().statistics().wins());
+          statsName = "Tode";
+          statsValue = String.valueOf(gamePlayer.data().statistics().deaths());
           break;
         case 2:
-          statsName = "zerstörte Betten";
-          statsValue = String.valueOf(gamePlayer.data().statistics().destroyedBeds());
+          statsName = "Siege";
+          statsValue = String.valueOf(gamePlayer.data().statistics().wins());
           break;
       }
       gamePlayer.fastBoard().updateLines(Stream.of(
         "",
         "&7Dein Ranking&8:",
-        "&8 » &d" + rank + ". Platz",
+        "&8 » &a" + rank + ". Platz",
         "",
         "&7Deine " + statsName + "&8:",
-        "&8 » &d" + statsValue,
+        "&8 » &a" + statsValue,
         "",
         "&7Warteschlange&8:",
-        "&8 » &d" + GameManager.instance().queueController().playerQueue().size() + " Spieler",
+        "&8 » &a" + GameManager.instance().queueController().playerQueue().size() + " Spieler",
         "",
         "&7Spieler im Spiel&8:",
-        "&8 » &d" + PlayerProvider.getPlayers(Environment.ARENA).size() + " Spieler",
+        "&8 » &a" + PlayerProvider.getPlayers(Environment.ARENA).size() + " Spieler",
         ""
       ).map(MessageFormat::replaceColors).collect(Collectors.toList()));
     });

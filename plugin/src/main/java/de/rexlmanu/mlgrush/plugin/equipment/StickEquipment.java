@@ -12,12 +12,12 @@ import org.bukkit.enchantments.Enchantment;
 @Getter
 @Accessors(fluent = true)
 public enum StickEquipment implements Equipment, Buyable {
-  WOOD(Material.STICK, "&dNormaler Stock", 0),
-  BLAZE(Material.BLAZE_ROD, "&dLohenrute", 0),
-  BONE(Material.BONE, "&dKnochen", 2500),
-  HOE(Material.IRON_HOE, "&dEisenhoe", 2500),
-  IRON_SWORD(Material.IRON_SWORD, "&dEisenschwert", 5000),
-  DIAMOND_SWORD(Material.DIAMOND_SWORD, "&dDiamantschwert", 7500);
+  WOOD(Material.STICK, "&aNormaler Stock", 0),
+  BLAZE(Material.BLAZE_ROD, "&aLohenrute", 0),
+  BONE(Material.BONE, "&aKnochen", 2500),
+  HOE(Material.IRON_HOE, "&aEisenhoe", 2500),
+  IRON_SWORD(Material.IRON_SWORD, "&aEisenschwert", 5000),
+  DIAMOND_SWORD(Material.DIAMOND_SWORD, "&aDiamantschwert", 7500);
 
   private Material material;
   private String displayName;

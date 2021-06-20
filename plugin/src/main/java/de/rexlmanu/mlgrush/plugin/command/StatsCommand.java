@@ -70,23 +70,23 @@ public class StatsCommand implements CommandExecutor {
       if (player.getName().equalsIgnoreCase(name)) {
         gamePlayer.sendMessage("Deine Statistiken");
       } else {
-        gamePlayer.sendMessage(String.format("Die Stats von &d%s", name));
+        gamePlayer.sendMessage(String.format("Die Stats von &a%s", name));
       }
       Statistics statistics = data.statistics();
       Stream.of(
         "",
-        String.format("&8  ▶ &7Ranking &8● &d%s", rank),
+        String.format("&8  ▶ &7Ranking &8● &a%s", rank),
         "",
-        String.format("&8  ▶ &7Kills &8● &d%s", statistics.kills()),
-        String.format("&8  ▶ &7Tode &8● &d%s", statistics.deaths()),
-        String.format("&8  ▶ &7KD &8● &d%.2f", checkForNan(statistics.kills(), statistics.deaths())),
+        String.format("&8  ▶ &7Kills &8● &a%s", statistics.kills()),
+        String.format("&8  ▶ &7Tode &8● &a%s", statistics.deaths()),
+        String.format("&8  ▶ &7KD &8● &a%.2f", checkForNan(statistics.kills(), statistics.deaths())),
         "",
-        String.format("&8  ▶ &7Abgebaute Betten &8● &d%s", statistics.destroyedBeds()),
-        String.format("&8  ▶ &7Platzierte Blöcke &8● &d%s", statistics.blocks()),
-        String.format("&8  ▶ &7Siegreiche Spiele &8● &d%s", statistics.wins()),
-        String.format("&8  ▶ &7Gespielte Spiele &8● &d%s", statistics.games()),
+        String.format("&8  ▶ &7Abgebaute Betten &8● &a%s", statistics.destroyedBeds()),
+        String.format("&8  ▶ &7Platzierte Blöcke &8● &a%s", statistics.blocks()),
+        String.format("&8  ▶ &7Siegreiche Spiele &8● &a%s", statistics.wins()),
+        String.format("&8  ▶ &7Gespielte Spiele &8● &a%s", statistics.games()),
         "",
-        String.format("&8  ▶ &7Siegesrate &8● &d%.1f%%", checkForNan(statistics.wins(), statistics.games()) * 100),
+        String.format("&8  ▶ &7Siegesrate &8● &a%.1f%%", checkForNan(statistics.wins(), statistics.games()) * 100),
         ""
       ).map(MessageFormat::replaceColors).forEach(player::sendMessage);
     });

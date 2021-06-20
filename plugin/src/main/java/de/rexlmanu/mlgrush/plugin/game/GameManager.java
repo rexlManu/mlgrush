@@ -56,17 +56,17 @@ public class GameManager {
   private static final List<EquipmentMob> EQUIPMENT_MOBS = Arrays.asList(
     EquipmentMob.builder()
       .entityType(EntityType.ZOMBIE)
-      .lines(Arrays.asList("&8» &dBlock", "&7Ändere den Typ deiner Blöcke."))
-      .inventoryName("&dBlöcke")
-      .armorStandName(MessageFormat.replaceColors("&d&lBlöcke"))
+      .lines(Arrays.asList("&8» &aBlock", "&7Ändere den Typ deiner Blöcke."))
+      .inventoryName("&aBlöcke")
+      .armorStandName(MessageFormat.replaceColors("&a&lBlöcke"))
       .locationName("block-change-npc")
       .elements(BlockEquipment.values())
       .build(),
     EquipmentMob.builder()
       .entityType(EntityType.VILLAGER)
-      .lines(Arrays.asList("&8» &dStick", "&7Ändere den Stick, mit dem du kämpfst."))
-      .inventoryName("&dStick")
-      .armorStandName(MessageFormat.replaceColors("&d&lSticks"))
+      .lines(Arrays.asList("&8» &aStick", "&7Ändere den Stick, mit dem du kämpfst."))
+      .inventoryName("&aStick")
+      .armorStandName(MessageFormat.replaceColors("&a&lSticks"))
       .locationName("stick-change-npc")
       .elements(StickEquipment.values())
       .build()
@@ -125,19 +125,19 @@ public class GameManager {
       this.queueCooldown.add(player.uniqueId());
       if (this.queueController.inQueue(player)) {
         this.queueController.playerQueue().remove(player);
-        player.sendMessage("Du hast die &dWarteschlange &7verlassen.");
+        player.sendMessage("Du hast die &aWarteschlange &7verlassen.");
         this.scoreboardHandler.updateAll(Environment.LOBBY);
         player.sound(Sound.PISTON_RETRACT, 2f);
         return;
       }
       this.queueController.playerQueue().offer(player);
-      player.sendMessage("Du hast die &dWarteschlange &7betreten.");
+      player.sendMessage("Du hast die &aWarteschlange &7betreten.");
       this.scoreboardHandler.updateAll(Environment.LOBBY);
       player.sound(Sound.PISTON_EXTEND, 2f);
     };
 //    this.locationProvider.get("queue-npc").ifPresent(location -> {
 //      this.interactiveMobs.add(new InteractiveMob(EntityType.WITCH, Arrays.asList(
-//        "&8» &dQueue",
+//        "&8» &aQueue",
 //        "&7Suche nach einem Gegner."
 //      ), queueInteractionHandler).create(location));
 //    });
@@ -153,7 +153,7 @@ public class GameManager {
       new ArmorStandInteraction(equipmentMob.armorStandName(), player ->
         new ShopInventory(player, equipmentMob.inventoryName(), equipmentMob.elements()));
     });
-    new ArmorStandInteraction(MessageFormat.replaceColors("&d&lQueue"), queueInteractionHandler);
+    new ArmorStandInteraction(MessageFormat.replaceColors("&a&lQueue"), queueInteractionHandler);
 
     this.environments.forEach(gameEnvironment -> Bukkit.getPluginManager().registerEvents(gameEnvironment, GamePlugin.getProvidingPlugin(GamePlugin.class)));
 

@@ -36,7 +36,7 @@ public class SpectatorInventory implements Listener, Runnable {
     put('b', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(11).build());
   }};
 
-  private static final ItemStack NO_GAMES = ItemStackBuilder.of(Material.BARRIER).name("&8» &dKeine laufenden Spiele")
+  private static final ItemStack NO_GAMES = ItemStackBuilder.of(Material.BARRIER).name("&8» &aKeine laufenden Spiele")
     .lore("", "  &8▶ &7Aktuell existieren &ckeine&7 laufende Spiele.", "").build();
 
   private static final char[][] PATTERN = {
@@ -51,7 +51,7 @@ public class SpectatorInventory implements Listener, Runnable {
   private List<ArenaDisplayItem> arenaDisplayItems;
 
   public SpectatorInventory() {
-    this.inventory = Bukkit.createInventory(null, 5 * 9, MessageFormat.replaceColors("&8● &dSpectator"));
+    this.inventory = Bukkit.createInventory(null, 5 * 9, MessageFormat.replaceColors("&8● &aSpectator"));
     this.arenaDisplayItems = new ArrayList<>();
 
     JavaPlugin plugin = GamePlugin.getProvidingPlugin(GamePlugin.class);
@@ -146,7 +146,7 @@ public class SpectatorInventory implements Listener, Runnable {
   private ItemStack createDisplayItemStack(Arena arena) {
     ArenaTemplate template = arena.configuration().arenaTemplate();
     return ItemStackBuilder.of(Material.valueOf(template.displayMaterial().toUpperCase()))
-      .name("&8» &d" + template.name())
+      .name("&8» &a" + template.name())
       .lore(this.generateLore(arena))
       .build();
   }
@@ -154,14 +154,14 @@ public class SpectatorInventory implements Listener, Runnable {
   private List<String> generateLore(Arena arena) {
     ArrayList<String> lore = new ArrayList<>();
     lore.add("");
-    lore.add("&8» &dSpieler&8:");
+    lore.add("&8» &aSpieler&8:");
     arena.gameTeams().forEach(gameTeam -> {
       lore.add(String.format("&8- &7Team %s &8» %s%s &7Punkte", gameTeam.name().displayName(), gameTeam.name().color(), gameTeam.points()));
       gameTeam.members().stream().map(GamePlayer::player).map(HumanEntity::getName).forEach(s -> lore.add("  &8- &7" + s));
     });
     lore.add("");
     long seconds = (System.currentTimeMillis() - arena.gameStart()) / 1000;
-    lore.add(String.format("&8» &dSpiellänge&8: &7%02d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60));
+    lore.add(String.format("&8» &aSpiellänge&8: &7%02d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60));
     lore.add("");
     return lore;
   }

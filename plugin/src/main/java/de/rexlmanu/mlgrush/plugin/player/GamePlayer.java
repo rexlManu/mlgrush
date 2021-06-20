@@ -52,7 +52,7 @@ public class GamePlayer {
       .builder()
       .expiration(3, TimeUnit.MINUTES)
       .asyncExpirationListener((key, value) -> PlayerProvider.find((UUID) key)
-        .ifPresent(gamePlayer -> gamePlayer.sendMessage(String.format("Deine Anfrage an &d%s&7 ist ausgelaufen.", this.player().getName()))))
+        .ifPresent(gamePlayer -> gamePlayer.sendMessage(String.format("Deine Anfrage an &a%s&7 ist ausgelaufen.", this.player().getName()))))
       .build();
 
     GameManager.instance().databaseContext().loadData(this.uniqueId).whenComplete((gamePlayerData, throwable) -> {

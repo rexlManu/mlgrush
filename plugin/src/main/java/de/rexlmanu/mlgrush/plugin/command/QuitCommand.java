@@ -33,7 +33,7 @@ public class QuitCommand implements CommandExecutor {
       }
       GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(gamePlayer).ifPresent(arena -> {
         arena.getTeam(gamePlayer).members().remove(gamePlayer);
-        arena.players().forEach(target -> target.sendMessage(String.format("&d%s &7hat das Spiel verlassen.", gamePlayer.player().getName())));
+        arena.players().forEach(target -> target.sendMessage(String.format("&a%s &7hat das Spiel verlassen.", gamePlayer.player().getName())));
         GameManager.instance().arenaManager().delete(arena);
       });
     });

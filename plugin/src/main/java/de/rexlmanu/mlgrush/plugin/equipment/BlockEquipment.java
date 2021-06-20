@@ -11,12 +11,12 @@ import org.bukkit.Material;
 @Getter
 @Accessors(fluent = true)
 public enum BlockEquipment implements Equipment, Buyable {
-  SANDSTONE(Material.SANDSTONE, "&dGlatter Sandstein", 0),
-  RED_SANDSTONE(Material.RED_SANDSTONE, "&dGlatter Roter Sandstein", 0),
-  ENDER_STONE(Material.ENDER_STONE, "&dEndstein", 2500),
-  QUARTZ_STONE(Material.QUARTZ_BLOCK, "&dQuarzblock", 2500),
-  PRISMARINE(Material.PRISMARINE, "&dDunkler Prismarin", 5000),
-  NETHER_BRICK(Material.NETHER_BRICK, "&dNetherziegel", 5000);
+  SANDSTONE(Material.SANDSTONE, "&aGlatter Sandstein", 0),
+  RED_SANDSTONE(Material.RED_SANDSTONE, "&aGlatter Roter Sandstein", 0),
+  ENDER_STONE(Material.ENDER_STONE, "&aEndstein", 2500),
+  QUARTZ_STONE(Material.QUARTZ_BLOCK, "&aQuarzblock", 2500),
+  PRISMARINE(Material.PRISMARINE, "&aDunkler Prismarin", 5000),
+  NETHER_BRICK(Material.NETHER_BRICK, "&aNetherziegel", 5000);
 
   private Material material;
   private String displayName;

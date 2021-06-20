@@ -29,9 +29,9 @@ public class EditLayoutHandler implements Listener {
   private static final ItemStack ABORT_ITEM = ItemStackBuilder.of(Material.BARRIER).name("&8» &cAbbrechen").build();
 
   private static final Map<ItemStack, String> SORT_ITEMS = new HashMap<ItemStack, String>() {{
-    put(ItemStackBuilder.of(Material.STICK).name("&8» &dStick").build(), "stick");
-    put(ItemStackBuilder.of(Material.STONE_PICKAXE).name("&8» &dPickaxe").build(), "pickaxe");
-    put(ItemStackBuilder.of(Material.SANDSTONE).name("&8» &dBlöcke").build(), "block");
+    put(ItemStackBuilder.of(Material.STICK).name("&8» &aStick").build(), "stick");
+    put(ItemStackBuilder.of(Material.STONE_PICKAXE).name("&8» &aPickaxe").build(), "pickaxe");
+    put(ItemStackBuilder.of(Material.SANDSTONE).name("&8» &aBlöcke").build(), "block");
   }};
 
   private GamePlayer gamePlayer;

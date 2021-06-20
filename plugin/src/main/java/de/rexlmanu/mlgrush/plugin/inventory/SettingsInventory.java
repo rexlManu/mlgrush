@@ -32,9 +32,9 @@ public class SettingsInventory implements Listener {
     { 't', 'b', 't', 't', 'b', 't', 't', 'b', 't' }
   };
 
-  private static final ItemStack INVENTORY_SORTING = ItemStackBuilder.of(Material.BUCKET).name("&8» &dInventarsortierung anpassen").build();
-  private static final ItemStack STICK_SHOP = ItemStackBuilder.of(Material.STICK).name("&8» &dStickauswahl öffnen").build();
-  private static final ItemStack BLOCK_SHOP = ItemStackBuilder.of(Material.SANDSTONE).name("&8» &dBlockauswahl öffnen").build();
+  private static final ItemStack INVENTORY_SORTING = ItemStackBuilder.of(Material.BUCKET).name("&8» &aInventarsortierung anpassen").build();
+  private static final ItemStack STICK_SHOP = ItemStackBuilder.of(Material.STICK).name("&8» &aStickauswahl öffnen").build();
+  private static final ItemStack BLOCK_SHOP = ItemStackBuilder.of(Material.SANDSTONE).name("&8» &aBlockauswahl öffnen").build();
   private boolean unregistered = false;
 
   private GamePlayer gamePlayer;
@@ -42,7 +42,7 @@ public class SettingsInventory implements Listener {
 
   public SettingsInventory(GamePlayer gamePlayer) {
     this.gamePlayer = gamePlayer;
-    this.inventory = Bukkit.createInventory(null, 27, MessageFormat.replaceColors("&8● &d" + "Einstellungen"));
+    this.inventory = Bukkit.createInventory(null, 27, MessageFormat.replaceColors("&8● &a" + "Einstellungen"));
     JavaPlugin plugin = GamePlugin.getProvidingPlugin(GamePlugin.class);
     Bukkit.getPluginManager().registerEvents(this, plugin);
 
@@ -68,11 +68,11 @@ public class SettingsInventory implements Listener {
     }
     if (STICK_SHOP.equals(event.getCurrentItem())) {
       this.unregister();
-      new ShopInventory(gamePlayer, "&8● &dStick", StickEquipment.values());
+      new ShopInventory(gamePlayer, "&8● &aStick", StickEquipment.values());
     }
     if (BLOCK_SHOP.equals(event.getCurrentItem())) {
       this.unregister();
-      new ShopInventory(gamePlayer, "&8● &dBlöcke", BlockEquipment.values());
+      new ShopInventory(gamePlayer, "&8● &aBlöcke", BlockEquipment.values());
     }
   }
 

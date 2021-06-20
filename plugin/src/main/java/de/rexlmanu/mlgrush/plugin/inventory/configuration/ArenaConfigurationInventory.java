@@ -62,46 +62,46 @@ public class ArenaConfigurationInventory implements Listener {
   private List<OptionItem<?>> optionItems = new ArrayList<>();
 
   private OptionItem<Integer> maximalPointsOption = this.register(new IntegerOptionItem(
-    ItemStackBuilder.of(Material.BED).name("&8» &dPunkte").lore("&7Wie viele &dPunkte&7 braucht", "&7man um das Spiel zu-", "&7gewinnen.").build(),
+    ItemStackBuilder.of(Material.BED).name("&8» &aPunkte").lore("&7Wie viele &aPunkte&7 braucht", "&7man um das Spiel zu-", "&7gewinnen.").build(),
     20, 10, 30, 1
   ));
   private OptionItem<Boolean> nohitdelayOption = this.register(new BooleanOptionItem(
-    ItemStackBuilder.of(Material.ARROW).name("&8» &dNoHitDelay").build(),
+    ItemStackBuilder.of(Material.ARROW).name("&8» &aNoHitDelay").build(),
     21, false
   ));
   private OptionItem<Boolean> blockBreakOption = this.register(new BooleanOptionItem(
-    ItemStackBuilder.of(Material.IRON_PICKAXE).name("&8» &dAuto. Block-Entferner").lore("&7Platzierte Blöcke werden nach", "&7einigen Sekunden wieder &dentfernt&7.").build(),
+    ItemStackBuilder.of(Material.IRON_PICKAXE).name("&8» &aAuto. Block-Entferner").lore("&7Platzierte Blöcke werden nach", "&7einigen Sekunden wieder &aentfernt&7.").build(),
     22, false
   ));
   private OptionItem<Integer> buildHeightOption = this.register(new IntegerOptionItem(
-    ItemStackBuilder.of(Material.SANDSTONE).name("&8» &dMaximale Bauhöhe").build(),
+    ItemStackBuilder.of(Material.SANDSTONE).name("&8» &aMaximale Bauhöhe").build(),
     23, 4, 250, 4
   ));
   private OptionItem<Boolean> knockbackOnlyHeightOption = this.register(new BooleanOptionItem(
-    ItemStackBuilder.of(Material.LEATHER_BOOTS).color(Color.YELLOW).name("&8» &dKnockback nur nach Oben").lore("&7Nur noch Knockback nach", "&doben &7wird möglich sein.").build(),
+    ItemStackBuilder.of(Material.LEATHER_BOOTS).color(Color.YELLOW).name("&8» &aKnockback nur nach Oben").lore("&7Nur noch Knockback nach", "&aoben &7wird möglich sein.").build(),
     24, false
   ));
   private OptionItem<Boolean> unlimitedBlocksOption = this.register(new BooleanOptionItem(
-    ItemStackBuilder.of(Material.BEDROCK).name("&8» &dUnlimiterte Blöcke").build(),
+    ItemStackBuilder.of(Material.BEDROCK).name("&8» &aUnlimiterte Blöcke").build(),
     12, false
   ));
   private OptionItem<Boolean> fallDamageOption = this.register(new BooleanOptionItem(
-    ItemStackBuilder.of(Material.DIAMOND_BOOTS).name("&8» &dFallschaden").build(),
+    ItemStackBuilder.of(Material.DIAMOND_BOOTS).name("&8» &aFallschaden").build(),
     13, false
   ));
   private OptionItem<Boolean> showCpsOption = this.register(new BooleanOptionItem(
-    ItemStackBuilder.of(Material.WOOD_SWORD).lore("&8» &7Du siehst wie viele", "&dKlicks per Sekunde &7dein", "&7Gegner aktuell hat.").name("&dCPS anzeigen").build(),
+    ItemStackBuilder.of(Material.WOOD_SWORD).lore("&8» &7Du siehst wie viele", "&aKlicks per Sekunde &7dein", "&7Gegner aktuell hat.").name("&aCPS anzeigen").build(),
     14, false
   ));
   private OptionItem<Integer> spawnProtectionOption = this.register(new IntegerOptionItem(
-    ItemStackBuilder.of(Material.BEACON).name("&8» &dSpawnProtection").lore("&7In der SpawnProtection", "&7kann man &dkeine&7", "&7Blöcke platzieren.").build(),
+    ItemStackBuilder.of(Material.BEACON).name("&8» &aSpawnProtection").lore("&7In der SpawnProtection", "&7kann man &akeine&7", "&7Blöcke platzieren.").build(),
     31, 3, 3, 0
   ));
 
   public ArenaConfigurationInventory(GamePlayer owner, GamePlayer target) {
     this.owner = owner;
     this.target = target;
-    this.inventory = Bukkit.createInventory(null, 5 * 9, MessageFormat.replaceColors("&8● &dSpiel konfigurieren"));
+    this.inventory = Bukkit.createInventory(null, 5 * 9, MessageFormat.replaceColors("&8● &aSpiel konfigurieren"));
 
     Bukkit.getPluginManager().registerEvents(this, GamePlugin.getProvidingPlugin(GamePlugin.class));
     this.createPattern();
@@ -139,19 +139,19 @@ public class ArenaConfigurationInventory implements Listener {
 
     this.owner.player().closeInventory();
     target.challengeRequests().put(this.owner.uniqueId(), configuration);
-    target.sendMessage(String.format("Du wurdest von &d%s&7 zu einem eigenen Spiel gefordert mit &dfolgenden &7Einstellungen:", this.owner.player().getName()));
+    target.sendMessage(String.format("Du wurdest von &a%s&7 zu einem eigenen Spiel gefordert mit &afolgenden &7Einstellungen:", this.owner.player().getName()));
     Stream.of("",
-      String.format("  &8▶ &7NoHitDelay &8● &d%s", this.nohitdelayOption.value() ? "&daktiv" : "&7deaktiviert"),
-      String.format("  &8▶ &7Knockback nur Oben &8● &d%s", this.knockbackOnlyHeightOption.value() ? "&daktiv" : "&7deaktiviert"),
-      String.format("  &8▶ &7Auto. Block-Entferner &8● &d%s", this.blockBreakOption.value() ? "&daktiv" : "&7deaktiviert"),
-      String.format("  &8▶ &7Maximale Bauhöhe &8● &d%s", this.buildHeightOption.value()),
-      String.format("  &8▶ &7SpawnProtection &8● &d%s", this.spawnProtectionOption.value()),
-      String.format("  &8▶ &7Benötigte Siegespunkte &8● &d%s", this.maximalPointsOption.value()),
-      String.format("  &8▶ &7Fallschaden &8● &d%s", this.fallDamageOption.value() ? "&daktiv" : "&7deaktiviert"),
-      String.format("  &8▶ &7Unlimiterte Blöcke &8● &d%s", this.unlimitedBlocksOption.value() ? "&daktiv" : "&7deaktiviert"),
-      String.format("  &8▶ &7CPS anzeigen &8● &d%s", this.showCpsOption.value() ? "&daktiv" : "&7deaktiviert"),
+      String.format("  &8▶ &7NoHitDelay &8● &a%s", this.nohitdelayOption.value() ? "&aaktiv" : "&7deaktiviert"),
+      String.format("  &8▶ &7Knockback nur Oben &8● &a%s", this.knockbackOnlyHeightOption.value() ? "&aaktiv" : "&7deaktiviert"),
+      String.format("  &8▶ &7Auto. Block-Entferner &8● &a%s", this.blockBreakOption.value() ? "&aaktiv" : "&7deaktiviert"),
+      String.format("  &8▶ &7Maximale Bauhöhe &8● &a%s", this.buildHeightOption.value()),
+      String.format("  &8▶ &7SpawnProtection &8● &a%s", this.spawnProtectionOption.value()),
+      String.format("  &8▶ &7Benötigte Siegespunkte &8● &a%s", this.maximalPointsOption.value()),
+      String.format("  &8▶ &7Fallschaden &8● &a%s", this.fallDamageOption.value() ? "&aaktiv" : "&7deaktiviert"),
+      String.format("  &8▶ &7Unlimiterte Blöcke &8● &a%s", this.unlimitedBlocksOption.value() ? "&aaktiv" : "&7deaktiviert"),
+      String.format("  &8▶ &7CPS anzeigen &8● &a%s", this.showCpsOption.value() ? "&aaktiv" : "&7deaktiviert"),
       "").map(MessageFormat::replaceColors).forEach(s -> target.player().sendMessage(s));
-    this.owner.sendMessage(String.format("Du hast &d%s&7 zu einem eigenen Spiel gefordert.", target.player().getName()));
+    this.owner.sendMessage(String.format("Du hast &a%s&7 zu einem eigenen Spiel gefordert.", target.player().getName()));
     this.owner.sound(Sound.LEVEL_UP, 2f);
   }
 
@@ -166,7 +166,7 @@ public class ArenaConfigurationInventory implements Listener {
   public void handle(PlayerIngameEvent event) {
     if (!event.getPlayer().getUniqueId().equals(this.target.uniqueId())) return;
     this.owner.player().closeInventory();
-    this.owner.sendMessage(String.format("Die Erstellung des Spiels wurde abgebrochen weil &d%s &7in ein Spiel gegangen ist.", this.target.player().getName()));
+    this.owner.sendMessage(String.format("Die Erstellung des Spiels wurde abgebrochen weil &a%s &7in ein Spiel gegangen ist.", this.target.player().getName()));
     this.owner.sound(Sound.ANVIL_LAND, 2f);
   }
 
@@ -174,7 +174,7 @@ public class ArenaConfigurationInventory implements Listener {
   public void handle(PlayerQuitEvent event) {
     if (!event.getPlayer().getUniqueId().equals(this.target.uniqueId())) return;
     this.owner.player().closeInventory();
-    this.owner.sendMessage(String.format("Die Erstellung des Spiels wurde abgebrochen weil &d%s &7das Spiel verlassen hat.", this.target.player().getName()));
+    this.owner.sendMessage(String.format("Die Erstellung des Spiels wurde abgebrochen weil &a%s &7das Spiel verlassen hat.", this.target.player().getName()));
     this.owner.sound(Sound.ANVIL_LAND, 2f);
   }
 

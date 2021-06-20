@@ -31,7 +31,7 @@ public class SetRankingCommand implements SubCommand {
       return;
     }
     GameManager.instance().locationProvider().set("ranking-" + ranking, targetBlock.getLocation());
-    gamePlayer.sendMessage(String.format("Du hast den Ranking Kopf für &d%s &7gesetzt.", ranking));
+    gamePlayer.sendMessage(String.format("Du hast den Ranking Kopf für &a%s &7gesetzt.", ranking));
   }
 
   @Override

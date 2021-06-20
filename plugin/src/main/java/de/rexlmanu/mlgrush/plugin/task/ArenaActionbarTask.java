@@ -30,11 +30,11 @@ public class ArenaActionbarTask implements Runnable {
           if (halfTeamCount < (i + 1)) {
             suffix.append(team.name().color()).append(team.points());
             if (gamePlayer.inspectionMode()) {
-              suffix.append(" &8● &d").append(this.format(team.members().get(0).detection()));
+              suffix.append(" &8● &a").append(this.format(team.members().get(0).detection()));
             }
           } else {
             if (gamePlayer.inspectionMode()) {
-              prefix.append("&d").append(this.format(team.members().get(0).detection())).append(" &8● ");
+              prefix.append("&a").append(this.format(team.members().get(0).detection())).append(" &8● ");
             }
             prefix.append(team.name().color()).append(team.points());
           }
@@ -54,19 +54,19 @@ public class ArenaActionbarTask implements Runnable {
 
   private String format(Detection detection) {
     // averageSecondly, average,
-    return new StringBuilder().append("&d")
+    return new StringBuilder().append("&a")
       .append(detection.clicks())
-      .append("&7c&8, &d")
+      .append("&7c&8, &a")
       .append(String.format("%.1f", detection.clickAverageSecondly()))
-      .append("&7cps&8, &d")
+      .append("&7cps&8, &a")
       .append(detection.places())
-      .append("&7p&8, &d")
+      .append("&7p&8, &a")
       .append(String.format("%.1f", detection.placeAverageSecondly()))
-      .append("&7pps&8, &d")
+      .append("&7pps&8, &a")
       .append(String.format("%.1f", detection.clickAverage()))
-      .append("&7acps&8, &d")
+      .append("&7acps&8, &a")
       .append(String.format("%.1f", detection.placeAverage()))
-      .append("&7apps&8, &d")
+      .append("&7apps&8, &a")
       .append(detection.transactionPing())
       .append("&7ms")
       .toString();
