@@ -53,17 +53,17 @@ public class LobbyEnvironment implements GameEnvironment {
         "\n"), MessageFormat.replaceColors("" +
         "&8« &d&lCommands &8» &0\n\n" +
         "&8● &d/quit\n" +
-        "&8▶ &0Verlasse die laufende Runde\n" +
+        "&8▶ &0Verlasse die aktuelle Runde\n" +
         "&8● &d/stats\n" +
-        "&8▶ &0Betrachte deine oder dem Spieler seine Stats\n" +
+        "&8▶ &0Betrachte Spielstatistiken von Dir oder eines anderen Spielers\n" +
         "&8● &d/inv\n" +
-        "&8▶ &0Passe deine Inventarsortierung an\n" +
+        "&8▶ &0Passe die Sortierung Deines Inventars an\n" +
         "\n"
       ), MessageFormat.replaceColors(
         "&8« &d&lHerausfordern &8» &7\n" +
           "\n" +
-          "&8▶ &0Mit dem &dEisenschwert &0kannst du mit &dLinksklick &0andere Spieler herausfordern zu einem normalen &dDuell&7.\n" +
-          "&8▶ &0Mit &dRechtsklick&0 auf einem Spieler, kannst du ein &deigenes Spiel &0erstellen, mit eigenen auserwählten &dOptionen&7.\n" +
+          "&8▶ &0Schlägst Du einen Spieler mit dem Eisenschwert, welches wir Dir in Dein Inventar gepackt haben, forderst Du ihn zu einem Duell raus.\n" +
+          "&8▶ &0Drückst Du mit dem Eisenschwert Rechtsklick, kannst Du Dir ein eigenes Spiel mit angepassten Einstellungen erstellen.\n" +
           "\n"
       ));
       meta.setAuthor(MessageFormat.replaceColors("&dPluginStube.net"));
