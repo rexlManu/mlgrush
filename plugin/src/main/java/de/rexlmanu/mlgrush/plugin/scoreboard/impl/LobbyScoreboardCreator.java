@@ -1,6 +1,8 @@
 package de.rexlmanu.mlgrush.plugin.scoreboard.impl;
 
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
+import de.rexlmanu.mlgrush.plugin.arena.Arena;
+import de.rexlmanu.mlgrush.plugin.arena.team.GameTeam;
 import de.rexlmanu.mlgrush.plugin.game.Environment;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
@@ -15,6 +17,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -81,7 +84,20 @@ public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
     teamIngame.setPrefix(MessageFormat.replaceColors("&8"));
     PlayerProvider.PLAYERS.forEach(target -> {
       if (target.environment().equals(Environment.ARENA)) {
-        teamIngame.addEntry(target.player().getName());
+        Optional<Arena> any = GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(target);
+        Arena arena = any.get();
+        if (arena.spectators().contains(gamePlayer)) {
+          GameTeam team = arena.getTeam(target);
+          Team scoreboardTeam = scoreboard.getTeam(team.name().key());
+          if (scoreboardTeam == null) {
+            scoreboardTeam = scoreboard.registerNewTeam(team.name().key());
+            scoreboardTeam.setPrefix(String.valueOf(team.name().color()));
+          }
+
+          scoreboardTeam.addEntry(target.player().getName());
+        } else {
+          teamIngame.addEntry(target.player().getName());
+        }
       } else {
         teamLobby.addEntry(target.player().getName());
       }
