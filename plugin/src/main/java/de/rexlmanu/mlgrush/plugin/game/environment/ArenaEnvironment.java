@@ -18,6 +18,7 @@ import de.rexlmanu.mlgrush.plugin.utility.LocationUtils;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import de.rexlmanu.mlgrush.plugin.utility.RandomElement;
 import net.jodah.expiringmap.ExpiringMap;
+import net.pluginstube.api.CloudBasicFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -54,7 +55,8 @@ public class ArenaEnvironment implements GameEnvironment {
 
     coordinator.add(ENVIRONMENT, AsyncPlayerChatEvent.class, event -> {
       event.target().setCancelled(true);
-      String message = MessageFormat.replaceColors(String.format("&a%s &8» &7", event.gamePlayer().player().getName())) + event.target().getMessage();
+      String prefix = CloudBasicFactory.getRankPrefix(CloudBasicFactory.getBlankRank(event.gamePlayer().uniqueId()));
+      String message = MessageFormat.replaceColors(String.format("%s%s &8» &7", prefix, event.gamePlayer().player().getName())) + event.target().getMessage();
 
       arenaManager
         .arenaContainer()

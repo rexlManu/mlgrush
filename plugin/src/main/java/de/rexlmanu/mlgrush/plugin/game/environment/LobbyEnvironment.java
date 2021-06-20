@@ -14,6 +14,8 @@ import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import de.rexlmanu.mlgrush.plugin.utility.PlayerUtils;
+import eu.thesimplecloud.api.CloudAPI;
+import net.pluginstube.api.CloudBasicFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -136,7 +138,8 @@ public class LobbyEnvironment implements GameEnvironment {
     });
     coordinator.add(ENVIRONMENT, AsyncPlayerChatEvent.class, event -> {
       event.target().setCancelled(true);
-      String message = MessageFormat.replaceColors(String.format("&a%s &8» &7", event.gamePlayer().player().getName())) + event.target().getMessage();
+      String prefix = CloudBasicFactory.getRankPrefix(CloudBasicFactory.getBlankRank(event.gamePlayer().uniqueId()));
+      String message = MessageFormat.replaceColors(String.format("%s%s &8» &7", prefix, event.gamePlayer().player().getName())) + event.target().getMessage();
 
       PlayerProvider.getPlayers(ENVIRONMENT).forEach(gamePlayer -> gamePlayer.player().sendMessage(message));
     });
@@ -148,7 +151,7 @@ public class LobbyEnvironment implements GameEnvironment {
         if (LEAVE_ITEM.equals(event.target().getItem())) {
           event.target().setCancelled(true);
           event.gamePlayer().sound(Sound.LEVEL_UP, 2f);
-          player.kickPlayer("");
+          CloudAPI.getInstance().getCloudPlayerManager().getCachedCloudPlayer(player.getUniqueId()).sendToLobby();
           return;
         }
         if (SPECTATOR_ITEM.equals(event.target().getItem())) {

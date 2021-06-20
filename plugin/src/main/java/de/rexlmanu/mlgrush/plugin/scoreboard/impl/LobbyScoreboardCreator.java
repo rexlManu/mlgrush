@@ -11,6 +11,8 @@ import de.rexlmanu.mlgrush.plugin.scoreboard.ScoreboardCreator;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import net.pluginstube.api.CloudBasicFactory;
+import net.pluginstube.api.scoreboard.ScoreboardTeamFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -90,9 +92,10 @@ public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
     Player player = gamePlayer.player();
     if (player == null) return;
     Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+    ScoreboardTeamFactory factory = new ScoreboardTeamFactory();
+    factory.registerAll();
+    factory.buildAll(scoreboard);
 
-    Team teamLobby = scoreboard.registerNewTeam("1-lobby");
-    teamLobby.setPrefix(MessageFormat.replaceColors("&7"));
     Team teamIngame = scoreboard.registerNewTeam("2-ingame");
     teamIngame.setPrefix(MessageFormat.replaceColors("&8"));
     PlayerProvider.PLAYERS.forEach(target -> {
@@ -112,7 +115,8 @@ public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
           teamIngame.addEntry(target.player().getName());
         }
       } else {
-        teamLobby.addEntry(target.player().getName());
+        scoreboard.getTeam(factory.getTeamEntryByPermissionGroup(CloudBasicFactory.getBlankRank(target.uniqueId())))
+          .addEntry(target.player().getName());
       }
     });
 

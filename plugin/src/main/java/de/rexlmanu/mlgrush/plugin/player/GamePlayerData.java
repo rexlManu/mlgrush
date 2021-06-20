@@ -17,7 +17,7 @@ import java.util.UUID;
 public class GamePlayerData implements Key {
 
   private UUID uniqueId;
-  private int coins;
+  private long coins;
   private List<String> boughtItems;
   private List<String> inventorySorting;
   private Statistics statistics;

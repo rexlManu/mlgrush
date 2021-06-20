@@ -35,6 +35,9 @@ repositories {
     }
   }
   maven {
+    url "https://repo.thesimplecloud.eu/artifactory/gradle-release-local/"
+  }
+  maven {
     name 'minecraft-repo'
     url 'https://libraries.minecraft.net/'
   }
@@ -52,8 +55,6 @@ dependencies {
   implementation('org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT')
 //     implementation(files('../testserver/spigot-1.8.8.jar')) // for nms
   implementation group: 'io.netty', name: 'netty-all', version: '4.1.65.Final'
-  implementation('net.pluginstube.api:pluginstube-api:0.3.9-ALPHA')
-
   /*
   implementation('net.pluginstube:library:1.0.2')
   This dont work because intellij still wants to check for version 1.0.1 and the repository sucks hard balls.
@@ -61,6 +62,7 @@ dependencies {
 
 //  implementation(files('../libs/library-1.0.2.jar'))
   implementation 'com.mojang:authlib:1.5.21'
+  implementation(group: 'eu.thesimplecloud.simplecloud', name: 'simplecloud-api', version: '2.2.0')
 
   compile('org.jetbrains:annotations:21.0.1')
   compile('eu.miopowered:packetlistener:1.0') {
@@ -74,6 +76,9 @@ dependencies {
   compile('net.jodah:expiringmap:0.5.9')
   compile('xyz.xenondevs:particle:1.6.1')
   compile('net.jitse:npclib-plugin:2.11.1-SNAPSHOT')
+  compile('net.pluginstube.api:pluginstube-api:0.6.2-ALPHA') {
+    transitive = false
+  }
 }
 
 processResources {
@@ -95,6 +100,7 @@ shadowJar {
   relocate 'net.jodah.expiringmap', 'de.rexlmanu.mlgrush.plugin.libs.expiringmap'
   relocate 'xyz.xenondevs.particle', 'de.rexlmanu.mlgrush.plugin.libs.particle'
   relocate 'net.jitse.npclib', 'de.rexlmanu.mlgrush.plugin.libs.npclib'
+  relocate 'net.pluginstube.api', 'de.rexlmanu.mlgrush.plugin.libs.pluginstube'
 
   configurations = [project.configurations.compile]
   archiveFileName = "mlgrush-${version}.jar"
