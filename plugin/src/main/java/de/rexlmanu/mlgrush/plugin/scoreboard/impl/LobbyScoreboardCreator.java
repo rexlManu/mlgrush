@@ -30,11 +30,11 @@ public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
     { "TeamSpeak", "&3PluginStube.net" },
   };
 
-  private int currentAd;
+  private int currentStats;
   private BukkitTask task;
 
   public LobbyScoreboardCreator() {
-    this.currentAd = 0;
+    this.currentStats = 0;
     this.task = Bukkit.getScheduler().runTaskTimerAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 20 * 3);
   }
 
@@ -42,30 +42,44 @@ public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
   public void run() {
     PlayerProvider.getPlayers(Environment.LOBBY).forEach(this::updateLines);
 
-    this.currentAd++;
-    if (this.currentAd >= ADS.length) this.currentAd = 0;
+    this.currentStats++;
+    if (this.currentStats >= 3) this.currentStats = 0;
   }
 
   @Override
   public void updateLines(GamePlayer gamePlayer) {
-    String[] ad = ADS[this.currentAd];
     GameManager.instance().databaseContext().getRanking(gamePlayer.uniqueId()).whenComplete((rank, throwable) -> {
       if (throwable != null) {
         rank = -1;
+      }
+      String statsName = null, statsValue = null;
+      switch (this.currentStats) {
+        case 0:
+          statsName = "Kills";
+          statsValue = String.valueOf(gamePlayer.data().statistics().kills());
+          break;
+        case 1:
+          statsName = "Siege";
+          statsValue = String.valueOf(gamePlayer.data().statistics().wins());
+          break;
+        case 2:
+          statsName = "zerstörte Betten";
+          statsValue = String.valueOf(gamePlayer.data().statistics().destroyedBeds());
+          break;
       }
       gamePlayer.fastBoard().updateLines(Stream.of(
         "",
         "&7Dein Ranking&8:",
         "&8 » &d" + rank + ". Platz",
         "",
+        "&7Deine " + statsName + "&8:",
+        "&8 » &d" + statsValue,
+        "",
         "&7Warteschlange&8:",
         "&8 » &d" + GameManager.instance().queueController().playerQueue().size() + " Spieler",
         "",
         "&7Spieler im Spiel&8:",
         "&8 » &d" + PlayerProvider.getPlayers(Environment.ARENA).size() + " Spieler",
-        "",
-        "&7" + ad[0] + "&8:",
-        "&8 » &d" + ad[1],
         ""
       ).map(MessageFormat::replaceColors).collect(Collectors.toList()));
     });
