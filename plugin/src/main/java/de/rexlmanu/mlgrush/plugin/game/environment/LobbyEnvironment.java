@@ -1,6 +1,7 @@
 package de.rexlmanu.mlgrush.plugin.game.environment;
 
 import de.rexlmanu.mlgrush.plugin.Constants;
+import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.arena.ArenaManager;
 import de.rexlmanu.mlgrush.plugin.arena.events.ArenaPlayerLeftEvent;
 import de.rexlmanu.mlgrush.plugin.event.EventCoordinator;
@@ -172,6 +173,13 @@ public class LobbyEnvironment implements GameEnvironment {
     GamePlayer gamePlayer = new GamePlayer(player.getUniqueId());
     PlayerProvider.PLAYERS.add(gamePlayer);
     GameManager.instance().detectionController().register(gamePlayer);
+
+    Bukkit.getScheduler().runTaskLater(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> {
+      PlayerProvider.getPlayers(ENVIRONMENT).forEach(gamePlayer1 -> {
+        gamePlayer1.player().showPlayer(event.getPlayer());
+        event.getPlayer().showPlayer(gamePlayer1.player());
+      });
+    }, 1);
   }
 
   @EventHandler(priority = EventPriority.LOWEST)
