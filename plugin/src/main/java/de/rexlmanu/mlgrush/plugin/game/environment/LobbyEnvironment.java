@@ -52,12 +52,13 @@ public class LobbyEnvironment implements GameEnvironment {
         "  &8▶ &d/quit &8● &7Verlasse das laufende Spiel\n" +
         "  &8▶ &d/stats <Name> &8● &7Betrachte deine oder dem Spieler seine Stats\n" +
         "  &8▶ &d/inv &8● &7Passe deine Inventarsortierung an\n" +
-        "\n" +
-        "&7Herausfordern:\n" +
-        "\n" +
-        "  &8▶ &7Mit dem &dEisenschwert &7kannst du mit &dLinksklick &7andere Spieler herausfordern zu einem &dDuell&7.\n" +
-        "  &8▶ &7Mit &dRechtsklick&7 auf einem Spieler, kannst du ein &deigenes Spiel &7erstellen und einstellen welche &dOptionen &7aktiviert sein sollen.\n" +
         "\n"
+      ), MessageFormat.replaceColors(
+        "\n&7Herausfordern:\n" +
+          "\n" +
+          "  &8▶ &7Mit dem &dEisenschwert &7kannst du mit &dLinksklick &7andere Spieler herausfordern zu einem &dDuell&7.\n" +
+          "  &8▶ &7Mit &dRechtsklick&7 auf einem Spieler, kannst du ein &deigenes Spiel &7erstellen und einstellen welche &dOptionen &7aktiviert sein sollen.\n" +
+          "\n"
       ));
       meta.setAuthor(MessageFormat.replaceColors("&dPluginStube.net"));
       itemStack.setItemMeta(meta);
