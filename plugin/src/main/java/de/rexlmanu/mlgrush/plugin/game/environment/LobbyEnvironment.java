@@ -1,6 +1,5 @@
 package de.rexlmanu.mlgrush.plugin.game.environment;
 
-import de.rexlmanu.mlgrush.plugin.Constants;
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.arena.ArenaManager;
 import de.rexlmanu.mlgrush.plugin.arena.events.ArenaPlayerLeftEvent;
@@ -29,13 +28,13 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import xyz.xenondevs.particle.ParticleEffect;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class LobbyEnvironment implements GameEnvironment {
 
@@ -44,6 +43,44 @@ public class LobbyEnvironment implements GameEnvironment {
   public static ItemStack LEAVE_ITEM = ItemStackBuilder.of(Material.IRON_DOOR).name("&8● &dSpiel verlassen &8▶ &7Rechtsklick &8●").build();
   public static ItemStack SPECTATOR_ITEM = ItemStackBuilder.of(Material.COMPASS).name("&8● &dSpectator &8▶ &7Rechtsklick &8●").build();
   public static ItemStack SETTINGS_ITEM = ItemStackBuilder.of(Material.REDSTONE_COMPARATOR).name("&8● &dEinstellungen &8▶ &7Rechtsklick &8●").build();
+  public static ItemStack TUTORIAL_ITEM = ItemStackBuilder.of(Material.WRITTEN_BOOK)
+    .name("&8● &dErklärung &8▶ &7Rechtsklick &8●")
+    .transform(itemStack -> {
+      BookMeta meta = (BookMeta) itemStack.getItemMeta();
+      meta.addPage(MessageFormat.replaceColors("" +
+        "&7Folgende Commands:\n" +
+        "  &8▶ &d/quit &8● &7Verlasse das laufende Spiel\n" +
+        "  &8▶ &d/stats <Name> &8● &7Betrachte deine oder dem Spieler seine Stats\n" +
+        "  &8▶ &d/inv &8● &7Passe deine Inventarsortierung an\n" +
+        "\n" +
+        "&7Herausfordern:\n" +
+        "\n" +
+        "  &8▶ &7Mit dem &dEisenschwert &7kannst du mit &dLinksklick &7andere Spieler herausfordern zu einem &dDuell&7.\n" +
+        "  &8▶ &7Mit &dRechtsklick&7 auf einem Spieler, kannst du ein &deigenes Spiel &7erstellen und einstellen welche &dOptionen &7aktiviert sein sollen.\n" +
+        "\n"
+      ));
+      meta.setAuthor(MessageFormat.replaceColors("&dPluginStube.net"));
+      itemStack.setItemMeta(meta);
+    })
+    .build();
+  /*
+        Stream.of(
+        String.format(Constants.PREFIX + "Hey, &d%s &7hier findest du einige Informationen:", event.gamePlayer().player().getName()),
+        "&7Commands&8:",
+        "",
+        "  &8▶ &d/quit &8● &7Verlasse das laufende Spiel",
+        "  &8▶ &d/stats <Name> &8● &7Betrachte deine oder dem Spieler seine Stats",
+        "  &8▶ &d/inv &8● &7Passe deine Inventarsortierung an",
+        "",
+        "&7Herausfordern&8:",
+        "",
+        "  &8▶ &7Mit dem &dEisenschwert &7kannst du mit &dLinksklick &7andere Spieler herausfordern zu einem &dDuell&7.",
+        "  &8▶ &7Mit &dRechtsklick&7 auf einem Spieler, kannst du ein &deigenes Spiel &7erstellen und einstellen welche &dOptionen &7aktiviert sein sollen.",
+        ""
+      )
+        .map(MessageFormat::replaceColors)
+        .forEach(s -> event.gamePlayer().player().sendMessage(s));
+   */
 
   public static ItemStack CHALLENGER_ITEM = ItemStackBuilder.of(Material.IRON_SWORD).breakable(false).hideAttributes().name("&8● &dHerausfordern &8▶ &7Rechtsklick &8●")
     .lore("&7<Linksklick> &8- &dSpieler herausfordern",
@@ -86,22 +123,6 @@ public class LobbyEnvironment implements GameEnvironment {
       GameManager.instance().giveLobbyItems(player);
       player.getLocation().getWorld().playSound(player.getLocation(), Sound.FIREWORK_TWINKLE, 1f, 1.2f);
       IntStream.range(0, 20).forEach(value -> player.sendMessage(""));
-      Stream.of(
-        String.format(Constants.PREFIX + "Hey, &d%s &7hier findest du einige Informationen:", event.gamePlayer().player().getName()),
-        "&7Commands&8:",
-        "",
-        "  &8▶ &d/quit &8● &7Verlasse das laufende Spiel",
-        "  &8▶ &d/stats <Name> &8● &7Betrachte deine oder dem Spieler seine Stats",
-        "  &8▶ &d/inv &8● &7Passe deine Inventarsortierung an",
-        "",
-        "&7Herausfordern&8:",
-        "",
-        "  &8▶ &7Mit dem &dEisenschwert &7kannst du mit &dLinksklick &7andere Spieler herausfordern zu einem &dDuell&7.",
-        "  &8▶ &7Mit &dRechtsklick&7 auf einem Spieler, kannst du ein &deigenes Spiel &7erstellen und einstellen welche &dOptionen &7aktiviert sein sollen.",
-        ""
-      )
-        .map(MessageFormat::replaceColors)
-        .forEach(s -> event.gamePlayer().player().sendMessage(s));
 
       if (event.gamePlayer().data().coins() < 10000) {
         event.gamePlayer().sendMessage(String.format("Du hast &d%s&7 Coins erhalten.", 100000));

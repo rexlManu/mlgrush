@@ -185,6 +185,7 @@ public class GameManager {
     player.getInventory().setItem(3, LobbyEnvironment.SPECTATOR_ITEM);
     player.getInventory().setItem(5, LobbyEnvironment.SETTINGS_ITEM);
     player.getInventory().setItem(0, LobbyEnvironment.CHALLENGER_ITEM);
+    player.getInventory().setItem(4, LobbyEnvironment.TUTORIAL_ITEM);
 
     PlayerProvider.find(player.getUniqueId()).ifPresent(gamePlayer -> GameManager.instance().statsHologramManager().show(gamePlayer));
   }
