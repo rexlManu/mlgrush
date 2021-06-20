@@ -48,22 +48,22 @@ public class LobbyEnvironment implements GameEnvironment {
     .transform(itemStack -> {
       BookMeta meta = (BookMeta) itemStack.getItemMeta();
       meta.addPage(MessageFormat.replaceColors("&8« &d&lKonzept &8» &7\n\n" +
-        "&0Das Spiel ist hauptsächlich dafür gemacht, die trainierten Fähigkeiten, in der Praxis zutesten.\n" +
-        "&0Nach &dzehn &7erfolgreichen Bettzerstörungen, hast du die Runde gewonnen.\n" +
+        "&8▶ &0Das Spiel ist hauptsächlich dafür gemacht, die &dtrainierten Fähigkeiten&0, in der Praxis zutesten.\n" +
+        "&8▶ &0Nach &dzehn &0erfolgreichen Bettzerstörungen, hast du die Runde gewonnen.\n" +
         "\n"), MessageFormat.replaceColors("" +
-        "&8« &d&lCommands &8» &7\n\n" +
+        "&8« &d&lCommands &8» &0\n\n" +
         "&8● &d/quit\n" +
-        "&8» &0Verlasse die laufende Runde\n" +
+        "&8▶ &0Verlasse die laufende Runde\n" +
         "&8● &d/stats\n" +
-        "&8» &0Betrachte deine oder dem Spieler seine Stats\n" +
+        "&8▶ &0Betrachte deine oder dem Spieler seine Stats\n" +
         "&8● &d/inv\n" +
-        "&8» &0Passe deine Inventarsortierung an\n" +
+        "&8▶ &0Passe deine Inventarsortierung an\n" +
         "\n"
       ), MessageFormat.replaceColors(
         "&8« &d&lHerausfordern &8» &7\n" +
           "\n" +
-          "&8▶ &7Mit dem &dEisenschwert &0kannst du mit &dLinksklick &0andere Spieler herausfordern zu einem normalen &dDuell&7.\n" +
-          "&8▶ &7Mit &dRechtsklick&0 auf einem Spieler, kannst du ein &deigenes Spiel &0erstellen, mit eigenen auserwählten &dOptionen&7.\n" +
+          "&8▶ &0Mit dem &dEisenschwert &0kannst du mit &dLinksklick &0andere Spieler herausfordern zu einem normalen &dDuell&7.\n" +
+          "&8▶ &0Mit &dRechtsklick&0 auf einem Spieler, kannst du ein &deigenes Spiel &0erstellen, mit eigenen auserwählten &dOptionen&7.\n" +
           "\n"
       ));
       meta.setAuthor(MessageFormat.replaceColors("&dPluginStube.net"));
