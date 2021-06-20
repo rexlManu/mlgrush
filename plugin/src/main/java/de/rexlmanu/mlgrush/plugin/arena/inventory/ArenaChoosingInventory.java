@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
@@ -63,7 +62,7 @@ public class ArenaChoosingInventory implements Listener, Runnable {
     this.future = new CompletableFuture<>();
     JavaPlugin plugin = GamePlugin.getProvidingPlugin(GamePlugin.class);
     this.task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this, 0, 20);
-    this.inventory = Bukkit.createInventory(null, 6 * 9, MessageFormat.replaceColors("&dMapauswahl"));
+    this.inventory = Bukkit.createInventory(null, 6 * 9, MessageFormat.replaceColors("&8● &dMapauswahl"));
 
     Bukkit.getPluginManager().registerEvents(this, plugin);
     this.createPattern();
@@ -101,7 +100,7 @@ public class ArenaChoosingInventory implements Listener, Runnable {
   private ItemStack createItem(ArenaTemplate template) {
     return ItemStackBuilder
       .of(Material.valueOf(template.displayMaterial().toUpperCase()))
-      .name(ChatColor.LIGHT_PURPLE + template.name())
+      .name("&8» &d" + template.name())
       .amount(1)
       .lore("", "&7Builder: &d" + template.description(), "&7Votes: &d0")
       .build();
