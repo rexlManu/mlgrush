@@ -1,5 +1,6 @@
 package de.rexlmanu.mlgrush.plugin.game.environment;
 
+import de.rexlmanu.mlgrush.plugin.Constants;
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.arena.ArenaManager;
 import de.rexlmanu.mlgrush.plugin.arena.events.ArenaPlayerLeftEvent;
@@ -40,24 +41,34 @@ public class LobbyEnvironment implements GameEnvironment {
 
   private static final Environment ENVIRONMENT = Environment.LOBBY;
 
-  public static ItemStack LEAVE_ITEM = ItemStackBuilder.of(Material.IRON_DOOR).name("&8● &dSpiel verlassen &8▶ &7Rechtsklick &8●").build();
+  public static ItemStack LEAVE_ITEM = ItemStackBuilder.of(Material.NETHER_STAR).name("&8● &dSpiel verlassen &8▶ &7Rechtsklick &8●").build();
   public static ItemStack SPECTATOR_ITEM = ItemStackBuilder.of(Material.COMPASS).name("&8● &dSpectator &8▶ &7Rechtsklick &8●").build();
   public static ItemStack SETTINGS_ITEM = ItemStackBuilder.of(Material.REDSTONE_COMPARATOR).name("&8● &dEinstellungen &8▶ &7Rechtsklick &8●").build();
   public static ItemStack TUTORIAL_ITEM = ItemStackBuilder.of(Material.WRITTEN_BOOK)
     .name("&8● &dErklärung &8▶ &7Rechtsklick &8●")
     .transform(itemStack -> {
       BookMeta meta = (BookMeta) itemStack.getItemMeta();
-      meta.addPage(MessageFormat.replaceColors("" +
-        "&7Folgende Commands:\n" +
-        "  &8▶ &d/quit &8● &7Verlasse das laufende Spiel\n" +
-        "  &8▶ &d/stats <Name> &8● &7Betrachte deine oder dem Spieler seine Stats\n" +
-        "  &8▶ &d/inv &8● &7Passe deine Inventarsortierung an\n" +
+      meta.addPage(MessageFormat.replaceColors(Constants.PREFIX + "\n" +
+        "&7Das Spiel ist hauptsächlich dafür gemacht, die trainierten Fähigkeiten, in der Praxis zutesten.\n" +
+        "&7Nach &dzehn &7erfolgreichen Bettzerstörungen, hast du die Runde gewonnen.\n" +
+        "\n" +
+        "\n" +
+        "&7Auf den weiteren Seiten findest du&8:\n" +
+        "&8» &dCommands\n" +
+        "&8» &dHerausfordern\n"), MessageFormat.replaceColors("" +
+        "&7Commands&8:\n\n" +
+        "&8● &d/quit\n" +
+        "&8» &7Verlasse das laufende Spiel\n" +
+        "&8● &d/stats\n" +
+        "&8» &7Betrachte deine oder dem Spieler seine Stats\n\n" +
+        "&8● &d/inv\n" +
+        "&8» &7Passe deine Inventarsortierung an\n" +
         "\n"
       ), MessageFormat.replaceColors(
         "\n&7Herausfordern:\n" +
           "\n" +
-          "  &8▶ &7Mit dem &dEisenschwert &7kannst du mit &dLinksklick &7andere Spieler herausfordern zu einem &dDuell&7.\n" +
-          "  &8▶ &7Mit &dRechtsklick&7 auf einem Spieler, kannst du ein &deigenes Spiel &7erstellen und einstellen welche &dOptionen &7aktiviert sein sollen.\n" +
+          "&8▶ &7Mit dem &dEisenschwert &7kannst du mit &dLinksklick &7andere Spieler herausfordern zu einem normalen &dDuell&7.\n" +
+          "&8▶ &7Mit &dRechtsklick&7 auf einem Spieler, kannst du ein &deigenes Spiel &7erstellen, mit eigenen auserwählten &dOptionen&7.\n" +
           "\n"
       ));
       meta.setAuthor(MessageFormat.replaceColors("&dPluginStube.net"));

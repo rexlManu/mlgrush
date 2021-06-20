@@ -117,6 +117,7 @@ public class SpectatorInventory implements Listener, Runnable {
     int index = 0;
     int[] innerSlots = this.getInnerSlots().toArray();
     for (int slot : innerSlots) {
+      this.inventory.setItem(slot, null);
       if (this.arenaDisplayItems.size() <= index) {
         this.inventory.setItem(slot, null);
         continue;
@@ -124,6 +125,7 @@ public class SpectatorInventory implements Listener, Runnable {
       ArenaDisplayItem displayItem = this.arenaDisplayItems.get(index);
       displayItem.slot(slot);
       this.inventory.setItem(displayItem.slot(), displayItem.itemStack());
+      index++;
     }
   }
 
@@ -144,7 +146,7 @@ public class SpectatorInventory implements Listener, Runnable {
   private ItemStack createDisplayItemStack(Arena arena) {
     ArenaTemplate template = arena.configuration().arenaTemplate();
     return ItemStackBuilder.of(Material.valueOf(template.displayMaterial().toUpperCase()))
-      .name("&8»" + template.name())
+      .name("&8» &d" + template.name())
       .lore(this.generateLore(arena))
       .build();
   }

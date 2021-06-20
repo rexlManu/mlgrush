@@ -18,8 +18,6 @@ import lombok.experimental.Accessors;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -96,7 +94,7 @@ public class Arena {
     }else {
       player.setMaximumNoDamageTicks(20);
     }
-    player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 10, 30, false, false));
+//    player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 10, 30, false, false));
   }
 
   public void resetGame() {
