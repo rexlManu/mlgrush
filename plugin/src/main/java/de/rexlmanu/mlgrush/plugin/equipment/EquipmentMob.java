@@ -18,6 +18,7 @@ public class EquipmentMob {
 
   private EntityType entityType;
   private List<String> lines;
+  private String armorStandName;
   private String locationName;
   private String inventoryName;
   private Buyable[] elements;

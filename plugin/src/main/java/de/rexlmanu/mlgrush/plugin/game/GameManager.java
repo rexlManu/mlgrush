@@ -13,6 +13,8 @@ import de.rexlmanu.mlgrush.plugin.event.EventCoordinator;
 import de.rexlmanu.mlgrush.plugin.event.cancel.EventCancel;
 import de.rexlmanu.mlgrush.plugin.game.environment.ArenaEnvironment;
 import de.rexlmanu.mlgrush.plugin.game.environment.LobbyEnvironment;
+import de.rexlmanu.mlgrush.plugin.game.npc.ArmorStandInteraction;
+import de.rexlmanu.mlgrush.plugin.game.npc.InteractionHandler;
 import de.rexlmanu.mlgrush.plugin.game.npc.InteractiveMob;
 import de.rexlmanu.mlgrush.plugin.inventory.ShopInventory;
 import de.rexlmanu.mlgrush.plugin.inventory.SpectatorInventory;
@@ -21,6 +23,7 @@ import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.queue.QueueController;
 import de.rexlmanu.mlgrush.plugin.scoreboard.ScoreboardHandler;
 import de.rexlmanu.mlgrush.plugin.stats.StatsHologramManager;
+import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import de.rexlmanu.mlgrush.plugin.utility.cooldown.Cooldown;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -55,6 +58,7 @@ public class GameManager {
       .entityType(EntityType.ZOMBIE)
       .lines(Arrays.asList("&8» &eBlock", "&7Ändere den Typ deiner Blöcke."))
       .inventoryName("&eBlöcke")
+      .armorStandName(MessageFormat.replaceColors("&d&lBlöcke"))
       .locationName("block-change-npc")
       .elements(BlockEquipment.values())
       .build(),
@@ -62,6 +66,7 @@ public class GameManager {
       .entityType(EntityType.VILLAGER)
       .lines(Arrays.asList("&8» &eStick", "&7Ändere den Stick, mit dem du kämpfst."))
       .inventoryName("&eStick")
+      .armorStandName(MessageFormat.replaceColors("&d&lSticks"))
       .locationName("stick-change-npc")
       .elements(StickEquipment.values())
       .build()
@@ -111,10 +116,7 @@ public class GameManager {
     // Bukkit.getWorlds().stream().map(World::getLivingEntities).forEach(livingEntities -> livingEntities.forEach(Entity::remove));
     Bukkit.getWorlds().forEach(world -> world.setDifficulty(Difficulty.EASY));
 
-    this.locationProvider.get("queue-npc").ifPresent(location -> this.interactiveMobs.add(new InteractiveMob(EntityType.WITCH, Arrays.asList(
-      "&8» &eQueue",
-      "&7Suche nach einem Gegner."
-    ), player -> {
+    InteractionHandler queueInteractionHandler = player -> {
       if (player.environment().equals(Environment.ARENA)) {
         player.sendMessage("Du bist bereits in einem Spiel.");
         return;
@@ -132,15 +134,26 @@ public class GameManager {
       player.sendMessage("Du hast die &eWarteschlange &7betreten.");
       this.scoreboardHandler.updateAll(Environment.LOBBY);
       player.sound(Sound.PISTON_EXTEND, 2f);
-    }).create(location)));
+    };
+//    this.locationProvider.get("queue-npc").ifPresent(location -> {
+//      this.interactiveMobs.add(new InteractiveMob(EntityType.WITCH, Arrays.asList(
+//        "&8» &eQueue",
+//        "&7Suche nach einem Gegner."
+//      ), queueInteractionHandler).create(location));
+//    });
 
-    EQUIPMENT_MOBS
-      .forEach(equipmentMob -> this.locationProvider.get(equipmentMob.locationName())
-        .ifPresent(location -> this.interactiveMobs.add(
-          new InteractiveMob(equipmentMob.entityType(), equipmentMob.lines(), player ->
-            new ShopInventory(player, equipmentMob.inventoryName(), equipmentMob.elements()))
-            .create(location)
-        )));
+//    EQUIPMENT_MOBS
+//      .forEach(equipmentMob -> this.locationProvider.get(equipmentMob.locationName())
+//        .ifPresent(location -> this.interactiveMobs.add(
+//          new InteractiveMob(equipmentMob.entityType(), equipmentMob.lines(), player ->
+//            new ShopInventory(player, equipmentMob.inventoryName(), equipmentMob.elements()))
+//            .create(location)
+//        )));
+    EQUIPMENT_MOBS.forEach(equipmentMob -> {
+      new ArmorStandInteraction(equipmentMob.armorStandName(), player ->
+        new ShopInventory(player, equipmentMob.inventoryName(), equipmentMob.elements()));
+    });
+    new ArmorStandInteraction(MessageFormat.replaceColors("&d&lQueue"), queueInteractionHandler);
 
     this.environments.forEach(gameEnvironment -> Bukkit.getPluginManager().registerEvents(gameEnvironment, GamePlugin.getProvidingPlugin(GamePlugin.class)));
 
