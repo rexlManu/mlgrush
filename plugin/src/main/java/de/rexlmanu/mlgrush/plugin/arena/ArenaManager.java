@@ -200,7 +200,7 @@ public class ArenaManager {
 //    player.getInventory().setItem(4, LobbyEnvironment.BACK_TO_LOBBY_ITEM);
     gamePlayer.sound(Sound.LEVEL_UP, 2f);
     GameManager.instance().scoreboardHandler().update(gamePlayer);
-    gamePlayer.sendMessage("Du kannst wieder zur Lobby\n &ezurückkehren &7mit &8/&eleave&7.");
+    gamePlayer.sendMessage("Du kannst wieder zur Lobby\n &ezurückkehren &7mit &8/&equit&7.");
   }
 
   public void removeSpectator(GamePlayer gamePlayer) {

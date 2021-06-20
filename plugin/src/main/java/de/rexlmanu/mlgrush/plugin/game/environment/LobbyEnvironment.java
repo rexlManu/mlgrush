@@ -89,7 +89,7 @@ public class LobbyEnvironment implements GameEnvironment {
         String.format(Constants.PREFIX + "Hey, &e%s &7hier findest du einige Informationen:", event.gamePlayer().player().getName()),
         "&7Commands&8:",
         "",
-        "  &8■ &e/leave &8× &7Verlasse das laufende Spiel",
+        "  &8■ &e/quit &8× &7Verlasse das laufende Spiel",
         "  &8■ &e/stats <Name> &8× &7Betrachte deine oder dem Spieler seine Stats",
         "  &8■ &e/inv &8× &7Passe deine Inventarsortierung an",
         "",
