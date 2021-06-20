@@ -2,8 +2,8 @@ package de.rexlmanu.mlgrush.plugin.task.arena;
 
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
+import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -35,7 +35,7 @@ public class ArenaShowCpsTask implements Runnable {
           if (objective == null) {
             objective = scoreboard.registerNewObjective(OBJECTIVE_NAME, "dummy");
             objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
-            objective.setDisplayName(ChatColor.LIGHT_PURPLE + "cps");
+            objective.setDisplayName(MessageFormat.replaceColors("&dcps"));
           }
           Objective finalObjective = objective;
           arena.players().forEach(target -> {

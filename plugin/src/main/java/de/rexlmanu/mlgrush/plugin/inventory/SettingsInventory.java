@@ -7,7 +7,6 @@ import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -43,7 +42,7 @@ public class SettingsInventory implements Listener {
 
   public SettingsInventory(GamePlayer gamePlayer) {
     this.gamePlayer = gamePlayer;
-    this.inventory = Bukkit.createInventory(null, 27, MessageFormat.replaceColors("&8● "+ChatColor.LIGHT_PURPLE + "Einstellungen"));
+    this.inventory = Bukkit.createInventory(null, 27, MessageFormat.replaceColors("&8● &d" + "Einstellungen"));
     JavaPlugin plugin = GamePlugin.getProvidingPlugin(GamePlugin.class);
     Bukkit.getPluginManager().registerEvents(this, plugin);
 
