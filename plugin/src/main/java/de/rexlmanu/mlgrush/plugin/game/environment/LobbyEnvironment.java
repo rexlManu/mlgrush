@@ -49,7 +49,7 @@ public class LobbyEnvironment implements GameEnvironment {
       BookMeta meta = (BookMeta) itemStack.getItemMeta();
       meta.addPage(MessageFormat.replaceColors("&8« &d&lKonzept &8» &7\n\n" +
         "&8▶ &0Das Spiel ist hauptsächlich dafür gemacht, die &dtrainierten Fähigkeiten&0, in der Praxis zutesten.\n" +
-        "&8▶ &0Nach &dzehn &0erfolgreichen Bettzerstörungen, hast du die Runde gewonnen.\n" +
+        "&8▶ &0Hast Du &dzehn &0gegnerische Betten zerstört, &dgewinnst &0Du das Spiel automatisch.\n" +
         "\n"), MessageFormat.replaceColors("" +
         "&8« &d&lCommands &8» &0\n\n" +
         "&8● &d/quit\n" +

@@ -55,7 +55,7 @@ public class ArenaManager {
     .teamSize(1)
     .spawnProtection(3)
     .nohitdelay(false)
-    .buildHeight(4)
+    .buildHeight(16)
     .autoBlockBreak(false)
     .custom(true)
     .fallDamage(false)
