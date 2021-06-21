@@ -38,7 +38,7 @@ public class FloorParticleTask implements Runnable {
 
   @Override
   public void run() {
-    if (this.cornerLocations.size() <= this.step) this.step = 0;
+    if (this.cornerLocations.size() <= (this.step - 1)) this.step = 0;
 
     ParticleEffect.FLAME.display(this.cornerLocations.get(this.step), 0, 0, 0, 0.001f, 1, null);
 

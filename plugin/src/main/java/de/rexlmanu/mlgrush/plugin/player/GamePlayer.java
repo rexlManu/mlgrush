@@ -9,7 +9,7 @@ import de.rexlmanu.mlgrush.plugin.equipment.StickEquipment;
 import de.rexlmanu.mlgrush.plugin.game.Environment;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
-import fr.mrmicky.fastboard.FastBoard;
+import de.rexlmanu.mlgrush.plugin.utility.fastboard.FastBoard;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;

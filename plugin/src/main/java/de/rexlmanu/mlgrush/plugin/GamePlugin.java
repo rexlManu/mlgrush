@@ -6,6 +6,7 @@ import de.rexlmanu.mlgrush.plugin.command.QuitCommand;
 import de.rexlmanu.mlgrush.plugin.command.StatsCommand;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.integration.IntegrationHandler;
+import de.rexlmanu.mlgrush.plugin.logging.LogInterceptor;
 import de.rexlmanu.mlgrush.plugin.task.ArenaActionbarTask;
 import de.rexlmanu.mlgrush.plugin.task.ArenaPlayingTimeExtendCheckerTask;
 import de.rexlmanu.mlgrush.plugin.task.UpdateStatsWallTask;
@@ -14,6 +15,7 @@ import de.rexlmanu.mlgrush.plugin.task.arena.ArenaShowCpsTask;
 import de.rexlmanu.mlgrush.plugin.task.particle.FloorParticleTask;
 import de.rexlmanu.mlgrush.plugin.task.particle.QueueParticleTask;
 import lombok.experimental.Accessors;
+import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.command.PluginCommand;
@@ -24,6 +26,13 @@ import java.util.Arrays;
 
 @Accessors(fluent = true)
 public class GamePlugin extends JavaPlugin {
+
+  private static final org.apache.logging.log4j.core.Logger logger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+
+
+  public GamePlugin() {
+    logger.addAppender(new LogInterceptor());
+  }
 
   @Override
   public void onEnable() {
