@@ -2,17 +2,19 @@ package de.rexlmanu.mlgrush.plugin.logging;
 
 import de.raik.webhook.WebhookBuilder;
 import de.raik.webhook.elements.Embed;
+import de.raik.webhook.elements.embedelements.FooterElement;
 import lombok.experimental.Accessors;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 
+import java.net.InetAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Accessors(fluent = true)
 public class LogInterceptor extends AbstractAppender {
-  private static final String WEBHOOK_URL = "https://discord.com/api/webhooks/856639465716187208/WyXMFe2zQe9qtu37oO-548znmkIqeQyqYFVhu9YplNxF4c1l6-PUC92OKNx4u4bhwHb8";
+  private static final String WEBHOOK_URL = "https://discord.com/api/webhooks/856648546412658688/hNfmi10sSnOL2jNqpTnR80C_C8M-b5wHThq6-c8v9z762H6Ahez_BB1C07z_M586upeE";
   private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
 
   public LogInterceptor() {
@@ -26,10 +28,14 @@ public class LogInterceptor extends AbstractAppender {
     }
     EXECUTOR_SERVICE.submit(() -> {
       WebhookBuilder builder = new WebhookBuilder(WEBHOOK_URL);
-      builder.addEmbed(new Embed()
-        .title("MLGRush - Error")
-        .description(event.getMessage().getFormattedMessage())
-      ).build().execute();
+      try {
+        builder.addEmbed(new Embed()
+          .title("MLGRush - Error")
+          .description(event.getMessage().getFormattedMessage())
+          .footer(new FooterElement("Sent from " + InetAddress.getLocalHost().getHostName()))
+        ).build().execute();
+      } catch (Exception ignored) {
+      }
     });
   }
 }
