@@ -33,7 +33,7 @@ public class ArmorStandInteraction implements Listener {
     Entity entity = event.getRightClicked();
     if (!(entity instanceof ArmorStand
       || !entity.isCustomNameVisible())
-      || !entity.getCustomName().equals(this.name)) return;
+      || !this.name.equals(entity.getCustomName())) return;
 
     PlayerProvider.find(event.getPlayer().getUniqueId())
       .ifPresent(gamePlayer -> this.handler.handle(gamePlayer));
