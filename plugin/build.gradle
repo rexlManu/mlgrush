@@ -76,7 +76,7 @@ dependencies {
   compile('net.jodah:expiringmap:0.5.9')
   compile('xyz.xenondevs:particle:1.6.1')
   compile('net.jitse:npclib-plugin:2.11.1-SNAPSHOT')
-  compile('net.pluginstube.api:pluginstube-api:0.6.2-ALPHA') {
+  compile('net.pluginstube.api:pluginstube-api:0.7.6-ALPHA') {
     transitive = false
   }
   compile group: 'io.github.mineflash07', name: 'discord-webhook', version: '1.0.1'

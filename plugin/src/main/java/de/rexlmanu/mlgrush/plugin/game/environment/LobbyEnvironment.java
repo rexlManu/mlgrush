@@ -22,6 +22,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -35,6 +36,7 @@ import xyz.xenondevs.particle.ParticleEffect;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class LobbyEnvironment implements GameEnvironment {
@@ -147,6 +149,11 @@ public class LobbyEnvironment implements GameEnvironment {
     coordinator.add(ENVIRONMENT, BlockBreakEvent.class, event -> event.target().setCancelled(!event.gamePlayer().buildMode()));
     coordinator.add(ENVIRONMENT, PlayerInteractEvent.class, event -> {
       Player player = event.gamePlayer().player();
+      if (Objects.nonNull(event.target().getClickedBlock()) ||
+        event.target().getAction().equals(Action.RIGHT_CLICK_BLOCK)
+        || event.target().getAction().equals(Action.PHYSICAL)) {
+        event.target().setCancelled(true);
+      }
       if (event.target().getAction().name().contains("RIGHT")) {
         if (LEAVE_ITEM.equals(event.target().getItem())) {
           event.target().setCancelled(true);

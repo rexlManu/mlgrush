@@ -165,7 +165,7 @@ public class FastBoard {
    */
   public FastBoard(Player player) {
     this.player = Objects.requireNonNull(player, "player");
-    this.id = UUID.randomUUID().toString().substring(0, 16);
+    this.id = UUID.randomUUID().toString().replace("-", "°").substring(0, 14);
 
     try {
       sendObjectivePacket(ObjectiveMode.CREATE);
