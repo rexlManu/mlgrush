@@ -32,8 +32,8 @@ import java.util.stream.IntStream;
 public class SpectatorInventory implements Listener, Runnable {
 
   private static Map<Character, ItemStack> PATTERN_ITEM = new HashMap<Character, ItemStack>() {{
-    put('t', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(9).build());
-    put('b', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(11).build());
+    put('t', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(13).build());
+    put('b', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(5).build());
   }};
 
   private static final ItemStack NO_GAMES = ItemStackBuilder.of(Material.BARRIER).name("&8» &aKeine laufenden Spiele")

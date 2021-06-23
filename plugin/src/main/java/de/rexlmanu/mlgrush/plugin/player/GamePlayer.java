@@ -57,6 +57,7 @@ public class GamePlayer {
 
     GameManager.instance().databaseContext().loadData(this.uniqueId).whenComplete((gamePlayerData, throwable) -> {
       if (throwable != null) {
+        throwable.printStackTrace();
         this.sendMessage("Wir konnten deine Daten nicht laden.");
         return;
       }

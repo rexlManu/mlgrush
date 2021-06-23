@@ -72,7 +72,7 @@ public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
       gamePlayer.fastBoard().updateLines(Stream.of(
         "",
         "&7Dein Ranking&8:",
-        "&8 » &a" + rank + ". Platz",
+        "&8 » &a" + (rank == -1 ? "?" : (rank + ". Platz")),
         "",
         "&7Deine " + statsName + "&8:",
         "&8 » &a" + statsValue,
@@ -115,7 +115,10 @@ public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
           teamIngame.addEntry(target.player().getName());
         }
       } else {
-        scoreboard.getTeam(factory.getTeamEntryByPermissionGroup(CloudBasicFactory.getBlankRank(target.uniqueId())))
+
+        scoreboard.getTeam(factory.getTeamEntryByPermissionGroup(GameManager.instance().nickAPI().get(target.uniqueId()).isPresent()
+          ? "Spieler"
+          : CloudBasicFactory.getBlankRank(target.uniqueId())))
           .addEntry(target.player().getName());
       }
     });

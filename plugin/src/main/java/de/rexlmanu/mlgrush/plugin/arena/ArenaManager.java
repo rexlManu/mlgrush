@@ -168,7 +168,7 @@ public class ArenaManager {
         String.format("&8  ▶ &7KD &8● &a%.2f &8(&a%s%.2f&7&8)", oldKd, kdDifference > 0 ? "+" : "", kdDifference),
         "",
         String.format("&8  ▶ &7Abgebaute Betten &8● &a%s &8(&a+%s&7&8)", statistics.destroyedBeds(), arenaStatistics.destroyedBeds()),
-        String.format("&8  ▶ &7Platzierte Blöcke &8● &a%s &8(&a+%s&7&8)", statistics.blocks(), arenaStatistics.blocks()),
+        //String.format("&8  ▶ &7Platzierte Blöcke &8● &a%s &8(&a+%s&7&8)", statistics.blocks(), arenaStatistics.blocks()),
         String.format("&8  ▶ &7Siegreiche Spiele &8● &a%s &8(&a+%s&7&8)", statistics.wins(), winningTeam.members().contains(gamePlayer) ? 1 : 0),
         String.format("&8  ▶ &7Gespielte Spiele &8● &a%s &8(&a+%s&7&8)", statistics.games(), 1),
         "",

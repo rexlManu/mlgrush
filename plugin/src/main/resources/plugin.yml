@@ -6,6 +6,7 @@ website: @website@
 main: de.rexlmanu.mlgrush.plugin.GamePlugin
 softdepend:
   - library-spigot-1.0
+  - SimpleCloud-Plugin
 commands:
   mlgrush:
     description: The main command for mlgrush

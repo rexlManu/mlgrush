@@ -32,6 +32,9 @@ public class MainCommand implements CommandExecutor, TabExecutor {
     this.commands.add(new InspectionCommand());
     this.commands.add(new UpdateStatsWallCommand());
     this.commands.add(new RespawnMobCommand());
+    this.commands.add(new ForceStatsWallCommand());
+    this.commands.add(new NickCommand());
+    this.commands.add(new UnnickCommand());
   }
 
   @Override

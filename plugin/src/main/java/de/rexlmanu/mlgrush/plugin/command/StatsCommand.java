@@ -75,14 +75,14 @@ public class StatsCommand implements CommandExecutor {
       Statistics statistics = data.statistics();
       Stream.of(
         "",
-        String.format("&8  ▶ &7Ranking &8● &a%s", rank),
+        String.format("&8  ▶ &7Ranking &8● &a%s", rank == -1 ? "?" : rank),
         "",
         String.format("&8  ▶ &7Kills &8● &a%s", statistics.kills()),
         String.format("&8  ▶ &7Tode &8● &a%s", statistics.deaths()),
         String.format("&8  ▶ &7KD &8● &a%.2f", checkForNan(statistics.kills(), statistics.deaths())),
         "",
         String.format("&8  ▶ &7Abgebaute Betten &8● &a%s", statistics.destroyedBeds()),
-        String.format("&8  ▶ &7Platzierte Blöcke &8● &a%s", statistics.blocks()),
+        //String.format("&8  ▶ &7Platzierte Blöcke &8● &a%s", statistics.blocks()),
         String.format("&8  ▶ &7Siegreiche Spiele &8● &a%s", statistics.wins()),
         String.format("&8  ▶ &7Gespielte Spiele &8● &a%s", statistics.games()),
         "",

@@ -14,6 +14,7 @@ import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import de.rexlmanu.mlgrush.plugin.utility.PlayerUtils;
+import eu.miopowered.nickapi.NickAPI;
 import eu.thesimplecloud.api.CloudAPI;
 import net.pluginstube.api.CloudBasicFactory;
 import org.bukkit.Bukkit;
@@ -131,7 +132,7 @@ public class LobbyEnvironment implements GameEnvironment {
       PlayerProvider.getPlayers(ENVIRONMENT).stream().map(GamePlayer::player).forEach(target -> target.showPlayer(player));
       PlayerProvider.getPlayers(ENVIRONMENT).stream().map(GamePlayer::player).forEach(player::showPlayer);
       GameManager.instance().giveLobbyItems(player);
-      player.getLocation().getWorld().playSound(player.getLocation(), Sound.FIREWORK_TWINKLE, 1f, 1.2f);
+      player.playSound(player.getLocation(), Sound.FIREWORK_TWINKLE, 1f, 1.2f);
 
 //      if (event.gamePlayer().data().coins() < 10000) {
 //        event.gamePlayer().sendMessage(String.format("Du hast &a%s&7 Coins erhalten.", 100000));
@@ -140,8 +141,10 @@ public class LobbyEnvironment implements GameEnvironment {
     });
     coordinator.add(ENVIRONMENT, AsyncPlayerChatEvent.class, event -> {
       event.target().setCancelled(true);
-      String prefix = CloudBasicFactory.getRankPrefix(CloudBasicFactory.getBlankRank(event.gamePlayer().uniqueId()));
-      String message = MessageFormat.replaceColors(String.format("%s%s &8» &7", prefix, event.gamePlayer().player().getName())) + event.target().getMessage();
+      String prefix = CloudBasicFactory.getRankPrefix(GameManager.instance().nickAPI().get(event.gamePlayer().uniqueId()).isPresent()
+        ? "Spieler"
+        : CloudBasicFactory.getBlankRank(event.gamePlayer().uniqueId()));
+      String message = MessageFormat.replaceColors(String.format("%s%s &8» &7", prefix, event.gamePlayer().player().getName())) + NickAPI.CHAT_PLACEHOLDER + event.target().getMessage();
 
       PlayerProvider.getPlayers(ENVIRONMENT).forEach(gamePlayer -> gamePlayer.player().sendMessage(message));
     });

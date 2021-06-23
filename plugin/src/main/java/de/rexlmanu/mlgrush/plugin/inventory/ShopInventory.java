@@ -1,6 +1,7 @@
 package de.rexlmanu.mlgrush.plugin.inventory;
 
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
+import de.rexlmanu.mlgrush.plugin.database.file.PluginStubeDatabase;
 import de.rexlmanu.mlgrush.plugin.equipment.BlockEquipment;
 import de.rexlmanu.mlgrush.plugin.equipment.Buyable;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
@@ -30,9 +31,9 @@ import java.util.Map;
 public class ShopInventory implements Listener {
 
   private static Map<Character, ItemStack> PATTERN_ITEM = new HashMap<Character, ItemStack>() {{
-    put('t', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(9).build());
-    put('b', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(11).build());
-    put('c', ItemStackBuilder.of(Material.BARRIER).name("&8» &cSchließen").data(11).build());
+    put('t', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(5).build());
+    put('b', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(13).build());
+    put('c', ItemStackBuilder.of(Material.BARRIER).name("&8» &cSchließen").build());
   }};
 
   private static final ItemStack ABORT_ITEM = ItemStackBuilder.of(Material.INK_SACK).data(1).name("&8» &cAbbrechen").build();
@@ -47,6 +48,7 @@ public class ShopInventory implements Listener {
   private Buyable currentBoughtItem;
   private BukkitTask animationTask;
   private int animationTick;
+  private boolean running = false;
 
   private GamePlayer gamePlayer;
   private Buyable[] elements;
@@ -133,13 +135,20 @@ public class ShopInventory implements Listener {
         this.gamePlayer.sendMessage(String.format("Dir fehlen noch &a%s &7Coins dafür.", this.currentBoughtItem.cost() - gamePlayer.data().coins()));
         return;
       }
-
-      gamePlayer.data().coins(gamePlayer.data().coins() - this.currentBoughtItem.cost());
-      gamePlayer.data().boughtItems().add(this.currentBoughtItem.name().toLowerCase());
-      this.gamePlayer.sendMessage(String.format("Du hast erfolgreich folgendes erworben: %s", currentBoughtItem.displayName()));
-      player.playSound(player.getLocation(), Sound.LEVEL_UP, 1f, 1.7f);
-      this.setElementItems();
-      this.currentBoughtItem = null;
+      if (this.running) return;
+      this.running = true;
+      PluginStubeDatabase.EXECUTOR_SERVICE.submit(() -> {
+        PluginStubeDatabase.instance().perkDatabase().buyPerk(this.gamePlayer.uniqueId().toString(), this.currentBoughtItem.perk());
+        Bukkit.getScheduler().runTask(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> {
+          gamePlayer.data().coins(gamePlayer.data().coins() - this.currentBoughtItem.cost());
+          gamePlayer.data().boughtItems().add(this.currentBoughtItem.name().toLowerCase());
+          this.gamePlayer.sendMessage(String.format("Du hast erfolgreich folgendes erworben: %s", currentBoughtItem.displayName()));
+          player.playSound(player.getLocation(), Sound.LEVEL_UP, 1f, 1.7f);
+          this.setElementItems();
+          this.currentBoughtItem = null;
+          this.running = false;
+        });
+      });
       return;
     }
     if (item.equals(ABORT_ITEM)) {

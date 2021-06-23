@@ -34,6 +34,12 @@ public class ScoreboardHandler {
     });
   }
 
+  public void updateSidebar(GamePlayer gamePlayer) {
+    if (gamePlayer.player() == null) return;
+    ScoreboardCreator creator = this.environmentScoreboardCreatorMap.get(gamePlayer.environment());
+    creator.updateLines(gamePlayer);
+  }
+
   public void updateAll(Environment environment) {
     PlayerProvider.getPlayers(environment).forEach(this::update);
   }

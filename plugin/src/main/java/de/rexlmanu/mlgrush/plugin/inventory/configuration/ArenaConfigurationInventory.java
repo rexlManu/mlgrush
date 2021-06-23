@@ -31,8 +31,8 @@ public class ArenaConfigurationInventory implements Listener {
   private static final ItemStack FINISH = ItemStackBuilder.of(Material.INK_SACK).name("&aAnfrage senden").data(10).build();
 
   private static Map<Character, ItemStack> PATTERN_ITEM = new HashMap<Character, ItemStack>() {{
-    put('t', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(9).build());
-    put('b', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(11).build());
+    put('t', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(13).build());
+    put('b', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(5).build());
     put('f', FINISH);
   }};
 

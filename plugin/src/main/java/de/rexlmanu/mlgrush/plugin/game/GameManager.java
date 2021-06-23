@@ -27,6 +27,7 @@ import de.rexlmanu.mlgrush.plugin.utility.FlyingItem;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import de.rexlmanu.mlgrush.plugin.utility.cooldown.Cooldown;
+import eu.miopowered.nickapi.NickAPI;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
@@ -92,6 +93,7 @@ public class GameManager {
   private DetectionController detectionController;
   private List<GameEnvironment> environments;
   private ScoreboardHandler scoreboardHandler;
+  private NickAPI nickAPI;
 
   private SpectatorInventory spectatorInventory;
 
@@ -103,7 +105,7 @@ public class GameManager {
   private GameManager() {
     GameManager.instance = this;
     File dataFolder = GamePlugin.getPlugin(GamePlugin.class).getDataFolder();
-    this.databaseContext = DatabaseFactory.create(DatabaseType.FILE);
+    this.databaseContext = DatabaseFactory.create(DatabaseType.PLUGINSTUBE);
     this.locationProvider = new LocationProvider(dataFolder);
     this.eventCoordinator = new EventCoordinator();
     this.queueController = new QueueController();
@@ -112,6 +114,7 @@ public class GameManager {
     this.detectionController = new DetectionController();
     this.environments = Arrays.asList(new LobbyEnvironment(), new ArenaEnvironment());
     this.scoreboardHandler = new ScoreboardHandler();
+    this.nickAPI = NickAPI.create(GamePlugin.getProvidingPlugin(GamePlugin.class));
 
     this.spectatorInventory = new SpectatorInventory();
     this.statsHologramManager = new StatsHologramManager();

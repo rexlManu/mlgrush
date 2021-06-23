@@ -5,6 +5,8 @@ import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import net.pluginstube.api.perk.Perk;
+import net.pluginstube.api.perk.perks.MLGRushPerks;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 
@@ -12,16 +14,17 @@ import org.bukkit.enchantments.Enchantment;
 @Getter
 @Accessors(fluent = true)
 public enum StickEquipment implements Equipment, Buyable {
-  WOOD(Material.STICK, "&aNormaler Stock", 0),
-  BLAZE(Material.BLAZE_ROD, "&aLohenrute", 0),
-  BONE(Material.BONE, "&aKnochen", 2500),
-  HOE(Material.IRON_HOE, "&aEisenhoe", 2500),
-  IRON_SWORD(Material.IRON_SWORD, "&aEisenschwert", 5000),
-  DIAMOND_SWORD(Material.DIAMOND_SWORD, "&aDiamantschwert", 7500);
+  WOOD(Material.STICK, "&aNormaler Stock", 0, MLGRushPerks.WOOD_STICK),
+  BLAZE(Material.BLAZE_ROD, "&aLohenrute", 0, MLGRushPerks.BLAZE_STICK),
+  BONE(Material.BONE, "&aKnochen", 2500, MLGRushPerks.BONE_STICK),
+  HOE(Material.IRON_HOE, "&aEisenhoe", 2500, MLGRushPerks.IRONHOE_STICK),
+  IRON_SWORD(Material.IRON_SWORD, "&aEisenschwert", 5000, MLGRushPerks.IRONSWORD_STICK),
+  DIAMOND_SWORD(Material.DIAMOND_SWORD, "&aDiamantschwert", 7500, MLGRushPerks.DIAMONDSWORD_STICK);
 
   private Material material;
   private String displayName;
   private int cost;
+  private Perk perk;
 
   @Override
   public void onEquip(GamePlayer gamePlayer, int slot) {

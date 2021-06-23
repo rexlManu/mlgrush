@@ -17,6 +17,7 @@ import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.utility.LocationUtils;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import de.rexlmanu.mlgrush.plugin.utility.RandomElement;
+import eu.miopowered.nickapi.NickAPI;
 import net.jodah.expiringmap.ExpiringMap;
 import net.pluginstube.api.CloudBasicFactory;
 import org.bukkit.Bukkit;
@@ -26,12 +27,14 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -55,8 +58,13 @@ public class ArenaEnvironment implements GameEnvironment {
 
     coordinator.add(ENVIRONMENT, AsyncPlayerChatEvent.class, event -> {
       event.target().setCancelled(true);
-      String prefix = CloudBasicFactory.getRankPrefix(CloudBasicFactory.getBlankRank(event.gamePlayer().uniqueId()));
-      String message = MessageFormat.replaceColors(String.format("%s%s &8» &7", prefix, event.gamePlayer().player().getName())) + event.target().getMessage();
+
+      String prefix = CloudBasicFactory.getRankPrefix(
+        GameManager.instance().nickAPI().get(event.gamePlayer().uniqueId()).isPresent()
+          ? "Spieler"
+          : CloudBasicFactory.getBlankRank(event.gamePlayer().uniqueId())
+      );
+      String message = MessageFormat.replaceColors(String.format("%s%s &8» &7", prefix, event.gamePlayer().player().getName())) + NickAPI.CHAT_PLACEHOLDER + event.target().getMessage();
 
       arenaManager
         .arenaContainer()
@@ -171,6 +179,16 @@ public class ArenaEnvironment implements GameEnvironment {
             event.gamePlayer().player().teleport(RandomElement.of(arena.gameTeams()).spawnLocation());
           }
         });
+    });
+    coordinator.add(ENVIRONMENT, PlayerInteractEvent.class, event -> {
+      if (event.target().getClickedBlock() == null || !event.target().getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+        return;
+      }
+      Material type = event.target().getClickedBlock().getType();
+      if (type.equals(Material.BED) || type.equals(Material.BED_BLOCK)) {
+        event.target().setCancelled(true);
+        return;
+      }
     });
   }
 

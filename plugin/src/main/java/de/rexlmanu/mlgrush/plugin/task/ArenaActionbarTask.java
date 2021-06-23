@@ -19,7 +19,7 @@ public class ArenaActionbarTask implements Runnable {
   @Override
   public void run() {
     GameManager.instance().arenaManager().arenaContainer().activeArenas().forEach(arena -> {
-      arena.players().forEach(gamePlayer -> GameManager.instance().scoreboardHandler().update(gamePlayer));
+      arena.players().forEach(gamePlayer -> GameManager.instance().scoreboardHandler().updateSidebar(gamePlayer));
       Stream.concat(arena.players().stream(), arena.spectators().stream()).filter(gamePlayer -> gamePlayer.player() != null).forEach(gamePlayer -> {
         long seconds = (System.currentTimeMillis() - arena.gameStart()) / 1000;
         StringBuilder prefix = new StringBuilder();
