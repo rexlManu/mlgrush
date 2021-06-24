@@ -83,7 +83,7 @@ public class PluginStubeDatabase implements DatabaseContext {
               .ifPresent(blockEquipment -> {
                 data.boughtItems().add(blockEquipment.name().toLowerCase());
                 if (extendedPerk.isSelected()) {
-                  data.selectedStick(blockEquipment.name().toLowerCase());
+                  data.selectedBlock(blockEquipment.name().toLowerCase());
                 }
               });
           }
