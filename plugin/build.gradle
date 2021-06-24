@@ -5,7 +5,7 @@ plugins {
   id 'java'
 }
 
-sourceCompatibility = targetCompatibility = '1.8'
+sourceCompatibility = targetCompatibility = '11'
 compileJava.options.encoding = "UTF-8"
 
 group 'de.rexlmanu.mlgrush'
@@ -41,6 +41,10 @@ repositories {
   maven {
     name 'minecraft-repo'
     url 'https://libraries.minecraft.net/'
+  }
+  maven {
+    name "miopowered-repo"
+    url "https://repo.miopowered.eu/releases"
   }
 }
 
@@ -81,10 +85,14 @@ dependencies {
     transitive = false
   }
   compile group: 'io.github.mineflash07', name: 'discord-webhook', version: '1.0.1'
-  compile('eu.miopowered:nickapi:1.8') {
+  compile('eu.miopowered.nickapi:api:1.0') {
     transitive = false
   }
 
+}
+
+configurations.all {
+  resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
 processResources {
@@ -107,6 +115,7 @@ shadowJar {
   relocate 'xyz.xenondevs.particle', 'de.rexlmanu.mlgrush.plugin.libs.particle'
   relocate 'net.jitse.npclib', 'de.rexlmanu.mlgrush.plugin.libs.npclib'
   relocate 'net.pluginstube.api', 'de.rexlmanu.mlgrush.plugin.libs.pluginstube'
+  relocate 'eu.miopowered.nickapi', 'de.rexlmanu.mlgrush.plugin.libs.nickapi'
 
   configurations = [project.configurations.compile]
   archiveFileName = "mlgrush-${version}.jar"

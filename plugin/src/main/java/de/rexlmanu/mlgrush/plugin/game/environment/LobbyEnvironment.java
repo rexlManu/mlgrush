@@ -240,6 +240,7 @@ public class LobbyEnvironment implements GameEnvironment {
       PlayerProvider.PLAYERS.remove(gamePlayer);
     });
     PlayerProvider.PLAYERS.forEach(gamePlayer -> gamePlayer.challengeRequests().remove(event.getPlayer().getUniqueId()));
+    GameManager.instance().nickAPI().unregister(event.getPlayer());
   }
 
   @EventHandler
