@@ -4,6 +4,7 @@ import de.rexlmanu.mlgrush.plugin.arena.Arena;
 import de.rexlmanu.mlgrush.plugin.command.SubCommand;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
+import de.rexlmanu.mlgrush.plugin.task.particle.RotatingParticleTask;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,5 +25,9 @@ public class DebugCommand implements SubCommand {
         (System.currentTimeMillis() - activeArena.gameStart()) / 1000
       ));
     }
+
+
+    gamePlayer.sendMessage("creating circle");
+    new RotatingParticleTask();
   }
 }

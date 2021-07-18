@@ -14,6 +14,7 @@ import de.rexlmanu.mlgrush.plugin.task.arena.ArenaBlockRemoveTask;
 import de.rexlmanu.mlgrush.plugin.task.arena.ArenaShowCpsTask;
 import de.rexlmanu.mlgrush.plugin.task.particle.FloorParticleTask;
 import de.rexlmanu.mlgrush.plugin.task.particle.QueueParticleTask;
+import de.rexlmanu.mlgrush.plugin.task.particle.TwinsParticleTask;
 import lombok.experimental.Accessors;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
@@ -71,9 +72,13 @@ public class GamePlugin extends JavaPlugin {
     new ArenaBlockRemoveTask();
     new ArenaShowCpsTask();
 
-    Arrays.asList("queue-npc", "stick-change-npc", "block-change-npc")
+    Arrays.asList("queue-npc")
       .forEach(s -> GameManager.instance().locationProvider().get(s)
         .ifPresent(FloorParticleTask::new));
+
+    Arrays.asList("stick-change-npc", "block-change-npc")
+      .forEach(s -> GameManager.instance().locationProvider().get(s)
+        .ifPresent(TwinsParticleTask::new));
 
     GameManager.instance().locationProvider().get("queue-npc")
       .ifPresent(QueueParticleTask::new);
