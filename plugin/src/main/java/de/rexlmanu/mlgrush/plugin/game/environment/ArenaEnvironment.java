@@ -69,7 +69,7 @@ public class ArenaEnvironment implements GameEnvironment {
       arenaManager
         .arenaContainer()
         .findArenaByPlayer(event.gamePlayer())
-        .ifPresent(arena -> arena.players().forEach(gamePlayer -> gamePlayer.player().sendMessage(message)));
+        .ifPresent(arena -> arena.players().forEach(gamePlayer -> gamePlayer.player().sendMessage(message.replace("%", "%%"))));
     });
     coordinator.add(ENVIRONMENT, BlockPlaceEvent.class, event -> arenaManager
       .arenaContainer()

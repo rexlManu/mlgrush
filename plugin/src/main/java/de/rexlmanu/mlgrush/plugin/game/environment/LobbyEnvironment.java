@@ -146,7 +146,7 @@ public class LobbyEnvironment implements GameEnvironment {
         : CloudBasicFactory.getBlankRank(event.gamePlayer().uniqueId()));
       String message = MessageFormat.replaceColors(String.format("%s%s &8» &7", prefix, event.gamePlayer().player().getName())) + NickAPI.CHAT_PLACEHOLDER + event.target().getMessage();
 
-      PlayerProvider.getPlayers(ENVIRONMENT).forEach(gamePlayer -> gamePlayer.player().sendMessage(message));
+      PlayerProvider.getPlayers(ENVIRONMENT).forEach(gamePlayer -> gamePlayer.player().sendMessage(message.replace("%", "%%")));
     });
     coordinator.add(ENVIRONMENT, BlockPlaceEvent.class, event -> event.target().setCancelled(!event.gamePlayer().buildMode()));
     coordinator.add(ENVIRONMENT, BlockBreakEvent.class, event -> event.target().setCancelled(!event.gamePlayer().buildMode()));
