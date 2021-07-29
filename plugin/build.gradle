@@ -70,7 +70,7 @@ dependencies {
   implementation(group: 'eu.thesimplecloud.simplecloud', name: 'simplecloud-api', version: '2.2.0')
 
   compile('org.jetbrains:annotations:21.0.1')
-  compile('eu.miopowered:packetlistener:1.0') {
+  compile('eu.miopowered:packetlistener:ab2188d2b3') {
     transitive = false
   }
   compile(project(':arenalib')) {
