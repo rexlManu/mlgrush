@@ -1,5 +1,8 @@
 package de.rexlmanu.mlgrush.plugin.game.environment;
 
+import de.dytanic.cloudnet.driver.CloudNetDriver;
+import de.dytanic.cloudnet.ext.bridge.player.IPlayerManager;
+import de.dytanic.cloudnet.ext.bridge.player.executor.ServerSelectorType;
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.arena.ArenaManager;
 import de.rexlmanu.mlgrush.plugin.arena.events.ArenaPlayerLeftEvent;
@@ -15,7 +18,6 @@ import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import de.rexlmanu.mlgrush.plugin.utility.PlayerUtils;
 import eu.miopowered.nickapi.NickAPI;
-import eu.thesimplecloud.api.CloudAPI;
 import net.pluginstube.api.CloudBasicFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -38,6 +40,7 @@ import xyz.xenondevs.particle.ParticleEffect;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class LobbyEnvironment implements GameEnvironment {
@@ -161,7 +164,12 @@ public class LobbyEnvironment implements GameEnvironment {
         if (LEAVE_ITEM.equals(event.target().getItem())) {
           event.target().setCancelled(true);
           event.gamePlayer().sound(Sound.LEVEL_UP, 2f);
-          CloudAPI.getInstance().getCloudPlayerManager().getCachedCloudPlayer(player.getUniqueId()).sendToLobby();
+          IPlayerManager playerManager = CloudNetDriver.getInstance().getServicesRegistry().getFirstService(IPlayerManager.class);
+
+          Optional
+            .ofNullable(playerManager.getOnlinePlayer(player.getUniqueId()))
+            .ifPresent(iCloudPlayer -> playerManager.getPlayerExecutor(iCloudPlayer)
+              .connectToGroup("Lobby", ServerSelectorType.LOWEST_PLAYERS));
           return;
         }
         if (SPECTATOR_ITEM.equals(event.target().getItem())) {
