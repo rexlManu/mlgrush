@@ -11,6 +11,8 @@ import net.pluginstube.api.database.SQLConnection;
 import net.pluginstube.api.database.coins.CoinsFactory;
 import net.pluginstube.api.database.credentials.Credential;
 import net.pluginstube.api.database.credentials.CredentialFactory;
+import net.pluginstube.api.database.invsort.InvsortDatabase;
+import net.pluginstube.api.database.invsort.model.InventorySort;
 import net.pluginstube.api.database.stats.StatsDatabase;
 import net.pluginstube.api.database.stats.StatsTable;
 import net.pluginstube.api.perk.PerkCategory;
@@ -41,6 +43,7 @@ public class PluginStubeDatabase implements DatabaseContext {
   private PerkDatabase perkDatabase;
   private PerkFactory perkFactory;
   private CoinsFactory coinsFactory;
+  private InvsortDatabase invsortDatabase;
 
   public PluginStubeDatabase() {
     instance = this;
@@ -64,6 +67,7 @@ public class PluginStubeDatabase implements DatabaseContext {
     this.coinsFactory = new CoinsFactory(this.connection);
     this.perkFactory = new PerkFactory();
     this.perkDatabase = new PerkDatabase(this.connection, this.perkFactory);
+    this.invsortDatabase = new InvsortDatabase(this.connection);
 
     this.perkFactory.initPerkIndex();
   }
@@ -100,6 +104,23 @@ public class PluginStubeDatabase implements DatabaseContext {
           }
         });
       } catch (PerkNotFoundException ignored) {
+      }
+      try {
+        InventorySort sorting = this.invsortDatabase.getInventorySorting(uniqueId.toString());
+        if (sorting == null) {
+          InventorySort sort = new InventorySort();
+          for (int i = 0; i < data.inventorySorting().size(); i++) {
+            sort.inventorySorting.put(i, data.inventorySorting().get(i));
+          }
+          this.invsortDatabase.insertNewData(uniqueId.toString(), sort);
+        } else {
+          data.inventorySorting().clear();
+          for (int i = 0; i < 8; i++) {
+            data.inventorySorting().add(sorting.inventorySorting.getOrDefault(i, null));
+          }
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
       }
 
       if (!this.statsDatabase.statsFromPlayerExists(uniqueId.toString(), StatsTable.MLGRUSH)) {
@@ -147,6 +168,16 @@ public class PluginStubeDatabase implements DatabaseContext {
         put("played", statistics.games());
         put("beds", statistics.destroyedBeds());
       }};
+
+      try {
+        InventorySort sort = new InventorySort();
+        for (int i = 0; i < gamePlayerData.inventorySorting().size(); i++) {
+          sort.inventorySorting.put(i, gamePlayerData.inventorySorting().get(i));
+        }
+        this.invsortDatabase.updateInventorySorting(gamePlayerData.uniqueId().toString(), sort);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
 
       this.statsDatabase.updateFullStatsDataset(gamePlayerData.uniqueId().toString(), statsMap, StatsTable.MLGRUSH);
       coinsFactory.setCoins(gamePlayerData.uniqueId().toString(), gamePlayerData.coins());
