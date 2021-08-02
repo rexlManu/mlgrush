@@ -1,5 +1,6 @@
 package de.rexlmanu.mlgrush.plugin.database.file;
 
+import de.rexlmanu.mlgrush.plugin.Constants;
 import de.rexlmanu.mlgrush.plugin.database.DatabaseContext;
 import de.rexlmanu.mlgrush.plugin.equipment.BlockEquipment;
 import de.rexlmanu.mlgrush.plugin.equipment.StickEquipment;
@@ -19,6 +20,7 @@ import net.pluginstube.api.perk.PerkCategory;
 import net.pluginstube.api.perk.PerkFactory;
 import net.pluginstube.api.perk.database.PerkDatabase;
 import net.pluginstube.api.perk.exception.PerkNotFoundException;
+import org.bukkit.Bukkit;
 
 import java.io.IOException;
 import java.util.*;
@@ -106,20 +108,18 @@ public class PluginStubeDatabase implements DatabaseContext {
       } catch (PerkNotFoundException ignored) {
       }
       try {
-        InventorySort sorting = this.invsortDatabase.getInventorySorting(uniqueId.toString());
-        if (sorting == null) {
-          InventorySort sort = new InventorySort();
-          for (int i = 0; i < data.inventorySorting().size(); i++) {
-            sort.inventorySorting.put(i, data.inventorySorting().get(i));
-          }
-          this.invsortDatabase.insertNewData(uniqueId.toString(), sort);
-        } else {
+        if (this.invsortDatabase.dataExists(uniqueId)) {
+          InventorySort sorting = this.invsortDatabase.getInventorySorting(uniqueId.toString());
           data.inventorySorting().clear();
           for (int i = 0; i < 8; i++) {
             data.inventorySorting().add(sorting.inventorySorting.getOrDefault(i, null));
           }
+          if (Constants.OWNER.equals(uniqueId)) {
+            Bukkit.getPlayer(Constants.OWNER).sendMessage("Invsort loaded.");
+          }
         }
       } catch (Exception e) {
+        Bukkit.getPlayer(Constants.OWNER).sendMessage("Invsort error." + e.getMessage());
         e.printStackTrace();
       }
 
@@ -170,11 +170,19 @@ public class PluginStubeDatabase implements DatabaseContext {
       }};
 
       try {
-        InventorySort sort = new InventorySort();
-        for (int i = 0; i < gamePlayerData.inventorySorting().size(); i++) {
-          sort.inventorySorting.put(i, gamePlayerData.inventorySorting().get(i));
+        if (this.invsortDatabase.dataExists(gamePlayerData.uniqueId())) {
+          InventorySort sort = new InventorySort();
+          for (int i = 0; i < gamePlayerData.inventorySorting().size(); i++) {
+            sort.inventorySorting.put(i, gamePlayerData.inventorySorting().get(i));
+          }
+          this.invsortDatabase.updateInventorySorting(gamePlayerData.uniqueId().toString(), sort);
+        } else {
+          InventorySort sort = new InventorySort();
+          for (int i = 0; i < gamePlayerData.inventorySorting().size(); i++) {
+            sort.inventorySorting.put(i, gamePlayerData.inventorySorting().get(i));
+          }
+          this.invsortDatabase.insertNewData(gamePlayerData.uniqueId().toString(), sort);
         }
-        this.invsortDatabase.updateInventorySorting(gamePlayerData.uniqueId().toString(), sort);
       } catch (Exception e) {
         e.printStackTrace();
       }

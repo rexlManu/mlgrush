@@ -27,8 +27,7 @@ public class NickCommand implements SubCommand {
       ))
       .filter(player -> player.getName().equals(gamePlayer.player().getName()))
       .build();
-    GameManager.instance().nickAPI().register(nickUser
-    );
+    GameManager.instance().nickAPI().register(nickUser);
     gamePlayer.sendMessage("Du wurdest genickt.");
     GameManager.instance().nickAPI().updater().update(nickUser, nickUser.fakeIdentity());
     GameManager.instance().scoreboardHandler().updateAll(gamePlayer.environment());
