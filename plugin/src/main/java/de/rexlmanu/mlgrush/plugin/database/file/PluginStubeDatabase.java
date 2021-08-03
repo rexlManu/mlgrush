@@ -111,7 +111,7 @@ public class PluginStubeDatabase implements DatabaseContext {
         if (this.invsortDatabase.dataExists(uniqueId)) {
           InventorySort sorting = this.invsortDatabase.getInventorySorting(uniqueId.toString());
           data.inventorySorting().clear();
-          for (int i = 0; i < 8; i++) {
+          for (int i = 0; i < 9; i++) {
             data.inventorySorting().add(sorting.inventorySorting.getOrDefault(i, null));
           }
           if (Constants.OWNER.equals(uniqueId)) {
