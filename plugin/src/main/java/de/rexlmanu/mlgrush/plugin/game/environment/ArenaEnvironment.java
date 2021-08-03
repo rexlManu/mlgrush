@@ -3,6 +3,7 @@ package de.rexlmanu.mlgrush.plugin.game.environment;
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.arena.Arena;
 import de.rexlmanu.mlgrush.plugin.arena.ArenaManager;
+import de.rexlmanu.mlgrush.plugin.arena.ArenaStatistics;
 import de.rexlmanu.mlgrush.plugin.arena.events.ArenaPlayerBlockPlaceEvent;
 import de.rexlmanu.mlgrush.plugin.arena.events.ArenaPlayerDiedEvent;
 import de.rexlmanu.mlgrush.plugin.arena.events.ArenaPlayerLeftEvent;
@@ -156,7 +157,9 @@ public class ArenaEnvironment implements GameEnvironment {
         GamePlayer killer = event.target().killer();
 
         if (killer != null) {
-          arena.statsFromPlayer(killer).addKill();
+          ArenaStatistics statistics = arena.statsFromPlayer(killer);
+          if (statistics == null) return;
+          statistics.addKill();
           killer.sound(Sound.ORB_PICKUP, 1f);
         }
       }));

@@ -45,7 +45,12 @@ public class ArenaScoreboardCreator implements ScoreboardCreator, Runnable {
   public void updateLines(GamePlayer gamePlayer) {
     String[] ad = LobbyScoreboardCreator.ADS[this.currentAd];
     GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(gamePlayer).ifPresent(arena -> {
-      GameTeam team = arena.getTeam(gamePlayer);
+      GameTeam team;
+      try {
+        team = arena.getTeam(gamePlayer);
+      } catch (IllegalStateException e) {
+        return;
+      }
       String enemy = arena.gameTeams()
         .stream()
         .filter(gameTeam -> !gameTeam.equals(team))

@@ -79,7 +79,8 @@ public class GamePlayer {
   }
 
   public void sound(Sound sound, float pitch) {
-    this.player().playSound(this.player().getLocation(), sound, 1f, pitch);
+    if (this.player() != null)
+      this.player().playSound(this.player().getLocation(), sound, 1f, pitch);
   }
 
   public void giveEquipment() {
