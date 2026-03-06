@@ -7,6 +7,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public final class ItemStackBuilder {
 
   private static final ItemFlag[] ALL_FLAGS = new ItemFlag[]{
     ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES,
-    ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_POTION_EFFECTS,
+    ItemFlag.HIDE_UNBREAKABLE,
     ItemFlag.HIDE_DESTROYS, ItemFlag.HIDE_PLACED_ON
   };
 
@@ -122,11 +123,15 @@ public final class ItemStackBuilder {
   }
 
   public ItemStackBuilder durability(int durability) {
-    return transform(itemStack -> itemStack.setDurability((short) durability));
+    return transformMeta(meta -> {
+      if (meta instanceof Damageable damageable) {
+        damageable.setDamage(Math.max(durability, 0));
+      }
+    });
   }
 
   public ItemStackBuilder data(int data) {
-    return durability(data);
+    return this;
   }
 
   public ItemStackBuilder amount(int amount) {
@@ -173,7 +178,7 @@ public final class ItemStackBuilder {
   }
 
   public ItemStackBuilder breakable(boolean flag) {
-    return transformMeta(meta -> meta.spigot().setUnbreakable(!flag));
+    return transformMeta(meta -> meta.setUnbreakable(!flag));
   }
 
   public ItemStackBuilder apply(Consumer<ItemStackBuilder> consumer) {

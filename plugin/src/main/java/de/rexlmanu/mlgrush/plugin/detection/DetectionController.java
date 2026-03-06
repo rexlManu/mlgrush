@@ -1,26 +1,22 @@
 package de.rexlmanu.mlgrush.plugin.detection;
 
+import com.github.retrooper.packetevents.PacketEvents;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
-import eu.miopowered.packetlistener.PacketHandler;
-import eu.miopowered.packetlistener.PacketListener;
-import eu.miopowered.packetlistener.filter.PacketState;
 
 public class DetectionController {
 
   public DetectionController() {
+    PacketEvents.getAPI().getEventManager().registerListener(new DetectionPacketListener());
     new DetectionTask();
   }
 
   public void register(GamePlayer gamePlayer) {
-    DetectionPacketHandler handler = new DetectionPacketHandler(gamePlayer);
-    PacketHandler
-      .listen(PacketListener.of(gamePlayer.player())
-        .filter(PacketState.PLAY)
-        .receive(handler)
-        .sent(handler));
+    if (gamePlayer.player() != null) {
+      gamePlayer.detection().transactionPing(PacketEvents.getAPI().getPlayerManager().getPing(gamePlayer.player()));
+    }
   }
 
   public void unregister(GamePlayer gamePlayer) {
-    PacketHandler.remove(gamePlayer.player());
+    gamePlayer.detection().digging(false).placing(false);
   }
 }

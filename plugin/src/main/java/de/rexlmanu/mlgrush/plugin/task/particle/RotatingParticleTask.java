@@ -4,40 +4,47 @@ import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.util.Vector;
-import xyz.xenondevs.particle.ParticleEffect;
 
 @Accessors(fluent = true)
 public class RotatingParticleTask implements Runnable {
-  private Location location;
+  private final Location location;
   private int degreee = 0;
 
   public RotatingParticleTask() {
     this.location = new Location(Bukkit.getWorld("world"), 0.5, 68, 0.5);
 
-    Bukkit.getScheduler().runTaskTimerAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 2);
+    Bukkit.getScheduler().runTaskTimer(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 2);
   }
 
   @Override
   public void run() {
-    if (degreee > 360) degreee = 0;
-    // the numbers are the angles on which you want to rotate your animation.
-    double xangle = Math.toRadians(degreee); // note that here we do have to convert to radians.
-    double xAxisCos = Math.cos(xangle); // getting the cos value for the pitch.
-    double xAxisSin = Math.sin(xangle); // getting the sin value for the pitch.
+    if (this.location.getWorld() == null) {
+      return;
+    }
+    if (this.degreee > 360) {
+      this.degreee = 0;
+    }
+    double xangle = Math.toRadians(this.degreee);
+    double xAxisCos = Math.cos(xangle);
+    double xAxisSin = Math.sin(xangle);
 
-// DON'T FORGET THE ' - ' IN FRONT OF 'yangle' HERE.
-    int yDegree = degreee + 45;
-    if (yDegree > 360) yDegree -= 360;
-    double yangle = Math.toRadians(yDegree); // note that here we do have to convert to radians.
-    double yAxisCos = Math.cos(-yangle); // getting the cos value for the yaw.
-    double yAxisSin = Math.sin(-yangle); // getting the sin value for the yaw.
+    int yDegree = this.degreee + 45;
+    if (yDegree > 360) {
+      yDegree -= 360;
+    }
+    double yangle = Math.toRadians(yDegree);
+    double yAxisCos = Math.cos(-yangle);
+    double yAxisSin = Math.sin(-yangle);
 
-    int zDegree = degreee + 90;
-    if (zDegree > 360) zDegree -= 360;
-    double zangle = Math.toRadians(zDegree); // note that here we do have to convert to radians.
-    double zAxisCos = Math.cos(zangle); // getting the cos value for the roll.
-    double zAxisSin = Math.sin(zangle); // getting the sin value for the roll.
+    int zDegree = this.degreee + 90;
+    if (zDegree > 360) {
+      zDegree -= 360;
+    }
+    double zangle = Math.toRadians(zDegree);
+    double zAxisCos = Math.cos(zangle);
+    double zAxisSin = Math.sin(zangle);
 
     double radius = 1.4f;
 
@@ -45,34 +52,32 @@ public class RotatingParticleTask implements Runnable {
       double radians = Math.toRadians(degree);
       double x = radius * Math.cos(radians);
       double z = radius * Math.sin(radians);
-//      location.add(x,0,z);
-      Vector vec = new Vector(x, 0, z);
-      rotateAroundAxisX(vec, xAxisCos, xAxisSin);
-      rotateAroundAxisY(vec, yAxisCos, yAxisSin);
-      rotateAroundAxisZ(vec, zAxisCos, zAxisSin);
+      Vector vector = new Vector(x, 0, z);
+      rotateAroundAxisX(vector, xAxisCos, xAxisSin);
+      rotateAroundAxisY(vector, yAxisCos, yAxisSin);
+      rotateAroundAxisZ(vector, zAxisCos, zAxisSin);
 
-      ParticleEffect.FLAME.display(location.clone().add(vec), 0, 0, 0, 0.01f, 1, null);
-//      location.subtract(x,0,z);
+      this.location.getWorld().spawnParticle(Particle.FLAME, this.location.clone().add(vector), 1, 0, 0, 0, 0.01D);
     }
 
-    degreee += 3;
+    this.degreee += 3;
   }
 
-  private Vector rotateAroundAxisX(Vector v, double cos, double sin) {
-    double y = v.getY() * cos - v.getZ() * sin;
-    double z = v.getY() * sin + v.getZ() * cos;
-    return v.setY(y).setZ(z);
+  private Vector rotateAroundAxisX(Vector vector, double cos, double sin) {
+    double y = vector.getY() * cos - vector.getZ() * sin;
+    double z = vector.getY() * sin + vector.getZ() * cos;
+    return vector.setY(y).setZ(z);
   }
 
-  private Vector rotateAroundAxisY(Vector v, double cos, double sin) {
-    double x = v.getX() * cos + v.getZ() * sin;
-    double z = v.getX() * -sin + v.getZ() * cos;
-    return v.setX(x).setZ(z);
+  private Vector rotateAroundAxisY(Vector vector, double cos, double sin) {
+    double x = vector.getX() * cos + vector.getZ() * sin;
+    double z = vector.getX() * -sin + vector.getZ() * cos;
+    return vector.setX(x).setZ(z);
   }
 
-  private Vector rotateAroundAxisZ(Vector v, double cos, double sin) {
-    double x = v.getX() * cos - v.getY() * sin;
-    double y = v.getX() * sin + v.getY() * cos;
-    return v.setX(x).setY(y);
+  private Vector rotateAroundAxisZ(Vector vector, double cos, double sin) {
+    double x = vector.getX() * cos - vector.getY() * sin;
+    double y = vector.getX() * sin + vector.getY() * cos;
+    return vector.setX(x).setY(y);
   }
 }

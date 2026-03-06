@@ -38,7 +38,7 @@ public class BooleanOptionItem implements OptionItem<Boolean> {
     if (!event.isLeftClick()) return;
     Inventory inventory = event.getClickedInventory();
     Player player = (Player) event.getWhoClicked();
-    player.playSound(player.getLocation(), Sound.CLICK, 0.7f, 2f);
+    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.7f, 2f);
     this.value = !this.value;
     inventory.setItem(this.slot, itemStack(ItemStackBuilder.of(itemStack).transformMeta(itemMeta -> {
       List<String> lore = itemMeta.getLore();

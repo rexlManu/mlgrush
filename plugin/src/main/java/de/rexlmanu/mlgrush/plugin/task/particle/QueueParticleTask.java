@@ -3,13 +3,15 @@ package de.rexlmanu.mlgrush.plugin.task.particle;
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import xyz.xenondevs.particle.ParticleEffect;
+import org.bukkit.Particle;
 
 public class QueueParticleTask implements Runnable {
 
-  private Location location;
+  private final Location location;
 
-  private float radius, angle, height;
+  private float radius;
+  private float angle;
+  private float height;
 
   public QueueParticleTask(Location location) {
     this.location = location;
@@ -17,36 +19,35 @@ public class QueueParticleTask implements Runnable {
     this.angle = 0;
     this.height = 0;
 
-    Bukkit.getScheduler().runTaskTimerAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 1);
+    Bukkit.getScheduler().runTaskTimer(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 1);
   }
 
   @Override
   public void run() {
-    if (this.angle >= 360) this.angle = 0;
+    if (this.angle >= 360) {
+      this.angle = 0;
+    }
     if (this.radius < 0.7f) {
       this.radius = 2f;
       this.height = 0;
     }
 
-    {
-      double x = this.radius * Math.sin(this.angle);
-      double z = this.radius * Math.cos(this.angle);
-      ParticleEffect.SPELL_WITCH.display(this.location.clone().add(x, this.height, z), 0, 0, 0, 5, 1, null);
-    }
-    {
-      float oppositeAngle = this.angle;
-      oppositeAngle += 180;
-      if (oppositeAngle > 360) {
-        oppositeAngle -= 360;
-      }
+    this.spawnAtAngle(this.angle);
 
-      double x = this.radius * Math.sin(oppositeAngle);
-      double z = this.radius * Math.cos(oppositeAngle);
-      ParticleEffect.SPELL_WITCH.display(location.clone().add(x, this.height, z), 0, 0, 0, 5, 1, null);
+    float oppositeAngle = this.angle + 180;
+    if (oppositeAngle > 360) {
+      oppositeAngle -= 360;
     }
+    this.spawnAtAngle(oppositeAngle);
 
     this.height += 0.025f;
     this.radius -= 0.01f;
     this.angle += 0.1f;
+  }
+
+  private void spawnAtAngle(float currentAngle) {
+    double x = this.radius * Math.sin(currentAngle);
+    double z = this.radius * Math.cos(currentAngle);
+    this.location.getWorld().spawnParticle(Particle.WITCH, this.location.clone().add(x, this.height, z), 1, 0, 0, 0, 0);
   }
 }

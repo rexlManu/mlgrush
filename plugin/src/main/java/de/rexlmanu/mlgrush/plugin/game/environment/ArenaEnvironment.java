@@ -18,13 +18,12 @@ import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.utility.LocationUtils;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import de.rexlmanu.mlgrush.plugin.utility.RandomElement;
-import eu.miopowered.nickapi.NickAPI;
 import net.jodah.expiringmap.ExpiringMap;
-import net.pluginstube.api.CloudBasicFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -48,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 public class ArenaEnvironment implements GameEnvironment {
 
   public static final Environment ENVIRONMENT = Environment.ARENA;
-  private Map<UUID, UUID> lastHitterMap;
+  private final Map<UUID, UUID> lastHitterMap;
 
   public ArenaEnvironment() {
     this.lastHitterMap = ExpiringMap.builder()
@@ -59,18 +58,14 @@ public class ArenaEnvironment implements GameEnvironment {
 
     coordinator.add(ENVIRONMENT, AsyncPlayerChatEvent.class, event -> {
       event.target().setCancelled(true);
-
-      String prefix = CloudBasicFactory.getRankPrefix(
-        GameManager.instance().nickAPI().get(event.gamePlayer().uniqueId()).isPresent()
-          ? "Spieler"
-          : CloudBasicFactory.getBlankRank(event.gamePlayer().uniqueId())
-      );
-      String message = MessageFormat.replaceColors(String.format("%s%s &8» &7", prefix, event.gamePlayer().player().getName())) + NickAPI.CHAT_PLACEHOLDER + event.target().getMessage();
+      String prefix = GameManager.instance().nicknameService().isNicked(event.gamePlayer().uniqueId()) ? "&8[N] &a" : "&a";
+      String name = GameManager.instance().nicknameService().displayName(event.gamePlayer().uniqueId(), event.gamePlayer().player().getName());
+      String message = MessageFormat.replaceColors(String.format("%s%s &8» &7%s", prefix, name, event.target().getMessage()));
 
       arenaManager
         .arenaContainer()
         .findArenaByPlayer(event.gamePlayer())
-        .ifPresent(arena -> arena.players().forEach(gamePlayer -> gamePlayer.player().sendMessage(message.replace("%", "%%"))));
+        .ifPresent(arena -> arena.players().forEach(gamePlayer -> gamePlayer.player().sendMessage(message)));
     });
     coordinator.add(ENVIRONMENT, BlockPlaceEvent.class, event -> arenaManager
       .arenaContainer()
@@ -85,7 +80,7 @@ public class ArenaEnvironment implements GameEnvironment {
           return;
         }
         if (arena.configuration().unlimitedBlocks()) {
-          ItemStack item = event.gamePlayer().player().getItemInHand();
+          ItemStack item = event.gamePlayer().player().getInventory().getItemInMainHand();
           item.setAmount(item.getMaxStackSize());
         }
 
@@ -100,11 +95,10 @@ public class ArenaEnvironment implements GameEnvironment {
         return;
       }
 
-      if (block.getType().equals(Material.BED)
-        || block.getType().equals(Material.BED_BLOCK)) {
+      if (Tag.BEDS.isTagged(block.getType())) {
         GameTeam destroyedBedTeam = arena.getTeam(location);
         GameTeam team = arena.getTeam(event.gamePlayer());
-        if (arena.getTeam(location).equals(team)) {
+        if (destroyedBedTeam.equals(team)) {
           event.target().setCancelled(true);
           return;
         }
@@ -127,9 +121,9 @@ public class ArenaEnvironment implements GameEnvironment {
       .findArenaByPlayer(event.gamePlayer()).ifPresent(arena -> {
         Location to = event.target().getTo();
         Location from = event.target().getFrom();
-        if (to.getX() == from.getX()
-          && to.getY() == from.getY()
-          && to.getZ() == from.getZ()) return;
+        if (to.getX() == from.getX() && to.getY() == from.getY() && to.getZ() == from.getZ()) {
+          return;
+        }
         if (!arena.region().contains(to)) {
           Bukkit.getPluginManager().callEvent(new ArenaPlayerDiedEvent(
             event.gamePlayer(),
@@ -158,17 +152,19 @@ public class ArenaEnvironment implements GameEnvironment {
 
         if (killer != null) {
           ArenaStatistics statistics = arena.statsFromPlayer(killer);
-          if (statistics == null) return;
+          if (statistics == null) {
+            return;
+          }
           statistics.addKill();
-          killer.sound(Sound.ORB_PICKUP, 1f);
+          killer.sound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f);
         }
       }));
     coordinator.add(Environment.LOBBY, PlayerMoveEvent.class, event -> {
       Location to = event.target().getTo();
       Location from = event.target().getFrom();
-      if (to.getX() == from.getX()
-        && to.getY() == from.getY()
-        && to.getZ() == from.getZ()) return;
+      if (to.getX() == from.getX() && to.getY() == from.getY() && to.getZ() == from.getZ()) {
+        return;
+      }
 
       arenaManager
         .arenaContainer()
@@ -178,27 +174,25 @@ public class ArenaEnvironment implements GameEnvironment {
         .findAny()
         .ifPresent(arena -> {
           if (!arena.region().contains(to)) {
-            // Teleport back to random spawn
             event.gamePlayer().player().teleport(RandomElement.of(arena.gameTeams()).spawnLocation());
           }
         });
     });
     coordinator.add(ENVIRONMENT, PlayerInteractEvent.class, event -> {
-      if (event.target().getClickedBlock() == null || !event.target().getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+      if (event.target().getClickedBlock() == null || event.target().getAction() != Action.RIGHT_CLICK_BLOCK) {
         return;
       }
-      Material type = event.target().getClickedBlock().getType();
-      if (type.equals(Material.BED) || type.equals(Material.BED_BLOCK)) {
+      if (Tag.BEDS.isTagged(event.target().getClickedBlock().getType())) {
         event.target().setCancelled(true);
-        return;
       }
     });
   }
 
   @EventHandler
   public void handle(EntityDamageEvent event) {
-    if (!(event.getEntity() instanceof Player)) return;
-    Player player = (Player) event.getEntity();
+    if (!(event.getEntity() instanceof Player player)) {
+      return;
+    }
     PlayerProvider.find(player.getUniqueId()).filter(gamePlayer -> gamePlayer.environment().equals(ENVIRONMENT))
       .ifPresent(gamePlayer -> {
         GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(gamePlayer).ifPresent(arena -> {
@@ -212,11 +206,11 @@ public class ArenaEnvironment implements GameEnvironment {
 
   @EventHandler
   public void handle(EntityDamageByEntityEvent event) {
-    if (!(event.getDamager() instanceof Player) || !(event.getEntity() instanceof Player)) return;
-    Player damager = (Player) event.getDamager();
-    Player player = (Player) event.getEntity();
+    if (!(event.getDamager() instanceof Player damager) || !(event.getEntity() instanceof Player player)) {
+      return;
+    }
     PlayerProvider.find(player.getUniqueId()).filter(gamePlayer -> gamePlayer.environment().equals(ENVIRONMENT))
-      .ifPresent(gamePlayer -> PlayerProvider.find(damager.getUniqueId()).filter(t -> t.environment().equals(ENVIRONMENT))
+      .ifPresent(gamePlayer -> PlayerProvider.find(damager.getUniqueId()).filter(target -> target.environment().equals(ENVIRONMENT))
         .ifPresent(targetPlayer -> {
           GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(gamePlayer).ifPresent(arena -> {
             if (arena.configuration().knockbackOnlyHeight()) {
@@ -233,5 +227,4 @@ public class ArenaEnvironment implements GameEnvironment {
   public void handle(PlayerBedEnterEvent event) {
     event.setCancelled(true);
   }
-
 }

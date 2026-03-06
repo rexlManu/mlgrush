@@ -22,8 +22,8 @@ import java.util.Map;
 
 public class SettingsInventory implements Listener {
   private static Map<Character, ItemStack> PATTERN_ITEM = new HashMap<Character, ItemStack>() {{
-    put('t', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(5).build());
-    put('b', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(13).build());
+    put('t', ItemStackBuilder.of(Material.LIME_STAINED_GLASS_PANE).name("&r").build());
+    put('b', ItemStackBuilder.of(Material.GREEN_STAINED_GLASS_PANE).name("&r").build());
   }};
 
   private static final char[][] PATTERN = {

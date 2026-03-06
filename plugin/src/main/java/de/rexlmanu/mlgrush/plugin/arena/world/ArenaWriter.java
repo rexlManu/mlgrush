@@ -27,8 +27,11 @@ public class ArenaWriter {
             Location location = new Location(startPoint.getWorld(), startPoint.getX() + x, startPoint.getY() + y, startPoint.getZ() + z);
             ingredients.stream().filter(ingredient -> ingredient.code() == code).findAny().ifPresent(ingredient -> {
               Block block = location.getBlock();
-              block.setType(Material.valueOf(ingredient.material().toUpperCase()));
-              block.setData((byte) ingredient.data());
+              try {
+                block.setBlockData(Bukkit.createBlockData(ingredient.material()), false);
+              } catch (IllegalArgumentException ignored) {
+                block.setType(Material.valueOf(ingredient.material().toUpperCase()), false);
+              }
             });
           }
         }

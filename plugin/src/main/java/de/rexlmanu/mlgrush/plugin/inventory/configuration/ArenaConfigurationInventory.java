@@ -28,11 +28,11 @@ import java.util.stream.Stream;
 
 public class ArenaConfigurationInventory implements Listener {
 
-  private static final ItemStack FINISH = ItemStackBuilder.of(Material.INK_SACK).name("&aAnfrage senden").data(10).build();
+  private static final ItemStack FINISH = ItemStackBuilder.of(Material.LIME_DYE).name("&aAnfrage senden").build();
 
   private static Map<Character, ItemStack> PATTERN_ITEM = new HashMap<Character, ItemStack>() {{
-    put('t', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(13).build());
-    put('b', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(5).build());
+    put('t', ItemStackBuilder.of(Material.GREEN_STAINED_GLASS_PANE).name("&r").build());
+    put('b', ItemStackBuilder.of(Material.LIME_STAINED_GLASS_PANE).name("&r").build());
     put('f', FINISH);
   }};
 
@@ -62,7 +62,7 @@ public class ArenaConfigurationInventory implements Listener {
   private List<OptionItem<?>> optionItems = new ArrayList<>();
 
   private OptionItem<Integer> maximalPointsOption = this.register(new IntegerOptionItem(
-    ItemStackBuilder.of(Material.BED).name("&8» &aPunkte").lore("&7Wie viele &aPunkte&7 braucht", "&7man um das Spiel zu-", "&7gewinnen.").build(),
+    ItemStackBuilder.of(Material.RED_BED).name("&8» &aPunkte").lore("&7Wie viele &aPunkte&7 braucht", "&7man um das Spiel zu-", "&7gewinnen.").build(),
     20, 10, 30, 1
   ));
   private OptionItem<Boolean> nohitdelayOption = this.register(new BooleanOptionItem(
@@ -90,7 +90,7 @@ public class ArenaConfigurationInventory implements Listener {
     13, false
   ));
   private OptionItem<Boolean> showCpsOption = this.register(new BooleanOptionItem(
-    ItemStackBuilder.of(Material.WOOD_SWORD).lore("&8» &7Du siehst wie viele", "&aKlicks per Sekunde &7dein", "&7Gegner aktuell hat.").name("&aCPS anzeigen").build(),
+    ItemStackBuilder.of(Material.WOODEN_SWORD).lore("&8» &7Du siehst wie viele", "&aKlicks per Sekunde &7dein", "&7Gegner aktuell hat.").name("&aCPS anzeigen").build(),
     14, false
   ));
   private OptionItem<Integer> spawnProtectionOption = this.register(new IntegerOptionItem(
@@ -152,7 +152,7 @@ public class ArenaConfigurationInventory implements Listener {
       String.format("  &8▶ &7CPS anzeigen &8● &a%s", this.showCpsOption.value() ? "&aaktiv" : "&7deaktiviert"),
       "").map(MessageFormat::replaceColors).forEach(s -> target.player().sendMessage(s));
     this.owner.sendMessage(String.format("Du hast &a%s&7 zu einem eigenen Spiel gefordert.", target.player().getName()));
-    this.owner.sound(Sound.LEVEL_UP, 2f);
+    this.owner.sound(Sound.ENTITY_PLAYER_LEVELUP, 2f);
   }
 
   @EventHandler
@@ -167,7 +167,7 @@ public class ArenaConfigurationInventory implements Listener {
     if (!event.getPlayer().getUniqueId().equals(this.target.uniqueId())) return;
     this.owner.player().closeInventory();
     this.owner.sendMessage(String.format("Die Erstellung des Spiels wurde abgebrochen weil &a%s &7in ein Spiel gegangen ist.", this.target.player().getName()));
-    this.owner.sound(Sound.ANVIL_LAND, 2f);
+    this.owner.sound(Sound.BLOCK_ANVIL_LAND, 2f);
   }
 
   @EventHandler(priority = EventPriority.LOWEST)
@@ -175,7 +175,7 @@ public class ArenaConfigurationInventory implements Listener {
     if (!event.getPlayer().getUniqueId().equals(this.target.uniqueId())) return;
     this.owner.player().closeInventory();
     this.owner.sendMessage(String.format("Die Erstellung des Spiels wurde abgebrochen weil &a%s &7das Spiel verlassen hat.", this.target.player().getName()));
-    this.owner.sound(Sound.ANVIL_LAND, 2f);
+    this.owner.sound(Sound.BLOCK_ANVIL_LAND, 2f);
   }
 
   private <T> OptionItem<T> register(OptionItem<T> optionItem) {

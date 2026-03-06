@@ -1,19 +1,21 @@
 package de.rexlmanu.mlgrush.plugin.task;
 
-import com.cryptomorin.xseries.messages.ActionBar;
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.arena.team.GameTeam;
 import de.rexlmanu.mlgrush.plugin.detection.Detection;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 
 import java.util.stream.Stream;
 
 public class ArenaActionbarTask implements Runnable {
 
+  private static final LegacyComponentSerializer LEGACY_SERIALIZER = LegacyComponentSerializer.legacySection();
+
   public ArenaActionbarTask() {
-    Bukkit.getScheduler().runTaskTimerAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 1);
+    Bukkit.getScheduler().runTaskTimer(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 1);
   }
 
   @Override
@@ -47,13 +49,12 @@ public class ArenaActionbarTask implements Runnable {
             suffix
           )
         );
-        ActionBar.sendActionBar(gamePlayer.player(), message);
+        gamePlayer.player().sendActionBar(LEGACY_SERIALIZER.deserialize(message));
       });
     });
   }
 
   private String format(Detection detection) {
-    // averageSecondly, average,
     return new StringBuilder().append("&a")
       .append(detection.clicks())
       .append("&7c&8, &a")
@@ -70,7 +71,5 @@ public class ArenaActionbarTask implements Runnable {
       .append(detection.transactionPing())
       .append("&7ms")
       .toString();
-//      .append(detection.standardDeviation())
-//      .append("&7sd").toString();
   }
 }

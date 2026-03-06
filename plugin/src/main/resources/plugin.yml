@@ -1,12 +1,12 @@
 name: MLGRush
-version: @version@
-author: @author@
-description: @description@
-website: @website@
+version: ${version}
+api-version: '1.21'
+author: ${author}
+description: ${description}
+website: ${website}
 main: de.rexlmanu.mlgrush.plugin.GamePlugin
 softdepend:
-  - library-spigot-1.0
-  - CloudNet-Bridge
+  - PlaceholderAPI
 commands:
   mlgrush:
     description: The main command for mlgrush

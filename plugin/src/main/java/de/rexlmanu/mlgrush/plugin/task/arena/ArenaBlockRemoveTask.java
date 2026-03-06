@@ -1,79 +1,63 @@
 package de.rexlmanu.mlgrush.plugin.task.arena;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.util.Vector3i;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockBreakAnimation;
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
-import eu.miopowered.packetlistener.reflection.PacketReflection;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class ArenaBlockRemoveTask implements Runnable {
-  private Map<Block, BlockAnimation> blockAnimationMap;
+  private final Map<Block, Float> blockAnimationMap = new HashMap<>();
 
   public ArenaBlockRemoveTask() {
-    this.blockAnimationMap = new ConcurrentHashMap<>();
-    Bukkit.getScheduler().runTaskTimerAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 6);
+    Bukkit.getScheduler().runTaskTimer(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 6);
   }
 
   @Override
   public void run() {
-    this.blockAnimationMap.keySet().stream().filter(block -> block.getType().equals(Material.AIR)).forEach(block -> this.blockAnimationMap.remove(block));
+    Iterator<Map.Entry<Block, Float>> iterator = this.blockAnimationMap.entrySet().iterator();
+    while (iterator.hasNext()) {
+      Map.Entry<Block, Float> entry = iterator.next();
+      if (entry.getKey().getType().isAir()) {
+        iterator.remove();
+      }
+    }
 
     GameManager.instance().arenaManager().arenaContainer().activeArenas().stream().filter(arena -> arena.configuration().autoBlockBreak()).forEach(arena -> {
       arena.placedBlocks().forEach(block -> {
-        if (!this.blockAnimationMap.containsKey(block)) {
-          this.blockAnimationMap.put(block, new BlockAnimation(0));
-        }
-        BlockAnimation animation = this.blockAnimationMap.get(block);
-        animation.state++;
-        arena
-          .players()
-          .stream()
-          .map(GamePlayer::player)
-          .forEach(player -> this.sendBlockAnimation(player, block, animation));
+        float progress = Math.min(1.0f, this.blockAnimationMap.getOrDefault(block, 0.0f) + 0.1f);
+        this.blockAnimationMap.put(block, progress);
 
-        if (animation.state > 9) {
+        arena.players().stream().map(GamePlayer::player).forEach(player -> this.sendBlockAnimation(player, block, progress));
+
+        if (progress >= 1.0f) {
           arena.placedBlocks().remove(block);
-          Bukkit.getScheduler().runTask(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> block.setType(Material.AIR));
-          return;
+          block.setType(Material.AIR, false);
+          this.blockAnimationMap.remove(block);
         }
       });
     });
   }
 
-  private void sendBlockAnimation(Player player, Block block, BlockAnimation blockAnimation) {
-    try {
-      Object nmsPlayer = player.getClass().getMethod("getHandle").invoke(player);
-      Object playerConnection = nmsPlayer.getClass().getField("playerConnection").get(nmsPlayer);
-      Method sendPacket = playerConnection.getClass().getMethod("sendPacket", PacketReflection.nmsClass("Packet"));
-      Class<?> blockPosition = PacketReflection.nmsClass("BlockPosition");
-      Location location = block.getLocation();
-      Object position = blockPosition.getConstructor(int.class, int.class, int.class)
-        .newInstance(location.getBlockX(), location.getBlockY(), location.getBlockZ());
-      Object packetPlayOutBlockBreakAnimation = PacketReflection.nmsClass("PacketPlayOutBlockBreakAnimation")
-        .getConstructor(int.class, blockPosition, int.class)
-        .newInstance(blockAnimation.entityId, position, blockAnimation.state);
-      sendPacket.invoke(playerConnection, packetPlayOutBlockBreakAnimation);
-    } catch (Exception e) {
-      e.printStackTrace();
+  private void sendBlockAnimation(Player player, Block block, float progress) {
+    if (player == null) {
+      return;
     }
-  }
-
-  private class BlockAnimation {
-    private int entityId;
-    private int state;
-
-    public BlockAnimation(int state) {
-      this.entityId = ThreadLocalRandom.current().nextInt(1000000, 9000000);
-      this.state = state;
-    }
+    byte stage = (byte) Math.max(0, Math.min(9, Math.round(progress * 9.0f)));
+    WrapperPlayServerBlockBreakAnimation packet = new WrapperPlayServerBlockBreakAnimation(
+      block.hashCode(),
+      new Vector3i(block.getX(), block.getY(), block.getZ()),
+      stage
+    );
+    PacketEvents.getAPI().getPlayerManager().sendPacket(player, packet);
   }
 }

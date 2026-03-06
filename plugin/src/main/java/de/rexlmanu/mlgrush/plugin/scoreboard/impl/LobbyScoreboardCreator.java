@@ -11,8 +11,6 @@ import de.rexlmanu.mlgrush.plugin.scoreboard.ScoreboardCreator;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import net.pluginstube.api.CloudBasicFactory;
-import net.pluginstube.api.scoreboard.ScoreboardTeamFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -28,16 +26,16 @@ import java.util.stream.Stream;
 public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
 
   public static final String[][] ADS = {
-    { "Twitter", "&b@PluginStubeNW" },
-    { "TeamSpeak", "&3PluginStube.net" },
+    { "Twitter", "&b@rexlManu" },
+    { "GitHub", "&7github.com/rexlManu" },
   };
 
   private int currentStats;
-  private BukkitTask task;
+  private final BukkitTask task;
 
   public LobbyScoreboardCreator() {
     this.currentStats = 0;
-    this.task = Bukkit.getScheduler().runTaskTimerAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 20 * 3);
+    this.task = Bukkit.getScheduler().runTaskTimer(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 20 * 3L);
   }
 
   @Override
@@ -45,7 +43,9 @@ public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
     PlayerProvider.getPlayers(Environment.LOBBY).forEach(this::updateLines);
 
     this.currentStats++;
-    if (this.currentStats >= 3) this.currentStats = 0;
+    if (this.currentStats >= 3) {
+      this.currentStats = 0;
+    }
   }
 
   @Override
@@ -54,20 +54,23 @@ public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
       if (throwable != null) {
         rank = -1;
       }
-      String statsName = null, statsValue = null;
+      String statsName = null;
+      String statsValue = null;
       switch (this.currentStats) {
-        case 0:
+        case 0 -> {
           statsName = "Kills";
           statsValue = String.valueOf(gamePlayer.data().statistics().kills());
-          break;
-        case 1:
+        }
+        case 1 -> {
           statsName = "Tode";
           statsValue = String.valueOf(gamePlayer.data().statistics().deaths());
-          break;
-        case 2:
+        }
+        case 2 -> {
           statsName = "Siege";
           statsValue = String.valueOf(gamePlayer.data().statistics().wins());
-          break;
+        }
+        default -> {
+        }
       }
       gamePlayer.fastBoard().updateLines(Stream.of(
         "",
@@ -90,36 +93,34 @@ public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
   @Override
   public void updateTablist(GamePlayer gamePlayer) {
     Player player = gamePlayer.player();
-    if (player == null) return;
+    if (player == null) {
+      return;
+    }
     Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-    ScoreboardTeamFactory factory = new ScoreboardTeamFactory();
-    factory.registerAll();
-    factory.buildAll(scoreboard);
+    Team lobbyTeam = scoreboard.registerNewTeam("00-lobby");
+    lobbyTeam.setPrefix(MessageFormat.replaceColors("&7"));
+    Team arenaTeam = scoreboard.registerNewTeam("10-arena");
+    arenaTeam.setPrefix(MessageFormat.replaceColors("&8"));
 
-    Team teamIngame = scoreboard.registerNewTeam("2-ingame");
-    teamIngame.setPrefix(MessageFormat.replaceColors("&8"));
     PlayerProvider.PLAYERS.forEach(target -> {
+      if (target.player() == null) {
+        return;
+      }
       if (target.environment().equals(Environment.ARENA)) {
-        Optional<Arena> any = GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(target);
-        Arena arena = any.get();
-        if (arena.spectators().contains(gamePlayer)) {
-          GameTeam team = arena.getTeam(target);
-          Team scoreboardTeam = scoreboard.getTeam(team.name().key());
+        Optional<Arena> arena = GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(target);
+        if (arena.isPresent() && arena.get().spectators().contains(gamePlayer)) {
+          GameTeam gameTeam = arena.get().getTeam(target);
+          Team scoreboardTeam = scoreboard.getTeam(gameTeam.name().key());
           if (scoreboardTeam == null) {
-            scoreboardTeam = scoreboard.registerNewTeam(team.name().key());
-            scoreboardTeam.setPrefix(String.valueOf(team.name().color()));
+            scoreboardTeam = scoreboard.registerNewTeam(gameTeam.name().key());
+            scoreboardTeam.setPrefix(String.valueOf(gameTeam.name().color()));
           }
-
           scoreboardTeam.addEntry(target.player().getName());
         } else {
-          teamIngame.addEntry(target.player().getName());
+          arenaTeam.addEntry(target.player().getName());
         }
       } else {
-
-        scoreboard.getTeam(factory.getTeamEntryByPermissionGroup(GameManager.instance().nickAPI().get(target.uniqueId()).isPresent()
-          ? "Spieler"
-          : CloudBasicFactory.getBlankRank(target.uniqueId())))
-          .addEntry(target.player().getName());
+        lobbyTeam.addEntry(target.player().getName());
       }
     });
 

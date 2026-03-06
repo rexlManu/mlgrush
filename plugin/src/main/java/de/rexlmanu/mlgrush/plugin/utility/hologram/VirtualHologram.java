@@ -1,170 +1,130 @@
 package de.rexlmanu.mlgrush.plugin.utility.hologram;
 
-import de.rexlmanu.mlgrush.plugin.utility.PlayerUtils;
-import eu.miopowered.packetlistener.reflection.PacketReflection;
+import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
-/**
- * Created by rexlManu on 22.07.2017.
- * Plugin by rexlManu
- * https://rexlGames.de
- * Coded with IntelliJ
- */
 public class VirtualHologram {
   private Location location;
   private List<String> lines;
-  private double distance_above = -0.27D;
-  private List<Object> armorstands = new ArrayList<>();
+  private double distanceAbove = -0.27D;
+  private final List<ArmorStand> armorStands = new ArrayList<>();
+  private final Set<UUID> viewers = new HashSet<>();
 
-  public VirtualHologram(final Location loc, final String... lines) {
-    this.location = loc;
-    this.lines = Arrays.asList(lines);
+  public VirtualHologram(Location location, String... lines) {
+    this(location, Arrays.asList(lines));
   }
 
-  public VirtualHologram(final Location loc, final List<String> lines) {
-    this.location = loc;
-    this.lines = lines;
+  public VirtualHologram(Location location, List<String> lines) {
+    this.location = location;
+    this.lines = new ArrayList<>(lines);
   }
 
   public List<String> getLines() {
-    return this.lines;
+    return new ArrayList<>(this.lines);
   }
 
   public Location getLocation() {
     return this.location;
   }
 
-  public void send(final Player p) {
-    double y = this.getLocation().getY();
-    for (int i = 0; i <= this.lines.size() - 1; i++) {
-      y += this.distance_above;
-      if(this.lines.get(i).isEmpty()) continue;
-      final Object armorStand = this.getEntityArmorStand(y);
-      if (armorStand == null) continue;
-      try {
-        armorStand.getClass().getMethod("setCustomName", String.class).invoke(armorStand, this.lines.get(i));
-        this.display(p, armorStand);
-        this.armorstands.add(armorStand);
-      } catch (ReflectiveOperationException e) {
-        e.printStackTrace();
-      }
+  public void send(Player player) {
+    if (player == null) {
+      return;
     }
+    Plugin plugin = GamePlugin.getProvidingPlugin(GamePlugin.class);
+    this.ensureSpawned();
+    this.viewers.add(player.getUniqueId());
+    this.armorStands.forEach(armorStand -> player.showEntity(plugin, armorStand));
   }
 
-
-  public void setValue(final Object obj, final String name, final Object value) {
-    try {
-      final Field field = obj.getClass().getDeclaredField(name);
-      field.setAccessible(true);
-      field.set(obj, value);
-    } catch (final Exception localException) {
-      localException.printStackTrace();
+  public void destroy(Player player) {
+    if (player == null) {
+      return;
     }
-  }
-
-  public int getFixLocation(final double pos) {
-    return (int) Math.floor(pos * 32.0D);
-  }
-
-  public byte getFixRotation(final float yawpitch) {
-    return (byte) (int) (yawpitch * 256.0F / 360.0F);
-  }
-
-  public void destroy(final Player p) {
-    try {
-
-      for (final Object armorStand : this.armorstands) {
-        Object packet = PacketReflection.nmsClass("PacketPlayOutEntityDestroy")
-          .getConstructor(int[].class)
-          .newInstance(new int[]{ (int) armorStand.getClass().getMethod("getId").invoke(armorStand) });
-        PlayerUtils.sendPacket(p, packet);
-      }
-    } catch (ReflectiveOperationException e) {
-      e.printStackTrace();
+    Plugin plugin = GamePlugin.getProvidingPlugin(GamePlugin.class);
+    this.armorStands.forEach(armorStand -> player.hideEntity(plugin, armorStand));
+    this.viewers.remove(player.getUniqueId());
+    if (this.viewers.isEmpty()) {
+      this.destroy();
     }
   }
 
   public void destroy() {
-    for (final Player p : Bukkit.getOnlinePlayers()) {
-      this.destroy(p);
-    }
+    this.armorStands.forEach(ArmorStand::remove);
+    this.armorStands.clear();
+    this.viewers.clear();
   }
 
   public void broadcast() {
-    for (final Player p : Bukkit.getOnlinePlayers()) {
-      this.send(p);
-    }
+    Bukkit.getOnlinePlayers().forEach(this::send);
   }
 
-  public void broadcast(final List<Player> players) {
-    for (final Player p : players) {
-      this.send(p);
-    }
+  public void broadcast(List<Player> players) {
+    players.forEach(this::send);
   }
 
-  private Object getEntityArmorStand(final double y) {
-    try {
-      World bukkitWorld = this.getLocation().getWorld();
-      Object world = bukkitWorld.getClass().getMethod("getHandle").invoke(bukkitWorld);
-      Object armorStand = PacketReflection.nmsClass("EntityArmorStand")
-        .getConstructor(PacketReflection.nmsClass("World")).newInstance(world);
-      armorStand.getClass()
-        .getMethod("setLocation", double.class, double.class, double.class, float.class, float.class)
-        .invoke(armorStand, this.getLocation().getX(), y, this.getLocation().getZ(), 0.0F, 0.0F);
-      armorStand.getClass().getMethod("setInvisible", boolean.class).invoke(armorStand, true);
-      armorStand.getClass().getMethod("setCustomNameVisible", boolean.class).invoke(armorStand, true);
-      return armorStand;
-    } catch (ReflectiveOperationException e) {
-      e.printStackTrace();
-      return null;
-    }
+  public void setDistance_above(double distanceAbove) {
+    this.distanceAbove = distanceAbove;
   }
 
-  private void display(final Player p, final Object eas) {
-    try {
-      Object packet = PacketReflection.nmsClass("PacketPlayOutSpawnEntityLiving")
-        .getConstructor(PacketReflection.nmsClass("EntityLiving"))
-        .newInstance(eas);
-      PlayerUtils.sendPacket(p, packet);
-    } catch (ReflectiveOperationException e) {
-      e.printStackTrace();
-    }
+  public void setLines(List<String> lines) {
+    this.lines = new ArrayList<>(lines);
+    this.reset();
   }
 
-  public void setArmorstands(final List<Object> armorstands) {
-    this.armorstands = armorstands;
+  public void setLines(String... lines) {
+    this.setLines(Arrays.asList(lines));
   }
 
-  public void setDistance_above(final double distance_above) {
-    this.distance_above = distance_above;
-  }
-
-  public void setLines(final List<String> lines) {
-    this.lines = lines;
-  }
-
-  public void setLines(final String... lines) {
-    this.lines = Arrays.asList(lines);
-  }
-
-  public void setLocation(final Location location) {
+  public void setLocation(Location location) {
     this.location = location;
+    this.reset();
   }
 
   public double getDistance_above() {
-    return this.distance_above;
+    return this.distanceAbove;
   }
 
-  public List<Object> getArmorstands() {
-    return this.armorstands;
+  private void ensureSpawned() {
+    if (!this.armorStands.isEmpty()) {
+      return;
+    }
+
+    double y = this.location.getY();
+    Plugin plugin = GamePlugin.getProvidingPlugin(GamePlugin.class);
+    for (String line : this.lines) {
+      y += this.distanceAbove;
+      if (line.isEmpty()) {
+        continue;
+      }
+      ArmorStand armorStand = (ArmorStand) this.location.getWorld().spawnEntity(new Location(this.location.getWorld(), this.location.getX(), y, this.location.getZ()), EntityType.ARMOR_STAND);
+      armorStand.setInvisible(true);
+      armorStand.setCustomNameVisible(true);
+      armorStand.setCustomName(line);
+      armorStand.setMarker(true);
+      armorStand.setGravity(false);
+      armorStand.setPersistent(false);
+      armorStand.setVisibleByDefault(false);
+      Bukkit.getOnlinePlayers().forEach(target -> target.hideEntity(plugin, armorStand));
+      this.armorStands.add(armorStand);
+    }
+  }
+
+  private void reset() {
+    Set<UUID> oldViewers = new HashSet<>(this.viewers);
+    this.destroy();
+    oldViewers.stream().map(Bukkit::getPlayer).forEach(this::send);
   }
 }
-

@@ -87,7 +87,7 @@ public class Arena {
     player.getInventory().clear();
     player.setVelocity(new Vector(0, 0, 0));
     gamePlayer.giveEquipment();
-    gamePlayer.sound(Sound.ORB_PICKUP, 2f);
+    gamePlayer.sound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2f);
     GameManager.instance().scoreboardHandler().update(gamePlayer);
     if (this.configuration.nohitdelay()) {
       player.setMaximumNoDamageTicks(0);

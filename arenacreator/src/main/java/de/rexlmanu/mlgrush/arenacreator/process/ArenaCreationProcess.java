@@ -4,7 +4,6 @@ import de.rexlmanu.mlgrush.arenacreator.ArenaCreatorPlugin;
 import de.rexlmanu.mlgrush.arenacreator.Constants;
 import de.rexlmanu.mlgrush.arenacreator.utility.ItemStackBuilder;
 import de.rexlmanu.mlgrush.arenacreator.utility.MessageFormat;
-import de.rexlmanu.mlgrush.arenacreator.utility.ParticleEffect;
 import de.rexlmanu.mlgrush.arenalib.*;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -33,9 +32,9 @@ public class ArenaCreationProcess implements Listener, Runnable {
 
   private static final ItemStack SELECT_FIRST_LOCATION = ItemStackBuilder.of(Material.STICK).name("&aErste Position markieren &7<Rechtsklick>").build();
   private static final ItemStack SELECT_SECOND_LOCATION = ItemStackBuilder.of(Material.BLAZE_ROD).name("&aZweite Position markieren &7<Rechtsklick>").build();
-  private static final ItemStack SELECT_BLUE_TEAM = ItemStackBuilder.of(Material.WOOL).data(11).name("&aSpawn für Team Blau &7<Rechtsklick>").build();
-  private static final ItemStack SELECT_RED_TEAM = ItemStackBuilder.of(Material.WOOL).data(14).name("&aSpawn für Team Rot &7<Rechtsklick>").build();
-  private static final ItemStack BUILD_HEIGHT = ItemStackBuilder.of(Material.SANDSTONE).data(14).name("&aStartbauhöhe &7<Rechtsklick>").build();
+  private static final ItemStack SELECT_BLUE_TEAM = ItemStackBuilder.of(Material.BLUE_WOOL).name("&aSpawn für Team Blau &7<Rechtsklick>").build();
+  private static final ItemStack SELECT_RED_TEAM = ItemStackBuilder.of(Material.RED_WOOL).name("&aSpawn für Team Rot &7<Rechtsklick>").build();
+  private static final ItemStack BUILD_HEIGHT = ItemStackBuilder.of(Material.SMOOTH_SANDSTONE).name("&aStartbauhöhe &7<Rechtsklick>").build();
 
   private final Map<String, Location> locationMap = new HashMap<>();
   private boolean waitForInput = false;
@@ -70,7 +69,7 @@ public class ArenaCreationProcess implements Listener, Runnable {
       this.player.sendMessage(Constants.PREFIX + "Markiere nun die zweite Position.");
       this.player.getInventory().setItem(0, SELECT_SECOND_LOCATION);
       this.locationMap.put(ArenaPosition.FIRST_CORNER, this.player.getLocation());
-      this.player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1f, 2f);
+      this.player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 2f);
     }
 
     if (SELECT_SECOND_LOCATION.equals(event.getItem())) {
@@ -78,26 +77,26 @@ public class ArenaCreationProcess implements Listener, Runnable {
       this.player.sendMessage(Constants.PREFIX + MessageFormat.replaceColors("Markiere nun den Spawn für das &bblaue &7Team."));
       this.player.getInventory().setItem(0, SELECT_BLUE_TEAM);
       this.locationMap.put(ArenaPosition.SECOND_CORNER, this.player.getLocation());
-      this.player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1f, 2f);
+      this.player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 2f);
     }
     if (SELECT_BLUE_TEAM.equals(event.getItem())) {
       event.setCancelled(true);
       this.player.sendMessage(Constants.PREFIX + MessageFormat.replaceColors("Markiere nun den Spawn für das &crote &7Team."));
       this.player.getInventory().setItem(0, SELECT_RED_TEAM);
       this.locationMap.put(ArenaPosition.BLUE_SPAWN, this.player.getLocation());
-      this.player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1f, 2f);
+      this.player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 2f);
     }
     if (SELECT_RED_TEAM.equals(event.getItem())) {
       event.setCancelled(true);
       this.locationMap.put(ArenaPosition.RED_SPAWN, this.player.getLocation());
       this.player.sendMessage(Constants.PREFIX + MessageFormat.replaceColors("Markiere nun den die Grundbauhöhe."));
       this.player.getInventory().setItem(0, BUILD_HEIGHT);
-      this.player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1f, 2f);
+      this.player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 2f);
     }
     if (BUILD_HEIGHT.equals(event.getItem())) {
       event.setCancelled(true);
       this.locationMap.put(ArenaPosition.BUILD_HEIGHT, this.player.getLocation());
-      this.player.playSound(player.getLocation(), Sound.LEVEL_UP, 1f, 2f);
+      this.player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 2f);
       this.player.sendMessage(Constants.PREFIX + "Du bist nun mit den Positionen fertig.");
       this.player.sendMessage(Constants.PREFIX + "Bitte tippe nun den Namen der Map ein:");
       this.waitForInput = true;
@@ -120,12 +119,13 @@ public class ArenaCreationProcess implements Listener, Runnable {
       return;
     }
     if (this.material == null) {
-      if (player.getItemInHand().getType().equals(Material.AIR)) {
+      ItemStack heldItem = player.getInventory().getItemInMainHand();
+      if (heldItem.getType().isAir()) {
         this.player.sendMessage(Constants.PREFIX + "Du hast kein Item in der Hand.");
         return;
       }
       this.waitForInput = false;
-      this.material = player.getItemInHand().getType().name().toLowerCase();
+      this.material = heldItem.getType().name().toLowerCase();
       this.player.sendMessage(Constants.PREFIX + "Die Map wird nun erstellt.");
       long start = System.currentTimeMillis();
       ArenaTemplate arenaTemplate = this.create();
@@ -141,7 +141,7 @@ public class ArenaCreationProcess implements Listener, Runnable {
   }
 
   private boolean equalsIngredient(Ingredient ingredient, Block block) {
-    return ingredient.material().equals(block.getType().name().toLowerCase()) && ingredient.code() == (int) block.getData();
+    return ingredient.material().equals(block.getBlockData().getAsString());
   }
 
   private ArenaTemplate create() {
@@ -167,7 +167,7 @@ public class ArenaCreationProcess implements Listener, Runnable {
         for (int z = 0; z < (z2 - z1); z++) {
           Location location = new Location(world, x1 + x, y1 + y, z1 + z);
           Ingredient ingredient = ingredients.stream().filter(i -> this.equalsIngredient(i, location.getBlock())).findAny().orElseGet(() -> {
-            Ingredient i = new Ingredient(codeStep.getAndIncrement(), location.getBlock().getType().name().toLowerCase(), location.getBlock().getData());
+            Ingredient i = new Ingredient(codeStep.getAndIncrement(), location.getBlock().getBlockData().getAsString(), 0);
             ingredients.add(i);
             return i;
           });
@@ -265,6 +265,11 @@ public class ArenaCreationProcess implements Listener, Runnable {
 
   private void spawnParticle(Location location) {
     location.add(location.getX() > 0 ? 0.5 : -0.5, 0.5, location.getZ() > 0 ? 0.5 : -0.5);
-    ParticleEffect.REDSTONE.display(new ParticleEffect.OrdinaryColor(this.red, this.green, this.blue), location, this.player);
+    this.player.spawnParticle(
+      Particle.DUST,
+      location,
+      1,
+      new Particle.DustOptions(Color.fromRGB(this.red, this.green, this.blue), 1.0f)
+    );
   }
 }

@@ -24,7 +24,7 @@ import java.util.*;
 
 public class EditLayoutHandler implements Listener {
 
-  private static final ItemStack SAVE_ITEM = ItemStackBuilder.of(Material.INK_SACK).data(10).name("&8» &aSpeichern").build();
+  private static final ItemStack SAVE_ITEM = ItemStackBuilder.of(Material.LIME_DYE).name("&8» &aSpeichern").build();
   private static final ItemStack REVERT_ITEM = ItemStackBuilder.of(Material.REDSTONE).name("&8» &cVorherige Einstellung behalten").build();
   private static final ItemStack ABORT_ITEM = ItemStackBuilder.of(Material.BARRIER).name("&8» &cAbbrechen").build();
 
@@ -47,7 +47,7 @@ public class EditLayoutHandler implements Listener {
     this.gamePlayer.sendMessage("Du kannst nun dein Inventar bearbeiten. Nachdem du deine gewünschte Anpassungen getroffen hast," +
       " nutze die jeweilige Items um die Aktion durchzuführen.");
     Player player = this.gamePlayer.player();
-    player.playSound(player.getLocation(), Sound.FIRE_IGNITE, 1, 2f);
+    player.playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 1, 2f);
     player.setWalkSpeed(0);
     PlayerInventory inventory = player.getInventory();
     inventory.clear();
@@ -90,12 +90,12 @@ public class EditLayoutHandler implements Listener {
       if (currentItem.equals(ABORT_ITEM)) {
         this.gamePlayer.sendMessage("Du hast den Vorgang abgebrochen.");
         this.unregister();
-        this.gamePlayer.sound(Sound.ANVIL_BREAK, 2f);
+        this.gamePlayer.sound(Sound.BLOCK_ANVIL_BREAK, 2f);
         return;
       }
       if (currentItem.equals(REVERT_ITEM)) {
         this.gamePlayer.sendMessage("Deine vorherigen Einstellungen werden behalten.");
-        this.gamePlayer.sound(Sound.ORB_PICKUP, 1f);
+        this.gamePlayer.sound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f);
         this.unregister();
         return;
       }
@@ -129,7 +129,7 @@ public class EditLayoutHandler implements Listener {
     if (inventorySort.size() == 9 && inventorySort.stream().filter(Objects::nonNull).count() == 3) {
       gamePlayer.data().inventorySorting(inventorySort);
       this.gamePlayer.sendMessage("Deine Anpassungen wurden gespeichert.");
-      this.gamePlayer.sound(Sound.LEVEL_UP, 2f);
+      this.gamePlayer.sound(Sound.ENTITY_PLAYER_LEVELUP, 2f);
     } else {
       this.gamePlayer.sendMessage("Deine Anpassungen konnten nicht gespeichert werden, da sie fehlerhaft sind.");
     }

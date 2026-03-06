@@ -36,8 +36,8 @@ public class ArenaChoosingInventory implements Listener, Runnable {
   }
 
   private static Map<Character, ItemStack> PATTERN_ITEM = new HashMap<Character, ItemStack>() {{
-    put('t', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(13).build());
-    put('b', ItemStackBuilder.of(Material.STAINED_GLASS_PANE).name("&r").data(5).build());
+    put('t', ItemStackBuilder.of(Material.GREEN_STAINED_GLASS_PANE).name("&r").build());
+    put('b', ItemStackBuilder.of(Material.LIME_STAINED_GLASS_PANE).name("&r").build());
   }};
 
   private static final char[][] PATTERN = {
@@ -123,9 +123,9 @@ public class ArenaChoosingInventory implements Listener, Runnable {
     if (this.remainingSeconds == 0) {
       this.task.cancel();
       VotedTemplate votedTemplate = this.getMostVotedTemplate();
-      votedTemplate.itemStack = ItemStackBuilder.of(votedTemplate.itemStack).hideAttributes().enchant(Enchantment.DURABILITY, 1).build();
+      votedTemplate.itemStack = ItemStackBuilder.of(votedTemplate.itemStack).hideAttributes().enchant(Enchantment.UNBREAKING, 1).build();
       this.inventory.setItem(votedTemplate.slot, votedTemplate.itemStack);
-      this.players.forEach(gamePlayer -> gamePlayer.sound(Sound.LEVEL_UP, 1f));
+      this.players.forEach(gamePlayer -> gamePlayer.sound(Sound.ENTITY_PLAYER_LEVELUP, 1f));
       this.future.complete(votedTemplate.template);
       this.unregister();
       return;
@@ -146,7 +146,7 @@ public class ArenaChoosingInventory implements Listener, Runnable {
       this.votedTemplates.forEach(votedTemplate -> votedTemplate.voters().remove(gamePlayer));
       this.votedTemplates.stream().filter(votedTemplate -> votedTemplate.itemStack.equals(event.getCurrentItem())).findAny().ifPresent(votedTemplate -> {
         votedTemplate.voters.add(gamePlayer);
-        gamePlayer.sound(Sound.ORB_PICKUP, 1.2f);
+        gamePlayer.sound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.2f);
         this.updateVotes();
       });
     });

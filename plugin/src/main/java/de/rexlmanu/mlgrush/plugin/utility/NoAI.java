@@ -1,38 +1,21 @@
 package de.rexlmanu.mlgrush.plugin.utility;
 
-import eu.miopowered.packetlistener.reflection.PacketReflection;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Mob;
 
-import java.lang.reflect.InvocationTargetException;
+public final class NoAI {
 
-public class NoAI {
-
-  private static Class<?> NBT_TAG_COMPOUND_CLASS;
-
-  static {
-    try {
-      NBT_TAG_COMPOUND_CLASS = PacketReflection.nmsClass("NBTTagCompound");
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-    }
+  private NoAI() {
   }
 
   public static void setEntityAi(Entity entity, boolean ai) {
-    try {
-      Object nmsEntity = entity.getClass().getMethod("getHandle").invoke(entity);
-      Object tag = nmsEntity.getClass().getMethod("getNBTTag").invoke(nmsEntity);
-      if (tag == null) {
-        tag = NBT_TAG_COMPOUND_CLASS.newInstance();
-      }
-
-      nmsEntity.getClass().getMethod("c", NBT_TAG_COMPOUND_CLASS).invoke(nmsEntity, tag);
-      NBT_TAG_COMPOUND_CLASS.getMethod("setInt", String.class, int.class).invoke(tag, "NoAI", ai ? 0 : 1);
-      NBT_TAG_COMPOUND_CLASS.getMethod("setBoolean", String.class, boolean.class).invoke(tag, "Silent", !ai);
-      nmsEntity.getClass().getMethod("f", NBT_TAG_COMPOUND_CLASS).invoke(nmsEntity, tag);
-
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-      e.printStackTrace();
+    if (entity instanceof LivingEntity livingEntity) {
+      livingEntity.setAI(ai);
     }
+    if (entity instanceof Mob mob) {
+      mob.setAware(ai);
+    }
+    entity.setSilent(!ai);
   }
-
 }

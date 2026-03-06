@@ -14,12 +14,9 @@ public class UnnickCommand implements SubCommand {
   }
 
   @Override
-  public void execute(GamePlayer gamePlayer, String[] arguments) throws Exception {
-    GameManager.instance().nickAPI().get(gamePlayer.uniqueId()).ifPresent(nickUser -> {
-      GameManager.instance().nickAPI().unregister(gamePlayer.player());
-      gamePlayer.sendMessage("Du wurdest entnickt.");
-      GameManager.instance().nickAPI().updater().update(nickUser, nickUser.realIdentity());
-      GameManager.instance().scoreboardHandler().updateAll(gamePlayer.environment());
-    });
+  public void execute(GamePlayer gamePlayer, String[] arguments) {
+    GameManager.instance().nicknameService().unregister(gamePlayer.player());
+    gamePlayer.sendMessage("Du wurdest entnickt.");
+    GameManager.instance().scoreboardHandler().updateAll(gamePlayer.environment());
   }
 }

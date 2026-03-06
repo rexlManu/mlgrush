@@ -1,32 +1,35 @@
 package de.rexlmanu.mlgrush.plugin.utility;
 
-import eu.miopowered.packetlistener.reflection.PacketReflection;
+import net.kyori.adventure.title.Title;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
+import java.time.Duration;
 
-public class PlayerUtils {
+public final class PlayerUtils {
 
-  /**
-   * Resets the player in the most parts to prepare for a fresh start
-   *
-   * @param player player that should be get reseted
-   */
+  private static final LegacyComponentSerializer LEGACY_SERIALIZER = LegacyComponentSerializer.legacySection();
+
+  private PlayerUtils() {
+  }
+
   public static void resetPlayer(Player player) {
     player.closeInventory();
     player.getInventory().clear();
     player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
-    player.setHealth(20);
-    player.setMaxHealth(player.getMaxHealth());
+    double maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH) == null ? 20.0D : player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+    player.setHealth(Math.min(maxHealth, 20.0D));
     player.setFoodLevel(20);
+    player.setFireTicks(0);
     player.setGameMode(GameMode.ADVENTURE);
     player.setAllowFlight(false);
+    player.setFlying(false);
     player.setVelocity(new Vector(0, 0, 0));
     player.setLevel(0);
     player.setExp(0);
@@ -34,17 +37,9 @@ public class PlayerUtils {
     player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
     player.setMaximumNoDamageTicks(20);
   }
+
   public static void updateGameMode(Player player, GameMode gameMode) {
-    try {
-      Object nmsPlayer = player.getClass().getMethod("getHandle").invoke(player);
-      Object playerConnection = nmsPlayer.getClass().getField("playerConnection").get(nmsPlayer);
-      Method sendPacket = playerConnection.getClass().getMethod("sendPacket", PacketReflection.nmsClass("Packet"));
-      Object packetPlayOutGameStateChange = PacketReflection.nmsClass("PacketPlayOutGameStateChange")
-        .getConstructor(int.class, float.class).newInstance(3, gameMode.getValue());
-      sendPacket.invoke(playerConnection, packetPlayOutGameStateChange);
-    } catch (ReflectiveOperationException e) {
-      e.printStackTrace();
-    }
+    player.setGameMode(gameMode);
   }
 
   public static Location faceLocation(Entity entity, Location to) {
@@ -65,58 +60,17 @@ public class PlayerUtils {
     if (zDiff < 0.0D) {
       yaw += Math.abs(180.0D - yaw) * 2.0D;
     }
-    Location loc = entity.getLocation();
-    loc.setYaw((float) (yaw - 90.0F));
-    loc.setPitch((float) (pitch - 90.0F));
-    return loc;
-  }
-
-  public static void sendPacket(Player player, Object packet) {
-    try {
-      Object nmsPlayer = player.getClass().getMethod("getHandle").invoke(player);
-      Object playerConnection = nmsPlayer.getClass().getField("playerConnection").get(nmsPlayer);
-      Method sendPacket = playerConnection.getClass().getMethod("sendPacket", PacketReflection.nmsClass("Packet"));
-      sendPacket.invoke(playerConnection, packet);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-  }
-
-  private static Class<?> getNMSClass(String name) {
-    try {
-      return Class.forName("net.minecraft.server"
-        + Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3] + "." + name);
-    } catch (ClassNotFoundException ex) {
-    }
-    return null;
+    Location location = entity.getLocation();
+    location.setYaw((float) (yaw - 90.0F));
+    location.setPitch((float) (pitch - 90.0F));
+    return location;
   }
 
   public static void sendTitle(Player player, int fadeInTime, int showTime, int fadeOutTime, String title, String subtitle) {
-    try {
-      title = MessageFormat.replaceColors(title);
-      subtitle = MessageFormat.replaceColors(subtitle);
-      Object chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class)
-        .invoke(null, "{\"text\": \"" + title + "\"}");
-      Constructor<?> titleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(
-        getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"),
-        int.class, int.class, int.class);
-      Object packet = titleConstructor.newInstance(
-        getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TITLE").get(null), chatTitle,
-        fadeInTime, showTime, fadeOutTime);
-
-      Object chatsTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class)
-        .invoke(null, "{\"text\": \"" + subtitle + "\"}");
-      Constructor<?> stitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(
-        getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"),
-        int.class, int.class, int.class);
-      Object spacket = stitleConstructor.newInstance(
-        getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("SUBTITLE").get(null), chatsTitle,
-        fadeInTime, showTime, fadeOutTime);
-
-      sendPacket(player, packet);
-      sendPacket(player, spacket);
-    } catch (Exception ex) {
-    }
+    player.showTitle(Title.title(
+      LEGACY_SERIALIZER.deserialize(MessageFormat.replaceColors(title)),
+      LEGACY_SERIALIZER.deserialize(MessageFormat.replaceColors(subtitle)),
+      Title.Times.times(Duration.ofMillis(fadeInTime * 50L), Duration.ofMillis(showTime * 50L), Duration.ofMillis(fadeOutTime * 50L))
+    ));
   }
-
 }

@@ -1,6 +1,5 @@
 package de.rexlmanu.mlgrush.plugin.arena;
 
-import com.cryptomorin.xseries.messages.Titles;
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.arena.configuration.ArenaConfiguration;
 import de.rexlmanu.mlgrush.plugin.arena.events.ArenaDestroyEvent;
@@ -45,7 +44,7 @@ public class ArenaManager {
     .name("&aSpitzhacke")
     .breakable(false)
     .hideAttributes()
-    .enchant(Enchantment.DIG_SPEED, 1)
+    .enchant(Enchantment.EFFICIENCY, 1)
     .build();
 
   public static final Supplier<ArenaConfiguration.ArenaConfigurationBuilder> DEFAULT_CONFIGURATION = () -> ArenaConfiguration.builder()
@@ -111,7 +110,7 @@ public class ArenaManager {
           Player player = gamePlayer.player();
           PlayerUtils.resetPlayer(player);
           GameManager.instance().locationProvider().get("spawn").ifPresent(player::teleport);
-          Bukkit.getOnlinePlayers().forEach(player::showPlayer);
+          Bukkit.getOnlinePlayers().forEach(target -> player.showPlayer(GamePlugin.getProvidingPlugin(GamePlugin.class), target));
           GameManager.instance().giveLobbyItems(player);
         });
       arena.resetBlocks();
@@ -144,11 +143,11 @@ public class ArenaManager {
     if (winningTeam == null) return;
     arena.players().forEach(gamePlayer -> {
       Player player = gamePlayer.player();
-      Titles.sendTitle(player, 5, 20, 10,
+      PlayerUtils.sendTitle(player, 5, 20, 10,
         MessageFormat.replaceColors("&7Team " + winningTeam.name().displayName()),
         MessageFormat.replaceColors("&7hat gewonnen.")
       );
-      gamePlayer.sound(Sound.LEVEL_UP, 1f);
+      gamePlayer.sound(Sound.ENTITY_PLAYER_LEVELUP, 1f);
       gamePlayer.sendMessage(String.format("Team %s &7hat das Spiel gewonnen!", winningTeam.name().displayName()));
       // Setting stats
       if (arena.configuration().custom()) return;
@@ -198,7 +197,7 @@ public class ArenaManager {
 
     player.setGameMode(GameMode.SPECTATOR);
 //    player.getInventory().setItem(4, LobbyEnvironment.BACK_TO_LOBBY_ITEM);
-    gamePlayer.sound(Sound.LEVEL_UP, 2f);
+    gamePlayer.sound(Sound.ENTITY_PLAYER_LEVELUP, 2f);
     GameManager.instance().scoreboardHandler().update(gamePlayer);
     gamePlayer.sendMessage("Du kannst wieder zur Lobby\n &azurückkehren &7mit &8/&aquit&7.");
   }
@@ -207,7 +206,7 @@ public class ArenaManager {
     Player player = gamePlayer.player();
     PlayerUtils.resetPlayer(player);
     GameManager.instance().locationProvider().get("spawn").ifPresent(player::teleport);
-    gamePlayer.sound(Sound.ORB_PICKUP, 2f);
+    gamePlayer.sound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2f);
     GameManager.instance().giveLobbyItems(player);
     this.arenaContainer
       .activeArenas()

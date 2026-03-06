@@ -12,9 +12,9 @@ public class Detection {
 
   private List<Integer> clickHistory, placeHistory;
   private boolean digging, placing;
-  private long lastDiggingAction, lastPlacingAction, transactionPing, startTransactionTime;
+  private long lastDiggingAction, lastPlacingAction, transactionPing, startTransactionTime, transactionId;
 
-  private int clicks, transactionId, lastClicks, places, lastPlaces;
+  private int clicks, lastClicks, places, lastPlaces;
   private double clickAverage, clickAverageSecondly, placeAverage, placeAverageSecondly;
 
   public Detection() {

@@ -19,6 +19,7 @@ import de.rexlmanu.mlgrush.plugin.game.npc.InteractiveMob;
 import de.rexlmanu.mlgrush.plugin.inventory.ShopInventory;
 import de.rexlmanu.mlgrush.plugin.inventory.SpectatorInventory;
 import de.rexlmanu.mlgrush.plugin.location.LocationProvider;
+import de.rexlmanu.mlgrush.plugin.nick.NicknameService;
 import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.queue.QueueController;
 import de.rexlmanu.mlgrush.plugin.scoreboard.ScoreboardHandler;
@@ -27,7 +28,6 @@ import de.rexlmanu.mlgrush.plugin.utility.FlyingItem;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import de.rexlmanu.mlgrush.plugin.utility.cooldown.Cooldown;
-import eu.miopowered.nickapi.NickAPI;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
@@ -42,6 +42,7 @@ import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.weather.WeatherChangeEvent;
@@ -93,7 +94,7 @@ public class GameManager {
   private DetectionController detectionController;
   private List<GameEnvironment> environments;
   private ScoreboardHandler scoreboardHandler;
-  private NickAPI nickAPI;
+  private NicknameService nicknameService;
 
   private SpectatorInventory spectatorInventory;
 
@@ -105,7 +106,7 @@ public class GameManager {
   private GameManager() {
     GameManager.instance = this;
     File dataFolder = GamePlugin.getPlugin(GamePlugin.class).getDataFolder();
-    this.databaseContext = DatabaseFactory.create(DatabaseType.PLUGINSTUBE);
+    this.databaseContext = DatabaseFactory.create(DatabaseType.FILE);
     this.locationProvider = new LocationProvider(dataFolder);
     this.eventCoordinator = new EventCoordinator();
     this.queueController = new QueueController();
@@ -114,14 +115,14 @@ public class GameManager {
     this.detectionController = new DetectionController();
     this.environments = Arrays.asList(new LobbyEnvironment(), new ArenaEnvironment());
     this.scoreboardHandler = new ScoreboardHandler();
-    this.nickAPI = NickAPI.create(GamePlugin.getProvidingPlugin(GamePlugin.class));
+    this.nicknameService = new NicknameService();
 
     this.spectatorInventory = new SpectatorInventory();
     this.statsHologramManager = new StatsHologramManager();
 //    this.statsNPCProvider = new StatsNPCProvider();
     this.queueCooldown = new Cooldown(1500);
     this.flyingItem = new FlyingItem();
-    this.flyingItem.setItemStack(ItemStackBuilder.of(Material.STICK).enchant(Enchantment.ARROW_INFINITE, 1).build());
+    this.flyingItem.setItemStack(ItemStackBuilder.of(Material.STICK).enchant(Enchantment.INFINITY, 1).build());
     // Sometimes in development it happens when the server don't get nicely shutdown, the 'old' are still there and you can't use the new spawned one.
     // Bukkit.getWorlds().stream().map(World::getLivingEntities).forEach(livingEntities -> livingEntities.forEach(Entity::remove));
     Bukkit.getWorlds().forEach(world -> world.setDifficulty(Difficulty.EASY));
@@ -137,13 +138,13 @@ public class GameManager {
         this.queueController.playerQueue().remove(player);
         player.sendMessage("Du hast die &aWarteschlange &7verlassen.");
         this.scoreboardHandler.updateAll(Environment.LOBBY);
-        player.sound(Sound.PISTON_RETRACT, 2f);
+        player.sound(Sound.BLOCK_PISTON_CONTRACT, 2f);
         return;
       }
       this.queueController.playerQueue().offer(player);
       player.sendMessage("Du hast die &aWarteschlange &7betreten.");
       this.scoreboardHandler.updateAll(Environment.LOBBY);
-      player.sound(Sound.PISTON_EXTEND, 2f);
+      player.sound(Sound.BLOCK_PISTON_EXTEND, 2f);
     };
     this.locationProvider.get("hologram").ifPresent(location -> {
       this.flyingItem.setLocation(location);
@@ -177,8 +178,7 @@ public class GameManager {
       FoodLevelChangeEvent.class,
       WeatherChangeEvent.class,
       PlayerDropItemEvent.class,
-      PlayerPickupItemEvent.class,
-      PlayerAchievementAwardedEvent.class,
+      EntityPickupItemEvent.class,
       PlayerArmorStandManipulateEvent.class,
       PlayerBedEnterEvent.class,
       PlayerItemDamageEvent.class,

@@ -4,7 +4,7 @@ import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import xyz.xenondevs.particle.ParticleEffect;
+import org.bukkit.Particle;
 
 @Accessors(fluent = true)
 public class TwinsParticleTask implements Runnable {
@@ -13,17 +13,16 @@ public class TwinsParticleTask implements Runnable {
   private int stepY = 0;
   private boolean reverse = false;
 
-
-  private int orbs = 2;
-  private double radius = 1;
-  private int numSteps = 60;
-  private int maxStepY = 30;
-  private Location location;
+  private final int orbs = 2;
+  private final double radius = 1;
+  private final int numSteps = 60;
+  private final int maxStepY = 30;
+  private final Location location;
 
   public TwinsParticleTask(Location location) {
     this.location = location.clone().add(0, 1, 0);
 
-    Bukkit.getScheduler().runTaskTimerAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 1);
+    Bukkit.getScheduler().runTaskTimer(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 1);
   }
 
   @Override
@@ -33,10 +32,10 @@ public class TwinsParticleTask implements Runnable {
       double orbSlice = Math.PI * 2 / this.orbs;
 
       double dx = -Math.cos(slice * this.stepX + orbSlice * i) * this.radius;
-      double dy = (this.stepY / (double) this.maxStepY);
+      double dy = this.stepY / (double) this.maxStepY;
       double dz = -Math.sin(slice * this.stepX + orbSlice * i) * this.radius;
 
-      ParticleEffect.FLAME.display(location.clone().add(dx, dy, dz), 0, 0, 0, 0.01f, 1, null);
+      this.location.getWorld().spawnParticle(Particle.FLAME, this.location.clone().add(dx, dy, dz), 1, 0, 0, 0, 0.01D);
     }
 
     this.stepX++;
@@ -46,12 +45,14 @@ public class TwinsParticleTask implements Runnable {
 
     if (this.reverse) {
       this.stepY++;
-      if (this.stepY > this.maxStepY)
+      if (this.stepY > this.maxStepY) {
         this.reverse = false;
+      }
     } else {
       this.stepY--;
-      if (this.stepY < -this.maxStepY)
+      if (this.stepY < -this.maxStepY) {
         this.reverse = true;
+      }
     }
   }
 }
