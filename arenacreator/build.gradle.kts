@@ -2,14 +2,12 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
   java
-  id("com.github.johnrengelman.shadow") version "8.1.1"
+  id("io.freefair.lombok") version "9.2.0"
+  id("com.gradleup.shadow") version "9.3.2"
 }
 
 dependencies {
   compileOnly("io.papermc.paper:paper-api:${rootProject.providers.gradleProperty("paperApiVersion").get()}")
-
-  compileOnly("org.projectlombok:lombok:1.18.38")
-  annotationProcessor("org.projectlombok:lombok:1.18.38")
 
   implementation(project(":arenalib"))
 

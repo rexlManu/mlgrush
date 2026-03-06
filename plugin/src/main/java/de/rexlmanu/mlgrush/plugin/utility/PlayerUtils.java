@@ -5,7 +5,6 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -23,8 +22,7 @@ public final class PlayerUtils {
     player.closeInventory();
     player.getInventory().clear();
     player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
-    double maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH) == null ? 20.0D : player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-    player.setHealth(Math.min(maxHealth, 20.0D));
+    player.setHealth(player.getMaxHealth());
     player.setFoodLevel(20);
     player.setFireTicks(0);
     player.setGameMode(GameMode.ADVENTURE);

@@ -1,15 +1,15 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import xyz.jpenilla.runpaper.task.RunServer
 
 plugins {
   java
-  id("com.github.johnrengelman.shadow") version "8.1.1"
+  id("io.freefair.lombok") version "9.2.0"
+  id("com.gradleup.shadow") version "9.3.2"
+  id("xyz.jpenilla.run-paper") version "3.0.2"
 }
 
 dependencies {
   compileOnly("io.papermc.paper:paper-api:${rootProject.providers.gradleProperty("paperApiVersion").get()}")
-
-  compileOnly("org.projectlombok:lombok:1.18.38")
-  annotationProcessor("org.projectlombok:lombok:1.18.38")
 
   implementation(project(":arenalib"))
   implementation("com.github.retrooper:packetevents-spigot:2.11.1")
@@ -38,6 +38,10 @@ tasks.processResources {
 
 tasks.named<ShadowJar>("shadowJar") {
   archiveFileName.set("mlgrush-${project.version}.jar")
+}
+
+tasks.named<RunServer>("runServer") {
+  minecraftVersion(rootProject.providers.gradleProperty("paperVersion").get())
 }
 
 tasks.build {

@@ -1,8 +1,4 @@
 plugins {
   `java-library`
-}
-
-dependencies {
-  compileOnly("org.projectlombok:lombok:1.18.38")
-  annotationProcessor("org.projectlombok:lombok:1.18.38")
+  id("io.freefair.lombok") version "9.2.0"
 }

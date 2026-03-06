@@ -36,3 +36,9 @@ subprojects {
     }
   }
 }
+
+tasks.register("runServer") {
+  group = "application"
+  description = "Runs the Paper development server"
+  dependsOn(":plugin:runServer")
+}
