@@ -5,10 +5,13 @@ import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayerData;
 import de.rexlmanu.mlgrush.plugin.utility.UUIDFetcher;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class StatsHandler {
@@ -21,33 +24,52 @@ public class StatsHandler {
         return;
       }
 
-      Bukkit.getScheduler().runTask(plugin, () -> {
-        for (int i = 0; i < 5; i++) {
-          int rank = i + 1;
-          int finalI = i;
-          GameManager.instance().locationProvider().get("ranking-" + rank).ifPresent(location -> {
-            if(!(location.getBlock().getState() instanceof Sign)) return;
-            GamePlayerData data = new GamePlayerData(UUID.randomUUID());
-            String owner = "MHF_QUESTION";
-            String name = "???";
-            if (gamePlayerData.size() > finalI) {
-              data = gamePlayerData.get(finalI);
-              name = UUIDFetcher.getName(UUID.fromString(data.getKey()));
-              owner = name;
-            }
-            Sign sign = (Sign) location.getBlock().getState();
-            sign.setLine(0, "---#" + rank + "---");
-            sign.setLine(1, name);
-            sign.setLine(2, data.statistics().kills() + " Kills");
-            sign.setLine(3, data.statistics().wins() + " Wins");
-            sign.update();
-            Skull skull = (Skull) sign.getLocation().add(0, 1, 0).getBlock().getState();
-            skull.setOwner(owner);
-            skull.update();
-          });
+      List<StatsWallEntry> entries = new ArrayList<>();
+      for (int i = 0; i < 5; i++) {
+        int rank = i + 1;
+        if (gamePlayerData.size() <= i) {
+          entries.add(new StatsWallEntry(rank, "???", 0, 0, null));
+          continue;
         }
+
+        GamePlayerData data = gamePlayerData.get(i);
+        UUID uniqueId = UUID.fromString(data.getKey());
+        String name = UUIDFetcher.getName(uniqueId);
+        if (name == null || name.isBlank()) {
+          name = "???";
+        }
+        entries.add(new StatsWallEntry(rank, name, data.statistics().kills(), data.statistics().wins(), uniqueId));
+      }
+
+      Bukkit.getScheduler().runTask(plugin, () -> {
+        entries.forEach(entry -> {
+          GameManager.instance().locationProvider().get("ranking-" + entry.rank()).ifPresent(location -> {
+            if (!(location.getBlock().getState() instanceof Sign sign)) {
+              return;
+            }
+
+            sign.setLine(0, "---#" + entry.rank() + "---");
+            sign.setLine(1, entry.name());
+            sign.setLine(2, entry.kills() + " Kills");
+            sign.setLine(3, entry.wins() + " Wins");
+            sign.update();
+
+            if (sign.getLocation().add(0, 1, 0).getBlock().getState() instanceof Skull skull) {
+              if (entry.uniqueId() == null) {
+                skull.setOwner("MHF_QUESTION");
+              } else {
+                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(entry.uniqueId());
+                skull.setOwningPlayer(offlinePlayer);
+              }
+              skull.update();
+            }
+          });
+        });
       });
     });
+  }
+
+  private record StatsWallEntry(int rank, String name, int kills, int wins, UUID uniqueId) {
   }
 
 }

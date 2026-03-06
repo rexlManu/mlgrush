@@ -109,9 +109,9 @@ public class LobbyNpcManager implements Listener {
       gameManager.scoreboardHandler().updateAll(de.rexlmanu.mlgrush.plugin.game.Environment.LOBBY);
       player.sound(org.bukkit.Sound.BLOCK_PISTON_EXTEND, 2f);
     });
-    this.register("stick-change-npc", "StickNpc", "&aSticks", "&7Aendere deinen Stick.", new ItemStack(StickEquipment.values()[0].material()), player ->
+    this.register("stick-change-npc", "StickNpc", "&aSticks", "&7Ändere deinen Stick.", new ItemStack(StickEquipment.values()[0].material()), player ->
       new de.rexlmanu.mlgrush.plugin.inventory.ShopInventory(player, "&aStick", StickEquipment.values()));
-    this.register("block-change-npc", "BlockNpc", "&aBloecke", "&7Aendere den Typ deiner Bloecke.", new ItemStack(BlockEquipment.values()[0].material()), player ->
+    this.register("block-change-npc", "BlockNpc", "&aBlöcke", "&7Ändere den Typ deiner Blöcke.", new ItemStack(BlockEquipment.values()[0].material()), player ->
       new de.rexlmanu.mlgrush.plugin.inventory.ShopInventory(player, "&aBlöcke", BlockEquipment.values()));
 
     if (this.rotationTask != null) {

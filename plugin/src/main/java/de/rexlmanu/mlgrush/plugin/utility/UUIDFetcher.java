@@ -7,6 +7,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -39,7 +40,7 @@ public class UUIDFetcher {
   }).create();
 
   private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/%s?at=%d";
-  private static final String NAME_URL = "https://api.mojang.com/user/profiles/%s/names";
+  private static final String NAME_URL = "https://api.minecraftservices.com/minecraft/profile/lookup/%s";
 
   private static Map<String, UUID> uuidCache = new HashMap<>();
   private static Map<UUID, String> nameCache = new HashMap<>();
@@ -95,12 +96,24 @@ public class UUIDFetcher {
     try {
       HttpURLConnection connection = (HttpURLConnection) new URL(String.format(UUID_URL, name, timestamp / 1000)).openConnection();
       connection.setReadTimeout(5000);
-      UUIDFetcher data = gson.fromJson(new BufferedReader(new InputStreamReader(connection.getInputStream())), UUIDFetcher.class);
+      if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+        return null;
+      }
+      try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+        UUIDFetcher data = gson.fromJson(reader, UUIDFetcher.class);
+        if (data == null || data.id == null) {
+          return null;
+        }
 
-      uuidCache.put(name, data.id);
-      nameCache.put(data.id, data.name);
+        uuidCache.put(name, data.id);
+        if (data.name != null) {
+          nameCache.put(data.id, data.name);
+        }
 
-      return data.id;
+        return data.id;
+      }
+    } catch (FileNotFoundException ignored) {
+      return null;
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -132,13 +145,22 @@ public class UUIDFetcher {
 
       HttpURLConnection connection = (HttpURLConnection) new URL(String.format(NAME_URL, fromUUID(uuid))).openConnection();
       connection.setReadTimeout(5000);
-      UUIDFetcher[] nameHistory = gson.fromJson(new BufferedReader(new InputStreamReader(connection.getInputStream())), UUIDFetcher[].class);
-      UUIDFetcher currentNameData = nameHistory[nameHistory.length - 1];
+      if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+        return null;
+      }
+      try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+        UUIDFetcher profile = gson.fromJson(reader, UUIDFetcher.class);
+        if (profile == null || profile.name == null) {
+          return null;
+        }
 
-      uuidCache.put(currentNameData.name.toLowerCase(), uuid);
-      nameCache.put(uuid, currentNameData.name);
+        uuidCache.put(profile.name.toLowerCase(), uuid);
+        nameCache.put(uuid, profile.name);
 
-      return currentNameData.name;
+        return profile.name;
+      }
+    } catch (FileNotFoundException ignored) {
+      return null;
     } catch (Exception e) {
       e.printStackTrace();
     }

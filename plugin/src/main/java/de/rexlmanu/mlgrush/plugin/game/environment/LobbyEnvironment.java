@@ -121,6 +121,9 @@ public class LobbyEnvironment implements GameEnvironment {
     coordinator.add(ENVIRONMENT, BlockPlaceEvent.class, event -> event.target().setCancelled(!event.gamePlayer().buildMode()));
     coordinator.add(ENVIRONMENT, BlockBreakEvent.class, event -> event.target().setCancelled(!event.gamePlayer().buildMode()));
     coordinator.add(ENVIRONMENT, PlayerInteractEvent.class, event -> {
+      if (event.gamePlayer().buildMode()) {
+        return;
+      }
       Player player = event.gamePlayer().player();
       if (Objects.nonNull(event.target().getClickedBlock())
         || event.target().getAction() == Action.RIGHT_CLICK_BLOCK
