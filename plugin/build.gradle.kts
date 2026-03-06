@@ -12,7 +12,7 @@ dependencies {
   compileOnly("io.papermc.paper:paper-api:${rootProject.providers.gradleProperty("paperApiVersion").get()}")
 
   implementation(project(":arenalib"))
-  implementation("com.github.retrooper:packetevents-spigot:2.11.1")
+  implementation("com.github.retrooper:packetevents-spigot:2.11.2")
   implementation("com.google.code.gson:gson:2.13.1")
   implementation("com.google.guava:guava:33.4.8-jre")
   implementation("net.jodah:expiringmap:0.5.11")

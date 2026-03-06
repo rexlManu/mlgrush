@@ -95,7 +95,6 @@ public class LobbyEnvironment implements GameEnvironment {
         location.getWorld().spawnParticle(Particle.FIREWORK, location, 150, 0.0, 0.5, 0.0, 0.5);
       });
 
-      event.gamePlayer().fastBoard().updateTitle(MessageFormat.replaceColors("&8« &a&lMLGRush &8»"));
       GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
 
       PlayerProvider.getPlayers(Environment.ARENA).forEach(gamePlayer -> {
@@ -211,6 +210,7 @@ public class LobbyEnvironment implements GameEnvironment {
       GameManager.instance().queueController().playerQueue().remove(gamePlayer);
       GameManager.instance().arenaManager().arenaContainer().activeArenas().forEach(arena -> arena.spectators().remove(gamePlayer));
       gamePlayer.save();
+      gamePlayer.destroyScoreboard();
       GameManager.instance().detectionController().unregister(gamePlayer);
       GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
       PlayerProvider.PLAYERS.remove(gamePlayer);

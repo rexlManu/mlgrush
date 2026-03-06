@@ -8,8 +8,8 @@ import de.rexlmanu.mlgrush.plugin.equipment.BlockEquipment;
 import de.rexlmanu.mlgrush.plugin.equipment.StickEquipment;
 import de.rexlmanu.mlgrush.plugin.game.Environment;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
+import de.rexlmanu.mlgrush.plugin.scoreboard.packet.PacketScoreboardSession;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
-import de.rexlmanu.mlgrush.plugin.utility.fastboard.FastBoard;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class GamePlayer {
 
   private UUID uniqueId;
-  private FastBoard fastBoard;
+  private PacketScoreboardSession scoreboardSession;
   @Setter
   private Environment environment;
 
@@ -41,7 +41,7 @@ public class GamePlayer {
 
   public GamePlayer(UUID uniqueId) {
     this.uniqueId = uniqueId;
-    this.fastBoard = new FastBoard(this.player());
+    this.scoreboardSession = new PacketScoreboardSession(uniqueId);
     this.environment = Environment.LOBBY;
     this.creatingGame = false;
     this.buildMode = false;
@@ -68,6 +68,10 @@ public class GamePlayer {
 
   public void save() {
     GameManager.instance().databaseContext().saveData(this.data);
+  }
+
+  public void destroyScoreboard() {
+    this.scoreboardSession.destroy();
   }
 
   public Player player() {

@@ -45,7 +45,6 @@ public class NicknameService {
   private void apply(Player player, String text) {
     String formatted = MessageFormat.replaceColors(text);
     player.displayName(LEGACY_SERIALIZER.deserialize(formatted));
-    player.playerListName(LEGACY_SERIALIZER.deserialize(formatted));
     player.setCustomName(formatted);
   }
 

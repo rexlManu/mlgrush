@@ -1,14 +1,11 @@
 package de.rexlmanu.mlgrush.plugin.database;
 
+import de.rexlmanu.mlgrush.plugin.database.file.FileDatabase;
+
 public class DatabaseFactory {
 
-  public static DatabaseContext create(DatabaseType databaseType) {
-    try {
-      return databaseType.contextClass().getConstructor().newInstance();
-    } catch (ReflectiveOperationException e) {
-      e.printStackTrace();
-      return null;
-    }
+  public static DatabaseContext create() {
+    return new FileDatabase();
   }
 
 }

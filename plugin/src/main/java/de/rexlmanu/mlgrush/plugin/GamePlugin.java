@@ -6,7 +6,6 @@ import de.rexlmanu.mlgrush.plugin.command.MainCommand;
 import de.rexlmanu.mlgrush.plugin.command.QuitCommand;
 import de.rexlmanu.mlgrush.plugin.command.StatsCommand;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
-import de.rexlmanu.mlgrush.plugin.integration.IntegrationHandler;
 import de.rexlmanu.mlgrush.plugin.task.ArenaActionbarTask;
 import de.rexlmanu.mlgrush.plugin.task.ArenaPlayingTimeExtendCheckerTask;
 import de.rexlmanu.mlgrush.plugin.task.UpdateStatsWallTask;
@@ -48,11 +47,9 @@ public class GamePlugin extends JavaPlugin {
       throw new IllegalStateException("Unable to create player data directory", exception);
     }
 
-    IntegrationHandler.enableIntegration();
-
     GameManager.create();
     PacketEvents.getAPI().init();
-    IntegrationHandler.gameInitIntegration();
+    GameManager.instance().lobbyNpcManager().respawnAll();
 
     PluginCommand command = this.getCommand("mlgrush");
     MainCommand executor = new MainCommand();

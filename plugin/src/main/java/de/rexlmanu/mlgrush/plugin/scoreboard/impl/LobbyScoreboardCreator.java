@@ -8,15 +8,21 @@ import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.scoreboard.ScoreboardCreator;
+import de.rexlmanu.mlgrush.plugin.scoreboard.packet.PacketTeamDefinition;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import lombok.Getter;
 import lombok.experimental.Accessors;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,6 +30,9 @@ import java.util.stream.Stream;
 @Getter
 @Accessors(fluent = true)
 public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
+
+  private static final LegacyComponentSerializer LEGACY_SERIALIZER = LegacyComponentSerializer.legacySection();
+  private static final String SIDEBAR_TITLE = "&8« &a&lMLGRush &8»";
 
   public static final String[][] ADS = {
     { "Twitter", "&b@rexlManu" },
@@ -72,7 +81,8 @@ public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
         default -> {
         }
       }
-      gamePlayer.fastBoard().updateLines(Stream.of(
+      gamePlayer.scoreboardSession().clearBelowName();
+      gamePlayer.scoreboardSession().updateSidebar(SIDEBAR_TITLE, Stream.of(
         "",
         "&7Dein Ranking&8:",
         "&8 » &a" + (rank == -1 ? "?" : (rank + ". Platz")),
@@ -96,34 +106,68 @@ public class LobbyScoreboardCreator implements ScoreboardCreator, Runnable {
     if (player == null) {
       return;
     }
-    Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-    Team lobbyTeam = scoreboard.registerNewTeam("00-lobby");
-    lobbyTeam.setPrefix(MessageFormat.replaceColors("&7"));
-    Team arenaTeam = scoreboard.registerNewTeam("10-arena");
-    arenaTeam.setPrefix(MessageFormat.replaceColors("&8"));
+    List<PacketTeamDefinition> teams = new ArrayList<>();
+    List<String> lobbyEntries = new ArrayList<>();
+    List<String> arenaEntries = new ArrayList<>();
+    Map<String, List<String>> spectatorArenaEntries = new HashMap<>();
+    LinkedHashMap<java.util.UUID, Component> displayNames = new LinkedHashMap<>();
+    Optional<Arena> ownArena = GameManager.instance().arenaManager().arenaContainer().activeArenas().stream()
+      .filter(arena -> arena.spectators().contains(gamePlayer))
+      .findFirst();
+    final Optional<Arena> spectatorArena = ownArena;
 
     PlayerProvider.PLAYERS.forEach(target -> {
       if (target.player() == null) {
         return;
       }
+      displayNames.put(target.uniqueId(), this.component(GameManager.instance().nicknameService().displayName(target.uniqueId(), target.player().getName())));
       if (target.environment().equals(Environment.ARENA)) {
         Optional<Arena> arena = GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(target);
-        if (arena.isPresent() && arena.get().spectators().contains(gamePlayer)) {
+        if (spectatorArena.isPresent() && arena.isPresent() && spectatorArena.get().equals(arena.get())) {
           GameTeam gameTeam = arena.get().getTeam(target);
-          Team scoreboardTeam = scoreboard.getTeam(gameTeam.name().key());
-          if (scoreboardTeam == null) {
-            scoreboardTeam = scoreboard.registerNewTeam(gameTeam.name().key());
-            scoreboardTeam.setPrefix(String.valueOf(gameTeam.name().color()));
-          }
-          scoreboardTeam.addEntry(target.player().getName());
+          spectatorArenaEntries.computeIfAbsent(gameTeam.name().key(), key -> new ArrayList<>()).add(target.player().getName());
         } else {
-          arenaTeam.addEntry(target.player().getName());
+          arenaEntries.add(target.player().getName());
         }
       } else {
-        lobbyTeam.addEntry(target.player().getName());
+        lobbyEntries.add(target.player().getName());
       }
     });
 
-    player.setScoreboard(scoreboard);
+    if (!lobbyEntries.isEmpty()) {
+      teams.add(new PacketTeamDefinition(
+        "00-lobby",
+        this.component("&7"),
+        Component.empty(),
+        com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams.NameTagVisibility.ALWAYS,
+        com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams.CollisionRule.ALWAYS,
+        lobbyEntries
+      ));
+    }
+    if (!arenaEntries.isEmpty()) {
+      teams.add(new PacketTeamDefinition(
+        "10-arena",
+        this.component("&8"),
+        Component.empty(),
+        com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams.NameTagVisibility.ALWAYS,
+        com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams.CollisionRule.ALWAYS,
+        arenaEntries
+      ));
+    }
+    spectatorArenaEntries.forEach((key, entries) -> teams.add(new PacketTeamDefinition(
+      "20-" + key,
+      this.component(String.valueOf(de.rexlmanu.mlgrush.plugin.arena.team.TeamColor.valueOf(key.toUpperCase()).color())),
+      Component.empty(),
+      com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams.NameTagVisibility.ALWAYS,
+      com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams.CollisionRule.ALWAYS,
+      entries
+    )));
+
+    gamePlayer.scoreboardSession().applyTeams(teams);
+    gamePlayer.scoreboardSession().updateTabEntries(displayNames);
+  }
+
+  private Component component(String value) {
+    return LEGACY_SERIALIZER.deserialize(MessageFormat.replaceColors(value));
   }
 }
