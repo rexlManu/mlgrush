@@ -9,21 +9,21 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSc
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerUpdateScore;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 public class PacketScoreboardSession {
 
-  private static final LegacyComponentSerializer LEGACY_SERIALIZER = LegacyComponentSerializer.legacySection();
+  private static final LegacyComponentSerializer LEGACY_SERIALIZER =
+      LegacyComponentSerializer.legacySection();
   private static final int PLAYER_LIST_SLOT = 0;
   private static final int SIDEBAR_SLOT = 1;
   private static final int BELOW_NAME_SLOT = 2;
@@ -53,38 +53,39 @@ public class PacketScoreboardSession {
 
     Component titleComponent = this.component(title);
     if (!this.sidebarInitialized) {
-      this.sendPacket(new WrapperPlayServerScoreboardObjective(
-        this.sidebarObjective,
-        WrapperPlayServerScoreboardObjective.ObjectiveMode.CREATE,
-        titleComponent,
-        WrapperPlayServerScoreboardObjective.RenderType.INTEGER
-      ));
+      this.sendPacket(
+          new WrapperPlayServerScoreboardObjective(
+              this.sidebarObjective,
+              WrapperPlayServerScoreboardObjective.ObjectiveMode.CREATE,
+              titleComponent,
+              WrapperPlayServerScoreboardObjective.RenderType.INTEGER));
       this.sendPacket(new WrapperPlayServerDisplayScoreboard(SIDEBAR_SLOT, this.sidebarObjective));
       this.sidebarInitialized = true;
     } else if (!this.sidebarTitle.equals(title)) {
-      this.sendPacket(new WrapperPlayServerScoreboardObjective(
-        this.sidebarObjective,
-        WrapperPlayServerScoreboardObjective.ObjectiveMode.UPDATE,
-        titleComponent,
-        WrapperPlayServerScoreboardObjective.RenderType.INTEGER
-      ));
+      this.sendPacket(
+          new WrapperPlayServerScoreboardObjective(
+              this.sidebarObjective,
+              WrapperPlayServerScoreboardObjective.ObjectiveMode.UPDATE,
+              titleComponent,
+              WrapperPlayServerScoreboardObjective.RenderType.INTEGER));
     }
 
     for (int index = 0; index < this.sidebarLineCount; index++) {
       if (index >= lines.size()) {
-        this.sendPacket(new WrapperPlayServerResetScore(this.sidebarHolder(index), this.sidebarObjective));
+        this.sendPacket(
+            new WrapperPlayServerResetScore(this.sidebarHolder(index), this.sidebarObjective));
       }
     }
 
     for (int index = 0; index < lines.size(); index++) {
-      this.sendPacket(new WrapperPlayServerUpdateScore(
-        this.sidebarHolder(index),
-        WrapperPlayServerUpdateScore.Action.CREATE_OR_UPDATE_ITEM,
-        this.sidebarObjective,
-        lines.size() - index,
-        this.component(lines.get(index)),
-        null
-      ));
+      this.sendPacket(
+          new WrapperPlayServerUpdateScore(
+              this.sidebarHolder(index),
+              WrapperPlayServerUpdateScore.Action.CREATE_OR_UPDATE_ITEM,
+              this.sidebarObjective,
+              lines.size() - index,
+              this.component(lines.get(index)),
+              null));
     }
 
     this.sidebarTitle = title;
@@ -99,101 +100,127 @@ public class PacketScoreboardSession {
 
     Component titleComponent = this.component(title);
     if (!this.belowNameInitialized) {
-      this.sendPacket(new WrapperPlayServerScoreboardObjective(
-        this.belowNameObjective,
-        WrapperPlayServerScoreboardObjective.ObjectiveMode.CREATE,
-        titleComponent,
-        WrapperPlayServerScoreboardObjective.RenderType.INTEGER
-      ));
-      this.sendPacket(new WrapperPlayServerDisplayScoreboard(BELOW_NAME_SLOT, this.belowNameObjective));
+      this.sendPacket(
+          new WrapperPlayServerScoreboardObjective(
+              this.belowNameObjective,
+              WrapperPlayServerScoreboardObjective.ObjectiveMode.CREATE,
+              titleComponent,
+              WrapperPlayServerScoreboardObjective.RenderType.INTEGER));
+      this.sendPacket(
+          new WrapperPlayServerDisplayScoreboard(BELOW_NAME_SLOT, this.belowNameObjective));
       this.belowNameInitialized = true;
     } else {
-      this.sendPacket(new WrapperPlayServerScoreboardObjective(
-        this.belowNameObjective,
-        WrapperPlayServerScoreboardObjective.ObjectiveMode.UPDATE,
-        titleComponent,
-        WrapperPlayServerScoreboardObjective.RenderType.INTEGER
-      ));
+      this.sendPacket(
+          new WrapperPlayServerScoreboardObjective(
+              this.belowNameObjective,
+              WrapperPlayServerScoreboardObjective.ObjectiveMode.UPDATE,
+              titleComponent,
+              WrapperPlayServerScoreboardObjective.RenderType.INTEGER));
     }
 
-    Bukkit.getOnlinePlayers().forEach(target -> {
-      if (scores.containsKey(target.getName())) {
-        this.sendPacket(new WrapperPlayServerUpdateScore(
-          target.getName(),
-          WrapperPlayServerUpdateScore.Action.CREATE_OR_UPDATE_ITEM,
-          this.belowNameObjective,
-          scores.get(target.getName()),
-          null,
-          null
-        ));
-      } else {
-        this.sendPacket(new WrapperPlayServerResetScore(target.getName(), this.belowNameObjective));
-      }
-    });
+    Bukkit.getOnlinePlayers()
+        .forEach(
+            target -> {
+              if (scores.containsKey(target.getName())) {
+                this.sendPacket(
+                    new WrapperPlayServerUpdateScore(
+                        target.getName(),
+                        WrapperPlayServerUpdateScore.Action.CREATE_OR_UPDATE_ITEM,
+                        this.belowNameObjective,
+                        scores.get(target.getName()),
+                        null,
+                        null));
+              } else {
+                this.sendPacket(
+                    new WrapperPlayServerResetScore(target.getName(), this.belowNameObjective));
+              }
+            });
   }
 
   public void clearBelowName() {
     if (!this.belowNameInitialized) {
       return;
     }
-    Bukkit.getOnlinePlayers().forEach(target -> this.sendPacket(new WrapperPlayServerResetScore(target.getName(), this.belowNameObjective)));
-    this.sendPacket(new WrapperPlayServerScoreboardObjective(
-      this.belowNameObjective,
-      WrapperPlayServerScoreboardObjective.ObjectiveMode.REMOVE,
-      Component.empty(),
-      WrapperPlayServerScoreboardObjective.RenderType.INTEGER
-    ));
+    Bukkit.getOnlinePlayers()
+        .forEach(
+            target ->
+                this.sendPacket(
+                    new WrapperPlayServerResetScore(target.getName(), this.belowNameObjective)));
+    this.sendPacket(
+        new WrapperPlayServerScoreboardObjective(
+            this.belowNameObjective,
+            WrapperPlayServerScoreboardObjective.ObjectiveMode.REMOVE,
+            Component.empty(),
+            WrapperPlayServerScoreboardObjective.RenderType.INTEGER));
     this.belowNameInitialized = false;
   }
 
   public void applyTeams(List<PacketTeamDefinition> definitions) {
-    this.activeTeams.forEach(teamName -> this.sendPacket(new WrapperPlayServerTeams(teamName, WrapperPlayServerTeams.TeamMode.REMOVE, java.util.Optional.empty())));
+    this.activeTeams.forEach(
+        teamName ->
+            this.sendPacket(
+                new WrapperPlayServerTeams(
+                    teamName, WrapperPlayServerTeams.TeamMode.REMOVE, java.util.Optional.empty())));
     this.activeTeams.clear();
 
     for (PacketTeamDefinition definition : definitions) {
-      WrapperPlayServerTeams.ScoreBoardTeamInfo info = new WrapperPlayServerTeams.ScoreBoardTeamInfo(
-        Component.text(definition.name()),
-        definition.prefix(),
-        definition.suffix(),
-        definition.visibility(),
-        definition.collisionRule(),
-        null,
-        WrapperPlayServerTeams.OptionData.NONE
-      );
-      this.sendPacket(new WrapperPlayServerTeams(definition.name(), WrapperPlayServerTeams.TeamMode.CREATE, info, definition.entries()));
+      WrapperPlayServerTeams.ScoreBoardTeamInfo info =
+          new WrapperPlayServerTeams.ScoreBoardTeamInfo(
+              Component.text(definition.name()),
+              definition.prefix(),
+              definition.suffix(),
+              definition.visibility(),
+              definition.collisionRule(),
+              null,
+              WrapperPlayServerTeams.OptionData.NONE);
+      this.sendPacket(
+          new WrapperPlayServerTeams(
+              definition.name(),
+              WrapperPlayServerTeams.TeamMode.CREATE,
+              info,
+              definition.entries()));
       this.activeTeams.add(definition.name());
     }
   }
 
   public void updateTabEntries(Map<UUID, Component> displayNames) {
     List<WrapperPlayServerPlayerInfoUpdate.PlayerInfo> entries = new ArrayList<>();
-    displayNames.forEach((uuid, displayName) -> {
-      WrapperPlayServerPlayerInfoUpdate.PlayerInfo playerInfo = new WrapperPlayServerPlayerInfoUpdate.PlayerInfo(uuid);
-      playerInfo.setDisplayName(displayName);
-      entries.add(playerInfo);
-    });
+    displayNames.forEach(
+        (uuid, displayName) -> {
+          WrapperPlayServerPlayerInfoUpdate.PlayerInfo playerInfo =
+              new WrapperPlayServerPlayerInfoUpdate.PlayerInfo(uuid);
+          playerInfo.setDisplayName(displayName);
+          entries.add(playerInfo);
+        });
 
     if (!entries.isEmpty()) {
-      this.sendPacket(new WrapperPlayServerPlayerInfoUpdate(WrapperPlayServerPlayerInfoUpdate.Action.UPDATE_DISPLAY_NAME, entries));
+      this.sendPacket(
+          new WrapperPlayServerPlayerInfoUpdate(
+              WrapperPlayServerPlayerInfoUpdate.Action.UPDATE_DISPLAY_NAME, entries));
     }
   }
 
   public void destroy() {
     if (this.sidebarInitialized) {
       for (int index = 0; index < this.sidebarLineCount; index++) {
-        this.sendPacket(new WrapperPlayServerResetScore(this.sidebarHolder(index), this.sidebarObjective));
+        this.sendPacket(
+            new WrapperPlayServerResetScore(this.sidebarHolder(index), this.sidebarObjective));
       }
-      this.sendPacket(new WrapperPlayServerScoreboardObjective(
-        this.sidebarObjective,
-        WrapperPlayServerScoreboardObjective.ObjectiveMode.REMOVE,
-        Component.empty(),
-        WrapperPlayServerScoreboardObjective.RenderType.INTEGER
-      ));
+      this.sendPacket(
+          new WrapperPlayServerScoreboardObjective(
+              this.sidebarObjective,
+              WrapperPlayServerScoreboardObjective.ObjectiveMode.REMOVE,
+              Component.empty(),
+              WrapperPlayServerScoreboardObjective.RenderType.INTEGER));
       this.sidebarInitialized = false;
       this.sidebarLineCount = 0;
     }
     this.clearBelowName();
-    this.activeTeams.forEach(teamName -> this.sendPacket(new WrapperPlayServerTeams(teamName, WrapperPlayServerTeams.TeamMode.REMOVE, java.util.Optional.empty())));
+    this.activeTeams.forEach(
+        teamName ->
+            this.sendPacket(
+                new WrapperPlayServerTeams(
+                    teamName, WrapperPlayServerTeams.TeamMode.REMOVE, java.util.Optional.empty())));
     this.activeTeams.clear();
     this.sendPacket(new WrapperPlayServerDisplayScoreboard(PLAYER_LIST_SLOT, ""));
   }

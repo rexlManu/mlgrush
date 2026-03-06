@@ -1,17 +1,17 @@
 package de.rexlmanu.mlgrush.plugin.nick;
 
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.entity.Player;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.entity.Player;
 
 public class NicknameService {
 
-  private static final LegacyComponentSerializer LEGACY_SERIALIZER = LegacyComponentSerializer.legacySection();
+  private static final LegacyComponentSerializer LEGACY_SERIALIZER =
+      LegacyComponentSerializer.legacySection();
 
   private final Map<UUID, NickProfile> profiles = new ConcurrentHashMap<>();
 
@@ -28,7 +28,8 @@ public class NicknameService {
   }
 
   public void register(Player player, String nickname) {
-    String safeNickname = nickname == null || nickname.isBlank() ? player.getName() : nickname.trim();
+    String safeNickname =
+        nickname == null || nickname.isBlank() ? player.getName() : nickname.trim();
     if (safeNickname.length() > 16) {
       safeNickname = safeNickname.substring(0, 16);
     }
@@ -48,6 +49,5 @@ public class NicknameService {
     player.setCustomName(formatted);
   }
 
-  public record NickProfile(String realName, String nickname) {
-  }
+  public record NickProfile(String realName, String nickname) {}
 }

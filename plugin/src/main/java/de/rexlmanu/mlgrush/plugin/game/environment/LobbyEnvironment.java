@@ -14,6 +14,9 @@ import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import de.rexlmanu.mlgrush.plugin.utility.PlayerUtils;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -37,149 +40,206 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-
 public class LobbyEnvironment implements GameEnvironment {
 
   private static final Environment ENVIRONMENT = Environment.LOBBY;
 
-  public static final ItemStack LEAVE_ITEM = ItemStackBuilder.of(Material.NETHER_STAR).name("&8● &aSpiel verlassen &8▶ &7Rechtsklick &8●").build();
-  public static final ItemStack SPECTATOR_ITEM = ItemStackBuilder.of(Material.COMPASS).name("&8● &aSpectator &8▶ &7Rechtsklick &8●").build();
-  public static final ItemStack SETTINGS_ITEM = ItemStackBuilder.of(Material.COMPARATOR).name("&8● &aEinstellungen &8▶ &7Rechtsklick &8●").build();
-  public static final ItemStack TUTORIAL_ITEM = ItemStackBuilder.of(Material.WRITTEN_BOOK)
-    .name("&8● &aErklärung &8▶ &7Rechtsklick &8●")
-    .transform(itemStack -> {
-      BookMeta meta = (BookMeta) itemStack.getItemMeta();
-      meta.addPage(
-        MessageFormat.replaceColors("&8« &a&lKonzept &8» &7\n\n" +
-          "&8▶ &0Das Spiel ist hauptsächlich dafür gemacht, die &atrainierten Fähigkeiten&0, in der Praxis zutesten.\n" +
-          "&8▶ &0Hast Du &azehn &0gegnerische Betten zerstört, &agewinnst &0Du das Spiel automatisch.\n\n"),
-        MessageFormat.replaceColors("&8« &a&lCommands &8» &0\n\n" +
-          "&8● &a/quit\n" +
-          "&8▶ &0Verlasse die aktuelle Runde\n" +
-          "&8● &a/stats\n" +
-          "&8▶ &0Betrachte Spielstatistiken von Dir oder eines anderen Spielers\n" +
-          "&8● &a/inv\n" +
-          "&8▶ &0Passe die Sortierung Deines Inventars an\n"),
-        MessageFormat.replaceColors("&8« &a&lHerausfordern &8» &7\n\n" +
-          "&8▶ &0Schlägst Du einen Spieler mit dem Eisenschwert, forderst Du ihn zu einem Duell raus.\n" +
-          "&8▶ &0Drückst Du mit dem Eisenschwert Rechtsklick, kannst Du Dir ein eigenes Spiel mit angepassten Einstellungen erstellen.\n")
-      );
-      meta.setAuthor(MessageFormat.replaceColors("&aMLGRush"));
-      itemStack.setItemMeta(meta);
-    })
-    .build();
+  public static final ItemStack LEAVE_ITEM =
+      ItemStackBuilder.of(Material.NETHER_STAR)
+          .name("&8● &aSpiel verlassen &8▶ &7Rechtsklick &8●")
+          .build();
+  public static final ItemStack SPECTATOR_ITEM =
+      ItemStackBuilder.of(Material.COMPASS).name("&8● &aSpectator &8▶ &7Rechtsklick &8●").build();
+  public static final ItemStack SETTINGS_ITEM =
+      ItemStackBuilder.of(Material.COMPARATOR)
+          .name("&8● &aEinstellungen &8▶ &7Rechtsklick &8●")
+          .build();
+  public static final ItemStack TUTORIAL_ITEM =
+      ItemStackBuilder.of(Material.WRITTEN_BOOK)
+          .name("&8● &aErklärung &8▶ &7Rechtsklick &8●")
+          .transform(
+              itemStack -> {
+                BookMeta meta = (BookMeta) itemStack.getItemMeta();
+                meta.addPage(
+                    MessageFormat.replaceColors(
+                        "&8« &a&lKonzept &8» &7\n\n"
+                            + "&8▶ &0Das Spiel ist hauptsächlich dafür gemacht, die &atrainierten Fähigkeiten&0, in der Praxis zutesten.\n"
+                            + "&8▶ &0Hast Du &azehn &0gegnerische Betten zerstört, &agewinnst &0Du das Spiel automatisch.\n\n"),
+                    MessageFormat.replaceColors(
+                        "&8« &a&lCommands &8» &0\n\n"
+                            + "&8● &a/quit\n"
+                            + "&8▶ &0Verlasse die aktuelle Runde\n"
+                            + "&8● &a/stats\n"
+                            + "&8▶ &0Betrachte Spielstatistiken von Dir oder eines anderen Spielers\n"
+                            + "&8● &a/inv\n"
+                            + "&8▶ &0Passe die Sortierung Deines Inventars an\n"),
+                    MessageFormat.replaceColors(
+                        "&8« &a&lHerausfordern &8» &7\n\n"
+                            + "&8▶ &0Schlägst Du einen Spieler mit dem Eisenschwert, forderst Du ihn zu einem Duell raus.\n"
+                            + "&8▶ &0Drückst Du mit dem Eisenschwert Rechtsklick, kannst Du Dir ein eigenes Spiel mit angepassten Einstellungen erstellen.\n"));
+                meta.setAuthor(MessageFormat.replaceColors("&aMLGRush"));
+                itemStack.setItemMeta(meta);
+              })
+          .build();
 
-  public static final ItemStack CHALLENGER_ITEM = ItemStackBuilder.of(Material.IRON_SWORD)
-    .breakable(false)
-    .hideAttributes()
-    .name("&8● &aHerausfordern &8▶ &7Rechtsklick &8●")
-    .lore("&7<Linksklick> &8- &aSpieler herausfordern", "&7<Rechtsklick> &8- &aEigenes Spiel erstellen")
-    .build();
+  public static final ItemStack CHALLENGER_ITEM =
+      ItemStackBuilder.of(Material.IRON_SWORD)
+          .breakable(false)
+          .hideAttributes()
+          .name("&8● &aHerausfordern &8▶ &7Rechtsklick &8●")
+          .lore(
+              "&7<Linksklick> &8- &aSpieler herausfordern",
+              "&7<Rechtsklick> &8- &aEigenes Spiel erstellen")
+          .build();
 
-  public static final ItemStack BACK_TO_LOBBY_ITEM = ItemStackBuilder
-    .of(Material.FIREWORK_STAR)
-    .name("&8» &aZurück zur Lobby")
-    .build();
+  public static final ItemStack BACK_TO_LOBBY_ITEM =
+      ItemStackBuilder.of(Material.FIREWORK_STAR).name("&8» &aZurück zur Lobby").build();
 
   public LobbyEnvironment() {
     EventCoordinator coordinator = GameManager.instance().eventCoordinator();
 
-    coordinator.add(ENVIRONMENT, PlayerJoinEvent.class, event -> {
-      Player player = event.target().getPlayer();
-      PlayerUtils.resetPlayer(player);
-      GameManager.instance().locationProvider().get("spawn").ifPresent(location -> {
-        player.teleport(location);
-        location.getWorld().spawnParticle(Particle.FIREWORK, location, 150, 0.0, 0.5, 0.0, 0.5);
-      });
+    coordinator.add(
+        ENVIRONMENT,
+        PlayerJoinEvent.class,
+        event -> {
+          Player player = event.target().getPlayer();
+          PlayerUtils.resetPlayer(player);
+          GameManager.instance()
+              .locationProvider()
+              .get("spawn")
+              .ifPresent(
+                  location -> {
+                    player.teleport(location);
+                    location
+                        .getWorld()
+                        .spawnParticle(Particle.FIREWORK, location, 150, 0.0, 0.5, 0.0, 0.5);
+                  });
 
-      GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
+          GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
 
-      PlayerProvider.getPlayers(Environment.ARENA).forEach(gamePlayer -> {
-        if (gamePlayer.player() != null) {
-          gamePlayer.player().hidePlayer(GamePlugin.getProvidingPlugin(GamePlugin.class), player);
-        }
-      });
-      PlayerProvider.getPlayers(ENVIRONMENT).stream().map(GamePlayer::player).filter(Objects::nonNull).forEach(target -> {
-        target.showPlayer(GamePlugin.getProvidingPlugin(GamePlugin.class), player);
-        player.showPlayer(GamePlugin.getProvidingPlugin(GamePlugin.class), target);
-      });
-      GameManager.instance().giveLobbyItems(player);
-      player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_TWINKLE, 1f, 1.2f);
-    });
+          PlayerProvider.getPlayers(Environment.ARENA)
+              .forEach(
+                  gamePlayer -> {
+                    if (gamePlayer.player() != null) {
+                      gamePlayer
+                          .player()
+                          .hidePlayer(GamePlugin.getProvidingPlugin(GamePlugin.class), player);
+                    }
+                  });
+          PlayerProvider.getPlayers(ENVIRONMENT).stream()
+              .map(GamePlayer::player)
+              .filter(Objects::nonNull)
+              .forEach(
+                  target -> {
+                    target.showPlayer(GamePlugin.getProvidingPlugin(GamePlugin.class), player);
+                    player.showPlayer(GamePlugin.getProvidingPlugin(GamePlugin.class), target);
+                  });
+          GameManager.instance().giveLobbyItems(player);
+          player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_TWINKLE, 1f, 1.2f);
+        });
 
-    coordinator.add(ENVIRONMENT, AsyncPlayerChatEvent.class, event -> {
-      event.target().setCancelled(true);
-      String prefix = this.chatPrefix(event.gamePlayer());
-      String name = GameManager.instance().nicknameService().displayName(event.gamePlayer().uniqueId(), event.gamePlayer().player().getName());
-      String message = MessageFormat.replaceColors(String.format("%s%s &8» &7%s", prefix, name, event.target().getMessage()));
-      PlayerProvider.getPlayers(ENVIRONMENT).forEach(gamePlayer -> gamePlayer.player().sendMessage(message));
-    });
-
-    coordinator.add(ENVIRONMENT, BlockPlaceEvent.class, event -> event.target().setCancelled(!event.gamePlayer().buildMode()));
-    coordinator.add(ENVIRONMENT, BlockBreakEvent.class, event -> event.target().setCancelled(!event.gamePlayer().buildMode()));
-    coordinator.add(ENVIRONMENT, PlayerInteractEvent.class, event -> {
-      if (event.gamePlayer().buildMode()) {
-        return;
-      }
-      Player player = event.gamePlayer().player();
-      if (Objects.nonNull(event.target().getClickedBlock())
-        || event.target().getAction() == Action.RIGHT_CLICK_BLOCK
-        || event.target().getAction() == Action.PHYSICAL) {
-        event.target().setCancelled(true);
-      }
-      if (event.target().getAction().name().contains("RIGHT")) {
-        if (LEAVE_ITEM.equals(event.target().getItem())) {
+    coordinator.add(
+        ENVIRONMENT,
+        AsyncPlayerChatEvent.class,
+        event -> {
           event.target().setCancelled(true);
-          event.gamePlayer().sendMessage("Es ist kein Lobby-Transfer konfiguriert.");
-          event.gamePlayer().sound(Sound.ENTITY_PLAYER_LEVELUP, 2f);
-          return;
-        }
-        if (SPECTATOR_ITEM.equals(event.target().getItem())) {
-          event.gamePlayer().sound(Sound.BLOCK_CHEST_OPEN, 2f);
-          GameManager.instance().spectatorInventory().open(player);
-          return;
-        }
-        if (SETTINGS_ITEM.equals(event.target().getItem())) {
-          event.gamePlayer().sound(Sound.BLOCK_CHEST_OPEN, 2f);
-          new SettingsInventory(event.gamePlayer());
-          return;
-        }
-      }
+          String prefix = this.chatPrefix(event.gamePlayer());
+          String name =
+              GameManager.instance()
+                  .nicknameService()
+                  .displayName(
+                      event.gamePlayer().uniqueId(), event.gamePlayer().player().getName());
+          String message =
+              MessageFormat.replaceColors(
+                  String.format("%s%s &8» &7%s", prefix, name, event.target().getMessage()));
+          PlayerProvider.getPlayers(ENVIRONMENT)
+              .forEach(gamePlayer -> gamePlayer.player().sendMessage(message));
+        });
 
-      if (BACK_TO_LOBBY_ITEM.equals(event.target().getItem())) {
-        GameManager.instance().arenaManager().removeSpectator(event.gamePlayer());
-      }
-    });
+    coordinator.add(
+        ENVIRONMENT,
+        BlockPlaceEvent.class,
+        event -> event.target().setCancelled(!event.gamePlayer().buildMode()));
+    coordinator.add(
+        ENVIRONMENT,
+        BlockBreakEvent.class,
+        event -> event.target().setCancelled(!event.gamePlayer().buildMode()));
+    coordinator.add(
+        ENVIRONMENT,
+        PlayerInteractEvent.class,
+        event -> {
+          if (event.gamePlayer().buildMode()) {
+            return;
+          }
+          Player player = event.gamePlayer().player();
+          if (Objects.nonNull(event.target().getClickedBlock())
+              || event.target().getAction() == Action.RIGHT_CLICK_BLOCK
+              || event.target().getAction() == Action.PHYSICAL) {
+            event.target().setCancelled(true);
+          }
+          if (event.target().getAction().name().contains("RIGHT")) {
+            if (LEAVE_ITEM.equals(event.target().getItem())) {
+              event.target().setCancelled(true);
+              event.gamePlayer().sendMessage("Es ist kein Lobby-Transfer konfiguriert.");
+              event.gamePlayer().sound(Sound.ENTITY_PLAYER_LEVELUP, 2f);
+              return;
+            }
+            if (SPECTATOR_ITEM.equals(event.target().getItem())) {
+              event.gamePlayer().sound(Sound.BLOCK_CHEST_OPEN, 2f);
+              GameManager.instance().spectatorInventory().open(player);
+              return;
+            }
+            if (SETTINGS_ITEM.equals(event.target().getItem())) {
+              event.gamePlayer().sound(Sound.BLOCK_CHEST_OPEN, 2f);
+              new SettingsInventory(event.gamePlayer());
+              return;
+            }
+          }
 
-    coordinator.add(ENVIRONMENT, PlayerInteractAtEntityEvent.class, event -> {
-      ItemStack heldItem = event.target().getPlayer().getInventory().getItemInMainHand();
-      if (!(event.target().getRightClicked() instanceof Player) || !CHALLENGER_ITEM.equals(heldItem)) {
-        return;
-      }
-      PlayerProvider.find(event.target().getRightClicked().getUniqueId()).ifPresent(target -> {
-        GamePlayer gamePlayer = event.gamePlayer();
-        if (!CHALLENGER_ITEM.equals(event.target().getPlayer().getInventory().getItemInMainHand())
-          || gamePlayer.creatingGame()
-          || target.creatingGame()) {
-          return;
-        }
-        if (target.challengeRequests().containsKey(event.gamePlayer().uniqueId())) {
-          gamePlayer.sendMessage(String.format("Du hast &a%s&7 bereits eine Anfrage gesendet.", target.player().getName()));
-          return;
-        }
-        new ArenaConfigurationInventory(gamePlayer, target);
-        gamePlayer.sound(Sound.BLOCK_CHEST_OPEN, 2f);
-      });
-    });
+          if (BACK_TO_LOBBY_ITEM.equals(event.target().getItem())) {
+            GameManager.instance().arenaManager().removeSpectator(event.gamePlayer());
+          }
+        });
 
-    coordinator.add(ENVIRONMENT, PlayerTeleportEvent.class, event -> {
-      if (PlayerTeleportEvent.TeleportCause.SPECTATE.equals(event.target().getCause())) {
-        event.target().setCancelled(true);
-      }
-    });
+    coordinator.add(
+        ENVIRONMENT,
+        PlayerInteractAtEntityEvent.class,
+        event -> {
+          ItemStack heldItem = event.target().getPlayer().getInventory().getItemInMainHand();
+          if (!(event.target().getRightClicked() instanceof Player)
+              || !CHALLENGER_ITEM.equals(heldItem)) {
+            return;
+          }
+          PlayerProvider.find(event.target().getRightClicked().getUniqueId())
+              .ifPresent(
+                  target -> {
+                    GamePlayer gamePlayer = event.gamePlayer();
+                    if (!CHALLENGER_ITEM.equals(
+                            event.target().getPlayer().getInventory().getItemInMainHand())
+                        || gamePlayer.creatingGame()
+                        || target.creatingGame()) {
+                      return;
+                    }
+                    if (target.challengeRequests().containsKey(event.gamePlayer().uniqueId())) {
+                      gamePlayer.sendMessage(
+                          String.format(
+                              "Du hast &a%s&7 bereits eine Anfrage gesendet.",
+                              target.player().getName()));
+                      return;
+                    }
+                    new ArenaConfigurationInventory(gamePlayer, target);
+                    gamePlayer.sound(Sound.BLOCK_CHEST_OPEN, 2f);
+                  });
+        });
+
+    coordinator.add(
+        ENVIRONMENT,
+        PlayerTeleportEvent.class,
+        event -> {
+          if (PlayerTeleportEvent.TeleportCause.SPECTATE.equals(event.target().getCause())) {
+            event.target().setCancelled(true);
+          }
+        });
   }
 
   @EventHandler(priority = EventPriority.LOWEST)
@@ -190,35 +250,58 @@ public class LobbyEnvironment implements GameEnvironment {
     PlayerProvider.PLAYERS.add(gamePlayer);
     GameManager.instance().detectionController().register(gamePlayer);
 
-    Bukkit.getScheduler().runTaskLater(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> {
-      PlayerProvider.getPlayers(ENVIRONMENT).forEach(target -> {
-        if (target.player() != null) {
-          target.player().showPlayer(GamePlugin.getProvidingPlugin(GamePlugin.class), event.getPlayer());
-          event.getPlayer().showPlayer(GamePlugin.getProvidingPlugin(GamePlugin.class), target.player());
-        }
-      });
-    }, 1L);
+    Bukkit.getScheduler()
+        .runTaskLater(
+            GamePlugin.getProvidingPlugin(GamePlugin.class),
+            () -> {
+              PlayerProvider.getPlayers(ENVIRONMENT)
+                  .forEach(
+                      target -> {
+                        if (target.player() != null) {
+                          target
+                              .player()
+                              .showPlayer(
+                                  GamePlugin.getProvidingPlugin(GamePlugin.class),
+                                  event.getPlayer());
+                          event
+                              .getPlayer()
+                              .showPlayer(
+                                  GamePlugin.getProvidingPlugin(GamePlugin.class), target.player());
+                        }
+                      });
+            },
+            1L);
   }
 
   @EventHandler(priority = EventPriority.LOWEST)
   public void handle(PlayerQuitEvent event) {
     event.setQuitMessage(null);
-    PlayerProvider.find(event.getPlayer().getUniqueId()).ifPresent(gamePlayer -> {
-      GameManager.instance()
-        .arenaManager()
-        .arenaContainer()
-        .findArenaByPlayer(gamePlayer)
-        .ifPresent(arena -> Bukkit.getPluginManager().callEvent(new ArenaPlayerLeftEvent(gamePlayer, arena)));
+    PlayerProvider.find(event.getPlayer().getUniqueId())
+        .ifPresent(
+            gamePlayer -> {
+              GameManager.instance()
+                  .arenaManager()
+                  .arenaContainer()
+                  .findArenaByPlayer(gamePlayer)
+                  .ifPresent(
+                      arena ->
+                          Bukkit.getPluginManager()
+                              .callEvent(new ArenaPlayerLeftEvent(gamePlayer, arena)));
 
-      GameManager.instance().queueController().playerQueue().remove(gamePlayer);
-      GameManager.instance().arenaManager().arenaContainer().activeArenas().forEach(arena -> arena.spectators().remove(gamePlayer));
-      gamePlayer.save();
-      gamePlayer.destroyScoreboard();
-      GameManager.instance().detectionController().unregister(gamePlayer);
-      GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
-      PlayerProvider.PLAYERS.remove(gamePlayer);
-    });
-    PlayerProvider.PLAYERS.forEach(gamePlayer -> gamePlayer.challengeRequests().remove(event.getPlayer().getUniqueId()));
+              GameManager.instance().queueController().playerQueue().remove(gamePlayer);
+              GameManager.instance()
+                  .arenaManager()
+                  .arenaContainer()
+                  .activeArenas()
+                  .forEach(arena -> arena.spectators().remove(gamePlayer));
+              gamePlayer.save();
+              gamePlayer.destroyScoreboard();
+              GameManager.instance().detectionController().unregister(gamePlayer);
+              GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
+              PlayerProvider.PLAYERS.remove(gamePlayer);
+            });
+    PlayerProvider.PLAYERS.forEach(
+        gamePlayer -> gamePlayer.challengeRequests().remove(event.getPlayer().getUniqueId()));
     GameManager.instance().nicknameService().unregister(event.getPlayer());
   }
 
@@ -236,8 +319,8 @@ public class LobbyEnvironment implements GameEnvironment {
       return;
     }
     PlayerProvider.find(event.getEntity().getUniqueId())
-      .filter(gamePlayer -> gamePlayer.environment().equals(Environment.LOBBY))
-      .ifPresent(target -> event.setCancelled(true));
+        .filter(gamePlayer -> gamePlayer.environment().equals(Environment.LOBBY))
+        .ifPresent(target -> event.setCancelled(true));
   }
 
   @EventHandler
@@ -251,27 +334,58 @@ public class LobbyEnvironment implements GameEnvironment {
     }
 
     PlayerProvider.find(event.getDamager().getUniqueId())
-      .filter(gamePlayer -> gamePlayer.environment().equals(Environment.LOBBY) || !gamePlayer.creatingGame())
-      .ifPresent(gamePlayer -> PlayerProvider.find(event.getEntity().getUniqueId()).filter(g -> !g.creatingGame()).ifPresent(target -> {
-        if (gamePlayer.challengeRequests().containsKey(target.uniqueId())) {
-          gamePlayer.sound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2f);
-          gamePlayer.sendMessage(String.format("Du hast zum Duell mit &a%s&7 zugestimmt.", target.player().getName()));
-          target.sendMessage(String.format("&a%s&7 hat dem Duell zugestimmt.", gamePlayer.player().getName()));
-          List<GamePlayer> players = Arrays.asList(gamePlayer, target);
-          players.forEach(player -> GameManager.instance().queueController().playerQueue().remove(player));
-          GameManager.instance().arenaManager().create(players, gamePlayer.challengeRequests().get(target.uniqueId()));
-          gamePlayer.challengeRequests().remove(target.uniqueId());
-          target.challengeRequests().remove(gamePlayer.uniqueId());
-          return;
-        }
-        if (target.challengeRequests().containsKey(gamePlayer.uniqueId())) {
-          return;
-        }
-        target.challengeRequests().put(gamePlayer.uniqueId(), ArenaManager.DEFAULT_CONFIGURATION.get().custom(false));
-        target.sendMessage(String.format("Du wurdest von &a%s&7 zum Duell herausgefordert.", gamePlayer.player().getName()));
-        gamePlayer.sendMessage(String.format("Du hast &a%s&7 zu einem Duell herausgefordert.", target.player().getName()));
-        gamePlayer.sound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2f);
-      }));
+        .filter(
+            gamePlayer ->
+                gamePlayer.environment().equals(Environment.LOBBY) || !gamePlayer.creatingGame())
+        .ifPresent(
+            gamePlayer ->
+                PlayerProvider.find(event.getEntity().getUniqueId())
+                    .filter(g -> !g.creatingGame())
+                    .ifPresent(
+                        target -> {
+                          if (gamePlayer.challengeRequests().containsKey(target.uniqueId())) {
+                            gamePlayer.sound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2f);
+                            gamePlayer.sendMessage(
+                                String.format(
+                                    "Du hast zum Duell mit &a%s&7 zugestimmt.",
+                                    target.player().getName()));
+                            target.sendMessage(
+                                String.format(
+                                    "&a%s&7 hat dem Duell zugestimmt.",
+                                    gamePlayer.player().getName()));
+                            List<GamePlayer> players = Arrays.asList(gamePlayer, target);
+                            players.forEach(
+                                player ->
+                                    GameManager.instance()
+                                        .queueController()
+                                        .playerQueue()
+                                        .remove(player));
+                            GameManager.instance()
+                                .arenaManager()
+                                .create(
+                                    players, gamePlayer.challengeRequests().get(target.uniqueId()));
+                            gamePlayer.challengeRequests().remove(target.uniqueId());
+                            target.challengeRequests().remove(gamePlayer.uniqueId());
+                            return;
+                          }
+                          if (target.challengeRequests().containsKey(gamePlayer.uniqueId())) {
+                            return;
+                          }
+                          target
+                              .challengeRequests()
+                              .put(
+                                  gamePlayer.uniqueId(),
+                                  ArenaManager.DEFAULT_CONFIGURATION.get().custom(false));
+                          target.sendMessage(
+                              String.format(
+                                  "Du wurdest von &a%s&7 zum Duell herausgefordert.",
+                                  gamePlayer.player().getName()));
+                          gamePlayer.sendMessage(
+                              String.format(
+                                  "Du hast &a%s&7 zu einem Duell herausgefordert.",
+                                  target.player().getName()));
+                          gamePlayer.sound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2f);
+                        }));
   }
 
   @EventHandler
@@ -280,11 +394,13 @@ public class LobbyEnvironment implements GameEnvironment {
       return;
     }
     PlayerProvider.find(event.getWhoClicked().getUniqueId())
-      .filter(gamePlayer -> gamePlayer.environment().equals(Environment.LOBBY))
-      .ifPresent(gamePlayer -> event.setCancelled(!gamePlayer.buildMode()));
+        .filter(gamePlayer -> gamePlayer.environment().equals(Environment.LOBBY))
+        .ifPresent(gamePlayer -> event.setCancelled(!gamePlayer.buildMode()));
   }
 
   private String chatPrefix(GamePlayer gamePlayer) {
-    return GameManager.instance().nicknameService().isNicked(gamePlayer.uniqueId()) ? "&8[N] &a" : "&a";
+    return GameManager.instance().nicknameService().isNicked(gamePlayer.uniqueId())
+        ? "&8[N] &a"
+        : "&a";
   }
 }

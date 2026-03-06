@@ -4,6 +4,7 @@ import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
+import java.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,19 +21,23 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.util.*;
-
 public class EditLayoutHandler implements Listener {
 
-  private static final ItemStack SAVE_ITEM = ItemStackBuilder.of(Material.LIME_DYE).name("&8» &aSpeichern").build();
-  private static final ItemStack REVERT_ITEM = ItemStackBuilder.of(Material.REDSTONE).name("&8» &cVorherige Einstellung behalten").build();
-  private static final ItemStack ABORT_ITEM = ItemStackBuilder.of(Material.BARRIER).name("&8» &cAbbrechen").build();
+  private static final ItemStack SAVE_ITEM =
+      ItemStackBuilder.of(Material.LIME_DYE).name("&8» &aSpeichern").build();
+  private static final ItemStack REVERT_ITEM =
+      ItemStackBuilder.of(Material.REDSTONE).name("&8» &cVorherige Einstellung behalten").build();
+  private static final ItemStack ABORT_ITEM =
+      ItemStackBuilder.of(Material.BARRIER).name("&8» &cAbbrechen").build();
 
-  private static final Map<ItemStack, String> SORT_ITEMS = new HashMap<ItemStack, String>() {{
-    put(ItemStackBuilder.of(Material.STICK).name("&8» &aStick").build(), "stick");
-    put(ItemStackBuilder.of(Material.STONE_PICKAXE).name("&8» &aPickaxe").build(), "pickaxe");
-    put(ItemStackBuilder.of(Material.SANDSTONE).name("&8» &aBlöcke").build(), "block");
-  }};
+  private static final Map<ItemStack, String> SORT_ITEMS =
+      new HashMap<ItemStack, String>() {
+        {
+          put(ItemStackBuilder.of(Material.STICK).name("&8» &aStick").build(), "stick");
+          put(ItemStackBuilder.of(Material.STONE_PICKAXE).name("&8» &aPickaxe").build(), "pickaxe");
+          put(ItemStackBuilder.of(Material.SANDSTONE).name("&8» &aBlöcke").build(), "block");
+        }
+      };
 
   private GamePlayer gamePlayer;
   private Player player;
@@ -44,8 +49,9 @@ public class EditLayoutHandler implements Listener {
     Bukkit.getPluginManager().registerEvents(this, GamePlugin.getProvidingPlugin(GamePlugin.class));
 
     this.gamePlayer.sendMessage("Bitte öffne dein Inventar.");
-    this.gamePlayer.sendMessage("Du kannst nun dein Inventar bearbeiten. Nachdem du deine gewünschte Anpassungen getroffen hast," +
-      " nutze die jeweilige Items um die Aktion durchzuführen.");
+    this.gamePlayer.sendMessage(
+        "Du kannst nun dein Inventar bearbeiten. Nachdem du deine gewünschte Anpassungen getroffen hast,"
+            + " nutze die jeweilige Items um die Aktion durchzuführen.");
     Player player = this.gamePlayer.player();
     player.playSound(player.getLocation(), Sound.ITEM_FIRECHARGE_USE, 1, 2f);
     player.setWalkSpeed(0);
@@ -57,13 +63,13 @@ public class EditLayoutHandler implements Listener {
     for (int i = 0; i < this.gamePlayer.data().inventorySorting().size(); i++) {
       String key = this.gamePlayer.data().inventorySorting().get(i);
       if (key == null) continue;
-      inventory.setItem(i, SORT_ITEMS
-        .entrySet()
-        .stream()
-        .filter(itemStackStringEntry -> itemStackStringEntry.getValue().equals(key))
-        .map(Map.Entry::getKey)
-        .findAny()
-        .orElse(null));
+      inventory.setItem(
+          i,
+          SORT_ITEMS.entrySet().stream()
+              .filter(itemStackStringEntry -> itemStackStringEntry.getValue().equals(key))
+              .map(Map.Entry::getKey)
+              .findAny()
+              .orElse(null));
     }
   }
 
@@ -131,7 +137,8 @@ public class EditLayoutHandler implements Listener {
       this.gamePlayer.sendMessage("Deine Anpassungen wurden gespeichert.");
       this.gamePlayer.sound(Sound.ENTITY_PLAYER_LEVELUP, 2f);
     } else {
-      this.gamePlayer.sendMessage("Deine Anpassungen konnten nicht gespeichert werden, da sie fehlerhaft sind.");
+      this.gamePlayer.sendMessage(
+          "Deine Anpassungen konnten nicht gespeichert werden, da sie fehlerhaft sind.");
     }
     this.unregister();
   }

@@ -3,16 +3,16 @@ package de.rexlmanu.mlgrush.arenacreator.command;
 import de.rexlmanu.mlgrush.arenacreator.ArenaCreatorPlugin;
 import de.rexlmanu.mlgrush.arenacreator.Constants;
 import de.rexlmanu.mlgrush.arenacreator.process.ArenaCreationProcess;
+import java.util.Optional;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Optional;
-
 public class ArenaCreatorCommand implements CommandExecutor {
   @Override
-  public boolean onCommand(CommandSender commandSender, Command command, String s, String[] arguments) {
+  public boolean onCommand(
+      CommandSender commandSender, Command command, String s, String[] arguments) {
     if (!(commandSender instanceof Player)) return true;
     Player player = (Player) commandSender;
     if (arguments.length == 0) {
@@ -20,10 +20,10 @@ public class ArenaCreatorCommand implements CommandExecutor {
       player.sendMessage(Constants.PREFIX + "/arenacreator abort - Breche den Prozess ab");
       return true;
     }
-    Optional<ArenaCreationProcess> optionalProcess = ArenaCreatorPlugin.ARENA_CREATION_PROCESSES
-      .stream()
-      .filter(arenaCreationProcess -> arenaCreationProcess.player().equals(player))
-      .findAny();
+    Optional<ArenaCreationProcess> optionalProcess =
+        ArenaCreatorPlugin.ARENA_CREATION_PROCESSES.stream()
+            .filter(arenaCreationProcess -> arenaCreationProcess.player().equals(player))
+            .findAny();
     if ("start".equals(arguments[0].toLowerCase())) {
       if (optionalProcess.isPresent()) {
         player.sendMessage(Constants.PREFIX + "Du hast bereits einen Prozess am laufen.");

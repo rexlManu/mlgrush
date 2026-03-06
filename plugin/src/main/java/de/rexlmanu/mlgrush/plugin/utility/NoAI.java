@@ -6,8 +6,7 @@ import org.bukkit.entity.Mob;
 
 public final class NoAI {
 
-  private NoAI() {
-  }
+  private NoAI() {}
 
   public static void setEntityAi(Entity entity, boolean ai) {
     if (entity instanceof LivingEntity livingEntity) {

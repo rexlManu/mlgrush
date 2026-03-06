@@ -3,10 +3,9 @@ package de.rexlmanu.mlgrush.plugin.command.subs;
 import de.rexlmanu.mlgrush.plugin.command.SubCommand;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 @AllArgsConstructor
 public class HelpCommand implements SubCommand {
@@ -25,7 +24,9 @@ public class HelpCommand implements SubCommand {
 
   @Override
   public void execute(GamePlayer gamePlayer, String[] arguments) {
-    this.commands.forEach(subCommand ->
-      gamePlayer.sendMessage(MessageFormat.of("%s - %s", subCommand.name(), subCommand.description())));
+    this.commands.forEach(
+        subCommand ->
+            gamePlayer.sendMessage(
+                MessageFormat.of("%s - %s", subCommand.name(), subCommand.description())));
   }
 }

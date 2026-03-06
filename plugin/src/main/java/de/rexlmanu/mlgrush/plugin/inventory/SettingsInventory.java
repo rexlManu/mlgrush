@@ -6,6 +6,8 @@ import de.rexlmanu.mlgrush.plugin.equipment.StickEquipment;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -17,24 +19,27 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class SettingsInventory implements Listener {
-  private static Map<Character, ItemStack> PATTERN_ITEM = new HashMap<Character, ItemStack>() {{
-    put('t', ItemStackBuilder.of(Material.LIME_STAINED_GLASS_PANE).name("&r").build());
-    put('b', ItemStackBuilder.of(Material.GREEN_STAINED_GLASS_PANE).name("&r").build());
-  }};
+  private static Map<Character, ItemStack> PATTERN_ITEM =
+      new HashMap<Character, ItemStack>() {
+        {
+          put('t', ItemStackBuilder.of(Material.LIME_STAINED_GLASS_PANE).name("&r").build());
+          put('b', ItemStackBuilder.of(Material.GREEN_STAINED_GLASS_PANE).name("&r").build());
+        }
+      };
 
   private static final char[][] PATTERN = {
-    { 't', 'b', 't', 't', 'b', 't', 't', 'b', 't' },
-    { 'b', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'b' },
-    { 't', 'b', 't', 't', 'b', 't', 't', 'b', 't' }
+    {'t', 'b', 't', 't', 'b', 't', 't', 'b', 't'},
+    {'b', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'b'},
+    {'t', 'b', 't', 't', 'b', 't', 't', 'b', 't'}
   };
 
-  private static final ItemStack INVENTORY_SORTING = ItemStackBuilder.of(Material.BUCKET).name("&8» &aInventarsortierung anpassen").build();
-  private static final ItemStack STICK_SHOP = ItemStackBuilder.of(Material.STICK).name("&8» &aStickauswahl öffnen").build();
-  private static final ItemStack BLOCK_SHOP = ItemStackBuilder.of(Material.SANDSTONE).name("&8» &aBlockauswahl öffnen").build();
+  private static final ItemStack INVENTORY_SORTING =
+      ItemStackBuilder.of(Material.BUCKET).name("&8» &aInventarsortierung anpassen").build();
+  private static final ItemStack STICK_SHOP =
+      ItemStackBuilder.of(Material.STICK).name("&8» &aStickauswahl öffnen").build();
+  private static final ItemStack BLOCK_SHOP =
+      ItemStackBuilder.of(Material.SANDSTONE).name("&8» &aBlockauswahl öffnen").build();
   private boolean unregistered = false;
 
   private GamePlayer gamePlayer;
@@ -42,7 +47,8 @@ public class SettingsInventory implements Listener {
 
   public SettingsInventory(GamePlayer gamePlayer) {
     this.gamePlayer = gamePlayer;
-    this.inventory = Bukkit.createInventory(null, 27, MessageFormat.replaceColors("&8● &a" + "Einstellungen"));
+    this.inventory =
+        Bukkit.createInventory(null, 27, MessageFormat.replaceColors("&8● &a" + "Einstellungen"));
     JavaPlugin plugin = GamePlugin.getProvidingPlugin(GamePlugin.class);
     Bukkit.getPluginManager().registerEvents(this, plugin);
 

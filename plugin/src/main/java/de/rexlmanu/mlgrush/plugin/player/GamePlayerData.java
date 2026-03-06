@@ -1,15 +1,14 @@
 package de.rexlmanu.mlgrush.plugin.player;
 
 import eu.miopowered.repository.Key;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @AllArgsConstructor
 @Accessors(fluent = true)
@@ -28,17 +27,20 @@ public class GamePlayerData implements Key {
     this.uniqueId = uniqueId;
     this.coins = 0;
     this.boughtItems = new CopyOnWriteArrayList<>();
-    this.inventorySorting = new ArrayList<String>() {{
-      add("stick");
-      add("pickaxe");
-      add("block");
-      add(null);
-      add(null);
-      add(null);
-      add(null);
-      add(null);
-      add(null);
-    }};
+    this.inventorySorting =
+        new ArrayList<String>() {
+          {
+            add("stick");
+            add("pickaxe");
+            add("block");
+            add(null);
+            add(null);
+            add(null);
+            add(null);
+            add(null);
+            add(null);
+          }
+        };
     this.statistics = new Statistics();
     this.selectedStick = null;
     this.selectedBlock = null;

@@ -57,7 +57,9 @@ public class RotatingParticleTask implements Runnable {
       rotateAroundAxisY(vector, yAxisCos, yAxisSin);
       rotateAroundAxisZ(vector, zAxisCos, zAxisSin);
 
-      this.location.getWorld().spawnParticle(Particle.FLAME, this.location.clone().add(vector), 1, 0, 0, 0, 0.01D);
+      this.location
+          .getWorld()
+          .spawnParticle(Particle.FLAME, this.location.clone().add(vector), 1, 0, 0, 0, 0.01D);
     }
 
     this.degreee += 3;

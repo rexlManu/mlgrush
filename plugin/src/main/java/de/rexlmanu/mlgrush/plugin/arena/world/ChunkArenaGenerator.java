@@ -1,13 +1,12 @@
 package de.rexlmanu.mlgrush.plugin.arena.world;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
 
 public class ChunkArenaGenerator extends ChunkGenerator {
 

@@ -5,16 +5,15 @@ import de.rexlmanu.mlgrush.plugin.arena.configuration.ArenaConfiguration;
 import de.rexlmanu.mlgrush.plugin.arena.world.ChunkArenaGenerator;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Accessors(fluent = true)
 @Getter
@@ -27,13 +26,12 @@ public class ArenaContainer {
   private World world;
 
   public ArenaContainer() {
-    this.world = Bukkit.createWorld(
-      WorldCreator
-        .name(ARENA_WORLD)
-        .environment(World.Environment.NORMAL)
-        .generator(new ChunkArenaGenerator())
-        .generateStructures(false)
-    );
+    this.world =
+        Bukkit.createWorld(
+            WorldCreator.name(ARENA_WORLD)
+                .environment(World.Environment.NORMAL)
+                .generator(new ChunkArenaGenerator())
+                .generateStructures(false));
 
     this.world.setDifficulty(Difficulty.PEACEFUL);
     this.world.setFullTime(2000);
@@ -42,11 +40,16 @@ public class ArenaContainer {
   }
 
   public void register(List<GamePlayer> players, ArenaConfiguration configuration) {
-    Bukkit.getScheduler().runTask(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> this.activeArenas.add(new Arena(configuration, players)));
+    Bukkit.getScheduler()
+        .runTask(
+            GamePlugin.getProvidingPlugin(GamePlugin.class),
+            () -> this.activeArenas.add(new Arena(configuration, players)));
   }
 
   public Optional<Arena> findArenaByPlayer(GamePlayer gamePlayer) {
-    return this.activeArenas.stream().filter(arena -> arena.players().contains(gamePlayer)).findAny();
+    return this.activeArenas.stream()
+        .filter(arena -> arena.players().contains(gamePlayer))
+        .findAny();
   }
 
   public void remove(Arena arena) {

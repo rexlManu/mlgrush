@@ -35,7 +35,9 @@ public class TwinsParticleTask implements Runnable {
       double dy = this.stepY / (double) this.maxStepY;
       double dz = -Math.sin(slice * this.stepX + orbSlice * i) * this.radius;
 
-      this.location.getWorld().spawnParticle(Particle.FLAME, this.location.clone().add(dx, dy, dz), 1, 0, 0, 0, 0.01D);
+      this.location
+          .getWorld()
+          .spawnParticle(Particle.FLAME, this.location.clone().add(dx, dy, dz), 1, 0, 0, 0, 0.01D);
     }
 
     this.stepX++;

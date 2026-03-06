@@ -2,13 +2,12 @@ package de.rexlmanu.mlgrush.plugin.event;
 
 import de.rexlmanu.mlgrush.plugin.event.type.GamePlayerEvent;
 import de.rexlmanu.mlgrush.plugin.game.Environment;
+import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-
-import java.util.function.Consumer;
 
 @AllArgsConstructor
 @Data
@@ -23,5 +22,4 @@ public class EventContainer<E> implements Listener {
     HandlerList.unregisterAll(this);
     return this;
   }
-
 }

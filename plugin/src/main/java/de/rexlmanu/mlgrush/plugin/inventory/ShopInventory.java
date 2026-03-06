@@ -6,6 +6,9 @@ import de.rexlmanu.mlgrush.plugin.equipment.Buyable;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Data;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -22,21 +25,22 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 @Data
 public class ShopInventory implements Listener {
 
-  private static final Map<Character, ItemStack> PATTERN_ITEM = new HashMap<Character, ItemStack>() {{
-    put('t', ItemStackBuilder.of(Material.LIME_STAINED_GLASS_PANE).name("&r").build());
-    put('b', ItemStackBuilder.of(Material.GREEN_STAINED_GLASS_PANE).name("&r").build());
-    put('c', ItemStackBuilder.of(Material.BARRIER).name("&8» &cSchließen").build());
-  }};
+  private static final Map<Character, ItemStack> PATTERN_ITEM =
+      new HashMap<Character, ItemStack>() {
+        {
+          put('t', ItemStackBuilder.of(Material.LIME_STAINED_GLASS_PANE).name("&r").build());
+          put('b', ItemStackBuilder.of(Material.GREEN_STAINED_GLASS_PANE).name("&r").build());
+          put('c', ItemStackBuilder.of(Material.BARRIER).name("&8» &cSchließen").build());
+        }
+      };
 
-  private static final ItemStack ABORT_ITEM = ItemStackBuilder.of(Material.RED_DYE).name("&8» &cAbbrechen").build();
-  private static final ItemStack BUY_ITEM = ItemStackBuilder.of(Material.LIME_DYE).name("&8» &aErwerben").build();
+  private static final ItemStack ABORT_ITEM =
+      ItemStackBuilder.of(Material.RED_DYE).name("&8» &cAbbrechen").build();
+  private static final ItemStack BUY_ITEM =
+      ItemStackBuilder.of(Material.LIME_DYE).name("&8» &aErwerben").build();
 
   private static final char[][] PATTERN = {
     {'t', 'b', 't', 't', 'b', 't', 't', 'b', 't'},
@@ -87,7 +91,8 @@ public class ShopInventory implements Listener {
   }
 
   private ItemStack createItem(Buyable buyable) {
-    ItemStackBuilder builder = ItemStackBuilder.of(buyable.material()).name("&8» " + buyable.displayName());
+    ItemStackBuilder builder =
+        ItemStackBuilder.of(buyable.material()).name("&8» " + buyable.displayName());
     if (buyable.cost() > 0) {
       if (this.owns(buyable)) {
         builder.lore("", "&a&lIN BESITZ");
@@ -96,7 +101,7 @@ public class ShopInventory implements Listener {
       }
     }
     if (buyable.name().toLowerCase().equals(this.gamePlayer.data().selectedStick())
-      || buyable.name().toLowerCase().equals(this.gamePlayer.data().selectedBlock())) {
+        || buyable.name().toLowerCase().equals(this.gamePlayer.data().selectedBlock())) {
       builder.enchant(Enchantment.UNBREAKING, 1);
       builder.hideAttributes();
     }
@@ -105,8 +110,8 @@ public class ShopInventory implements Listener {
 
   private boolean owns(Buyable buyable) {
     return this.gamePlayer.player().hasPermission(buyable.permission())
-      || this.gamePlayer.data().boughtItems().contains(buyable.name().toLowerCase())
-      || buyable.cost() == 0;
+        || this.gamePlayer.data().boughtItems().contains(buyable.name().toLowerCase())
+        || buyable.cost() == 0;
   }
 
   private void open() {
@@ -117,7 +122,8 @@ public class ShopInventory implements Listener {
 
   @EventHandler
   public void handle(InventoryClickEvent event) {
-    if (event.getClickedInventory() == null || !event.getClickedInventory().equals(this.inventory)) {
+    if (event.getClickedInventory() == null
+        || !event.getClickedInventory().equals(this.inventory)) {
       return;
     }
 
@@ -134,7 +140,8 @@ public class ShopInventory implements Listener {
       player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1f, 1.3f);
       return;
     }
-    if (item.getType() == Material.LIME_STAINED_GLASS_PANE || item.getType() == Material.GREEN_STAINED_GLASS_PANE) {
+    if (item.getType() == Material.LIME_STAINED_GLASS_PANE
+        || item.getType() == Material.GREEN_STAINED_GLASS_PANE) {
       return;
     }
     if (item.isSimilar(BUY_ITEM)) {
@@ -142,12 +149,17 @@ public class ShopInventory implements Listener {
         return;
       }
       if (this.gamePlayer.data().coins() < this.currentBoughtItem.cost()) {
-        this.gamePlayer.sendMessage(String.format("Dir fehlen noch &a%s &7Coins dafür.", this.currentBoughtItem.cost() - this.gamePlayer.data().coins()));
+        this.gamePlayer.sendMessage(
+            String.format(
+                "Dir fehlen noch &a%s &7Coins dafür.",
+                this.currentBoughtItem.cost() - this.gamePlayer.data().coins()));
         return;
       }
       this.gamePlayer.data().coins(this.gamePlayer.data().coins() - this.currentBoughtItem.cost());
       this.gamePlayer.data().boughtItems().add(this.currentBoughtItem.name().toLowerCase());
-      this.gamePlayer.sendMessage(String.format("Du hast erfolgreich folgendes erworben: %s", this.currentBoughtItem.displayName()));
+      this.gamePlayer.sendMessage(
+          String.format(
+              "Du hast erfolgreich folgendes erworben: %s", this.currentBoughtItem.displayName()));
       player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.7f);
       this.setElementItems();
       this.currentBoughtItem = null;
@@ -163,46 +175,60 @@ public class ShopInventory implements Listener {
       return;
     }
     Arrays.stream(this.elements)
-      .filter(buyable -> buyable.material().equals(item.getType()))
-      .findAny()
-      .ifPresent(buyable -> {
-        if (this.owns(buyable)) {
-          if (buyable.name().toLowerCase().equals(this.gamePlayer.data().selectedStick())
-            || buyable.name().toLowerCase().equals(this.gamePlayer.data().selectedBlock())) {
-            return;
-          }
-          if (buyable instanceof BlockEquipment) {
-            this.gamePlayer.data().selectedBlock(buyable.name().toLowerCase());
-          } else {
-            this.gamePlayer.data().selectedStick(buyable.name().toLowerCase());
-          }
-          this.gamePlayer.sendMessage(String.format("Du hast folgendes ausgerüstet: %s", buyable.displayName()));
-          player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1.4f);
-          this.setElementItems();
-          return;
-        }
-        if (this.animationTick != 0) {
-          return;
-        }
+        .filter(buyable -> buyable.material().equals(item.getType()))
+        .findAny()
+        .ifPresent(
+            buyable -> {
+              if (this.owns(buyable)) {
+                if (buyable.name().toLowerCase().equals(this.gamePlayer.data().selectedStick())
+                    || buyable
+                        .name()
+                        .toLowerCase()
+                        .equals(this.gamePlayer.data().selectedBlock())) {
+                  return;
+                }
+                if (buyable instanceof BlockEquipment) {
+                  this.gamePlayer.data().selectedBlock(buyable.name().toLowerCase());
+                } else {
+                  this.gamePlayer.data().selectedStick(buyable.name().toLowerCase());
+                }
+                this.gamePlayer.sendMessage(
+                    String.format("Du hast folgendes ausgerüstet: %s", buyable.displayName()));
+                player.playSound(
+                    player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1.4f);
+                this.setElementItems();
+                return;
+              }
+              if (this.animationTick != 0) {
+                return;
+              }
 
-        this.currentBoughtItem = buyable;
-        this.animationTick = 0;
+              this.currentBoughtItem = buyable;
+              this.animationTick = 0;
 
-        this.animationTask = Bukkit.getScheduler().runTaskTimer(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> {
-          if (this.animationTick > 6) {
-            this.animationTick = 0;
-            this.animationTask.cancel();
-            this.inventory.setItem(13, this.createItem(buyable));
-            this.inventory.setItem(11, ABORT_ITEM);
-            this.inventory.setItem(15, BUY_ITEM);
-            player.playSound(player.getLocation(), Sound.BLOCK_PISTON_EXTEND, 0.8f, 1f);
-            return;
-          }
-          this.inventory.setItem(this.animationTick + 10, null);
-          player.playSound(player.getLocation(), Sound.BLOCK_PISTON_EXTEND, 0.6f, 2f);
-          this.animationTick++;
-        }, 0L, 1L);
-      });
+              this.animationTask =
+                  Bukkit.getScheduler()
+                      .runTaskTimer(
+                          GamePlugin.getProvidingPlugin(GamePlugin.class),
+                          () -> {
+                            if (this.animationTick > 6) {
+                              this.animationTick = 0;
+                              this.animationTask.cancel();
+                              this.inventory.setItem(13, this.createItem(buyable));
+                              this.inventory.setItem(11, ABORT_ITEM);
+                              this.inventory.setItem(15, BUY_ITEM);
+                              player.playSound(
+                                  player.getLocation(), Sound.BLOCK_PISTON_EXTEND, 0.8f, 1f);
+                              return;
+                            }
+                            this.inventory.setItem(this.animationTick + 10, null);
+                            player.playSound(
+                                player.getLocation(), Sound.BLOCK_PISTON_EXTEND, 0.6f, 2f);
+                            this.animationTick++;
+                          },
+                          0L,
+                          1L);
+            });
   }
 
   @EventHandler

@@ -14,8 +14,7 @@ public class ArenaPlayerDiedEvent extends PlayerEvent {
   private static final HandlerList HANDLER_LIST = new HandlerList();
 
   private GamePlayer gamePlayer;
-  @Nullable
-  private GamePlayer killer;
+  @Nullable private GamePlayer killer;
 
   public ArenaPlayerDiedEvent(GamePlayer gamePlayer, GamePlayer killer) {
     super(gamePlayer.player());

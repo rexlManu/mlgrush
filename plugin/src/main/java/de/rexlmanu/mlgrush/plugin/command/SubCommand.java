@@ -1,10 +1,9 @@
 package de.rexlmanu.mlgrush.plugin.command;
 
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public interface SubCommand {
 

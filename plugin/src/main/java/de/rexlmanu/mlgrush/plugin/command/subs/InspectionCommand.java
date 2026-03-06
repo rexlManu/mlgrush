@@ -18,6 +18,9 @@ public class InspectionCommand implements SubCommand {
   @Override
   public void execute(GamePlayer gamePlayer, String[] arguments) throws Exception {
     gamePlayer.inspectionMode(!gamePlayer.inspectionMode());
-    gamePlayer.sendMessage(String.format("Du hast den &aInspectionMode&7 %s.", gamePlayer.inspectionMode() ? "aktiviert" : "deaktiviert"));
+    gamePlayer.sendMessage(
+        String.format(
+            "Du hast den &aInspectionMode&7 %s.",
+            gamePlayer.inspectionMode() ? "aktiviert" : "deaktiviert"));
   }
 }

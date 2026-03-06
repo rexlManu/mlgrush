@@ -2,6 +2,7 @@ import org.gradle.api.tasks.compile.JavaCompile
 
 plugins {
   base
+  id("com.diffplug.spotless") version "6.25.0"
 }
 
 group = "de.rexlmanu.mlgrush"
@@ -10,6 +11,8 @@ version = providers.gradleProperty("version").get()
 subprojects {
   group = rootProject.group
   version = rootProject.version
+
+  apply(plugin = "com.diffplug.spotless")
 
   repositories {
     mavenCentral()
@@ -33,6 +36,29 @@ subprojects {
 
     tasks.withType<Test>().configureEach {
       useJUnitPlatform()
+    }
+  }
+
+  extensions.configure<com.diffplug.gradle.spotless.SpotlessExtension>("spotless") {
+    java {
+      target("src/**/*.java")
+      googleJavaFormat("1.22.0")
+      removeUnusedImports()
+      trimTrailingWhitespace()
+      endWithNewline()
+    }
+
+    kotlinGradle {
+      target("*.gradle.kts", "**/*.gradle.kts")
+      ktfmt()
+      trimTrailingWhitespace()
+      endWithNewline()
+    }
+
+    format("misc") {
+      target("*.md", ".gitignore", "**/.gitignore", "**/*.yml", "**/*.yaml", "gradle.properties")
+      trimTrailingWhitespace()
+      endWithNewline()
     }
   }
 }

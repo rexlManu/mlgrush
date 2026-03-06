@@ -1,13 +1,12 @@
 package de.rexlmanu.mlgrush.plugin.player;
 
 import de.rexlmanu.mlgrush.plugin.game.Environment;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerProvider {
 
@@ -24,7 +23,8 @@ public class PlayerProvider {
   }
 
   public static List<GamePlayer> getPlayers(Environment environment) {
-    return PLAYERS.stream().filter(gamePlayer -> gamePlayer.environment().equals(environment)).collect(Collectors.toList());
+    return PLAYERS.stream()
+        .filter(gamePlayer -> gamePlayer.environment().equals(environment))
+        .collect(Collectors.toList());
   }
-
 }

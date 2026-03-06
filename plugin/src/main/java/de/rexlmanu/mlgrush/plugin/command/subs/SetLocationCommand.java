@@ -4,13 +4,12 @@ import de.rexlmanu.mlgrush.plugin.command.CommandParameter;
 import de.rexlmanu.mlgrush.plugin.command.SubCommand;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
-import org.bukkit.Location;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
 public class SetLocationCommand implements SubCommand {
 
@@ -37,7 +36,16 @@ public class SetLocationCommand implements SubCommand {
   @Override
   public @NotNull List<String> suggestions(GamePlayer gamePlayer, String[] arguments) {
     if (arguments.length != 1) return new ArrayList<>();
-    return Stream.of("stick-change-npc", "block-change-npc", "queue-npc", "spawn", "hologram", "npc-ranking-1", "npc-ranking-2", "npc-ranking-3")
-      .filter(s -> s.startsWith(arguments[0].toLowerCase())).collect(Collectors.toList());
+    return Stream.of(
+            "stick-change-npc",
+            "block-change-npc",
+            "queue-npc",
+            "spawn",
+            "hologram",
+            "npc-ranking-1",
+            "npc-ranking-2",
+            "npc-ranking-3")
+        .filter(s -> s.startsWith(arguments[0].toLowerCase()))
+        .collect(Collectors.toList());
   }
 }

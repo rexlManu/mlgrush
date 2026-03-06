@@ -10,6 +10,10 @@ import de.rexlmanu.mlgrush.plugin.game.Environment;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.scoreboard.packet.PacketScoreboardSession;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,11 +23,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
 @Data
 @Getter
 @Accessors(fluent = true)
@@ -31,8 +30,7 @@ public class GamePlayer {
 
   private UUID uniqueId;
   private PacketScoreboardSession scoreboardSession;
-  @Setter
-  private Environment environment;
+  @Setter private Environment environment;
 
   private Map<UUID, ArenaConfiguration.ArenaConfigurationBuilder> challengeRequests;
   private boolean creatingGame, buildMode, inspectionMode;
@@ -48,22 +46,33 @@ public class GamePlayer {
     this.inspectionMode = false;
     this.detection = new Detection();
 
-    this.challengeRequests = ExpiringMap
-      .builder()
-      .expiration(3, TimeUnit.MINUTES)
-      .asyncExpirationListener((key, value) -> PlayerProvider.find((UUID) key)
-        .ifPresent(gamePlayer -> gamePlayer.sendMessage(String.format("Deine Anfrage an &a%s&7 ist ausgelaufen.", this.player().getName()))))
-      .build();
+    this.challengeRequests =
+        ExpiringMap.builder()
+            .expiration(3, TimeUnit.MINUTES)
+            .asyncExpirationListener(
+                (key, value) ->
+                    PlayerProvider.find((UUID) key)
+                        .ifPresent(
+                            gamePlayer ->
+                                gamePlayer.sendMessage(
+                                    String.format(
+                                        "Deine Anfrage an &a%s&7 ist ausgelaufen.",
+                                        this.player().getName()))))
+            .build();
 
-    GameManager.instance().databaseContext().loadData(this.uniqueId).whenComplete((gamePlayerData, throwable) -> {
-      if (throwable != null) {
-        throwable.printStackTrace();
-        this.sendMessage("Wir konnten deine Daten nicht laden.");
-        return;
-      }
-      this.data = gamePlayerData;
-      GameManager.instance().statsHologramManager().show(this);
-    });
+    GameManager.instance()
+        .databaseContext()
+        .loadData(this.uniqueId)
+        .whenComplete(
+            (gamePlayerData, throwable) -> {
+              if (throwable != null) {
+                throwable.printStackTrace();
+                this.sendMessage("Wir konnten deine Daten nicht laden.");
+                return;
+              }
+              this.data = gamePlayerData;
+              GameManager.instance().statsHologramManager().show(this);
+            });
   }
 
   public void save() {

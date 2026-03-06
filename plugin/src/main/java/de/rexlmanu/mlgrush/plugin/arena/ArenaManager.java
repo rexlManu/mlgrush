@@ -18,18 +18,17 @@ import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import de.rexlmanu.mlgrush.plugin.utility.PlayerUtils;
 import de.rexlmanu.mlgrush.plugin.utility.RandomElement;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 @Accessors(fluent = true)
 @Getter
@@ -39,28 +38,30 @@ public class ArenaManager {
   public static final int SPACE_X = 250;
   public static final int SPACE_Z = 250;
 
-  public static final ItemStack PICKAXE = ItemStackBuilder
-    .of(Material.STONE_PICKAXE)
-    .name("&aSpitzhacke")
-    .breakable(false)
-    .hideAttributes()
-    .enchant(Enchantment.EFFICIENCY, 1)
-    .build();
+  public static final ItemStack PICKAXE =
+      ItemStackBuilder.of(Material.STONE_PICKAXE)
+          .name("&aSpitzhacke")
+          .breakable(false)
+          .hideAttributes()
+          .enchant(Enchantment.EFFICIENCY, 1)
+          .build();
 
-  public static final Supplier<ArenaConfiguration.ArenaConfigurationBuilder> DEFAULT_CONFIGURATION = () -> ArenaConfiguration.builder()
-    .maximalGameLength(Math.toIntExact(TimeUnit.MINUTES.toSeconds(30)))
-    .maximalPoints(10)
-    .teamAmount(2)
-    .teamSize(1)
-    .spawnProtection(3)
-    .nohitdelay(false)
-    .buildHeight(16)
-    .autoBlockBreak(false)
-    .custom(true)
-    .fallDamage(false)
-    .unlimitedBlocks(false)
-    .showCps(false)
-    .knockbackOnlyHeight(false);
+  public static final Supplier<ArenaConfiguration.ArenaConfigurationBuilder> DEFAULT_CONFIGURATION =
+      () ->
+          ArenaConfiguration.builder()
+              .maximalGameLength(Math.toIntExact(TimeUnit.MINUTES.toSeconds(30)))
+              .maximalPoints(10)
+              .teamAmount(2)
+              .teamSize(1)
+              .spawnProtection(3)
+              .nohitdelay(false)
+              .buildHeight(16)
+              .autoBlockBreak(false)
+              .custom(true)
+              .fallDamage(false)
+              .unlimitedBlocks(false)
+              .showCps(false)
+              .knockbackOnlyHeight(false);
 
   private ArenaTemplateLoader templateLoader;
   private ArenaContainer arenaContainer;
@@ -74,50 +75,79 @@ public class ArenaManager {
     this.create(players, DEFAULT_CONFIGURATION.get().custom(false));
   }
 
-  public void create(List<GamePlayer> players, ArenaConfiguration.ArenaConfigurationBuilder configurationBuilder) {
+  public void create(
+      List<GamePlayer> players, ArenaConfiguration.ArenaConfigurationBuilder configurationBuilder) {
     // Prevent dupe arenas, I dont know when could that happen but better to protect against that
     if (players.stream().anyMatch(GamePlayer::creatingGame)) return;
-    players.forEach(gamePlayer -> {
-      GameManager.instance().statsHologramManager().destroy(gamePlayer);
-      gamePlayer.creatingGame(true);
-      Bukkit.getPluginManager().callEvent(new PlayerIngameEvent(gamePlayer.player()));
-    });
-    ArenaChoosingInventory.create(players).whenComplete((template, throwable) -> {
-      if (throwable != null) {
-        players.forEach(gamePlayer -> gamePlayer.sendMessage("Das Spiel konnte nicht erstellt werden."));
-        return;
-      }
-      ArenaConfiguration configuration = configurationBuilder
-        .arenaTemplate(template)
-        .startPoint(new Location(this.arenaContainer.world(), this.getNextFreeX(), HEIGHT, SPACE_Z))
-        .build();
-      players.forEach(gamePlayer -> gamePlayer.sendMessage("Das Spiel wird erstellt."));
-      ArenaWriter.generateTemplate(configuration);
-      if (configuration.custom()) {
-        players.forEach(gamePlayer -> gamePlayer.sendMessage("In dieser Runde werden &akeine&7 Statistiken gewertet."));
-      }
-      this.arenaContainer.register(players, configuration);
-      GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
-    });
+    players.forEach(
+        gamePlayer -> {
+          GameManager.instance().statsHologramManager().destroy(gamePlayer);
+          gamePlayer.creatingGame(true);
+          Bukkit.getPluginManager().callEvent(new PlayerIngameEvent(gamePlayer.player()));
+        });
+    ArenaChoosingInventory.create(players)
+        .whenComplete(
+            (template, throwable) -> {
+              if (throwable != null) {
+                players.forEach(
+                    gamePlayer ->
+                        gamePlayer.sendMessage("Das Spiel konnte nicht erstellt werden."));
+                return;
+              }
+              ArenaConfiguration configuration =
+                  configurationBuilder
+                      .arenaTemplate(template)
+                      .startPoint(
+                          new Location(
+                              this.arenaContainer.world(), this.getNextFreeX(), HEIGHT, SPACE_Z))
+                      .build();
+              players.forEach(gamePlayer -> gamePlayer.sendMessage("Das Spiel wird erstellt."));
+              ArenaWriter.generateTemplate(configuration);
+              if (configuration.custom()) {
+                players.forEach(
+                    gamePlayer ->
+                        gamePlayer.sendMessage(
+                            "In dieser Runde werden &akeine&7 Statistiken gewertet."));
+              }
+              this.arenaContainer.register(players, configuration);
+              GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
+            });
   }
 
   public void destroy(Arena arena) {
-    arena.players().forEach(gamePlayer -> gamePlayer.creatingGame(false).environment(Environment.LOBBY));
-    Bukkit.getScheduler().runTask(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> {
-      arena.spectators().forEach(this::removeSpectator);
-      arena.players().stream().filter(gamePlayer -> Objects.nonNull(gamePlayer.player()))
-        .forEach(gamePlayer -> {
-          Player player = gamePlayer.player();
-          PlayerUtils.resetPlayer(player);
-          GameManager.instance().locationProvider().get("spawn").ifPresent(player::teleport);
-          Bukkit.getOnlinePlayers().forEach(target -> player.showPlayer(GamePlugin.getProvidingPlugin(GamePlugin.class), target));
-          GameManager.instance().giveLobbyItems(player);
-        });
-      arena.resetBlocks();
-      arena.region().clear(arena.configuration().startPoint());
-    });
-    Bukkit.getScheduler().runTaskLaterAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), () ->
-      GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY), 1);
+    arena
+        .players()
+        .forEach(gamePlayer -> gamePlayer.creatingGame(false).environment(Environment.LOBBY));
+    Bukkit.getScheduler()
+        .runTask(
+            GamePlugin.getProvidingPlugin(GamePlugin.class),
+            () -> {
+              arena.spectators().forEach(this::removeSpectator);
+              arena.players().stream()
+                  .filter(gamePlayer -> Objects.nonNull(gamePlayer.player()))
+                  .forEach(
+                      gamePlayer -> {
+                        Player player = gamePlayer.player();
+                        PlayerUtils.resetPlayer(player);
+                        GameManager.instance()
+                            .locationProvider()
+                            .get("spawn")
+                            .ifPresent(player::teleport);
+                        Bukkit.getOnlinePlayers()
+                            .forEach(
+                                target ->
+                                    player.showPlayer(
+                                        GamePlugin.getProvidingPlugin(GamePlugin.class), target));
+                        GameManager.instance().giveLobbyItems(player);
+                      });
+              arena.resetBlocks();
+              arena.region().clear(arena.configuration().startPoint());
+            });
+    Bukkit.getScheduler()
+        .runTaskLaterAsynchronously(
+            GamePlugin.getProvidingPlugin(GamePlugin.class),
+            () -> GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY),
+            1);
     Bukkit.getPluginManager().callEvent(new ArenaDestroyEvent(arena));
     this.arenaContainer.remove(arena);
   }
@@ -127,10 +157,8 @@ public class ArenaManager {
     int x = baseLocation.getBlockX();
     while (true) {
       int finalX = x;
-      if (this.arenaContainer
-        .activeArenas()
-        .stream()
-        .noneMatch(target -> target.configuration().startPoint().getBlockX() == finalX)) {
+      if (this.arenaContainer.activeArenas().stream()
+          .noneMatch(target -> target.configuration().startPoint().getBlockX() == finalX)) {
         break;
       }
       x += SPACE_X;
@@ -141,49 +169,81 @@ public class ArenaManager {
   public void delete(Arena arena) {
     GameTeam winningTeam = arena.getWinningTeam();
     if (winningTeam == null) return;
-    arena.players().forEach(gamePlayer -> {
-      Player player = gamePlayer.player();
-      PlayerUtils.sendTitle(player, 5, 20, 10,
-        MessageFormat.replaceColors("&7Team " + winningTeam.name().displayName()),
-        MessageFormat.replaceColors("&7hat gewonnen.")
-      );
-      gamePlayer.sound(Sound.ENTITY_PLAYER_LEVELUP, 1f);
-      gamePlayer.sendMessage(String.format("Team %s &7hat das Spiel gewonnen!", winningTeam.name().displayName()));
-      // Setting stats
-      if (arena.configuration().custom()) return;
-      gamePlayer.sendMessage("Deine Statistiken haben sich folgend verändert:");
-      ArenaStatistics arenaStatistics = arena.statsFromPlayer(gamePlayer);
-      Statistics statistics = gamePlayer.data().statistics();
-      double oldKd = StatsCommand.checkForNan(statistics.kills(), statistics.deaths());
-      double newKd = StatsCommand.checkForNan(statistics.kills() + arenaStatistics.kills(), statistics.deaths() + arenaStatistics.deaths());
-      double kdDifference = newKd - oldKd;
-      double oldWinrate = StatsCommand.checkForNan(statistics.wins(), statistics.games()) * 100;
-      double newWinrate = StatsCommand.checkForNan(statistics.wins() + (winningTeam.members().contains(gamePlayer) ? 1 : 0), statistics.games() + 1) * 100;
-      double winrateDifference = newWinrate - oldWinrate;
-      Stream.of(
-        "",
-        String.format("&8  ▶ &7Kills &8● &a%s &8(&a+%s&7&8)", statistics.kills(), arenaStatistics.kills()),
-        String.format("&8  ▶ &7Tode &8● &a%s &8(&a+%s&7&8)", statistics.deaths(), arenaStatistics.deaths()),
-        String.format("&8  ▶ &7KD &8● &a%.2f &8(&a%s%.2f&7&8)", oldKd, kdDifference > 0 ? "+" : "", kdDifference),
-        "",
-        String.format("&8  ▶ &7Abgebaute Betten &8● &a%s &8(&a+%s&7&8)", statistics.destroyedBeds(), arenaStatistics.destroyedBeds()),
-        //String.format("&8  ▶ &7Platzierte Blöcke &8● &a%s &8(&a+%s&7&8)", statistics.blocks(), arenaStatistics.blocks()),
-        String.format("&8  ▶ &7Siegreiche Spiele &8● &a%s &8(&a+%s&7&8)", statistics.wins(), winningTeam.members().contains(gamePlayer) ? 1 : 0),
-        String.format("&8  ▶ &7Gespielte Spiele &8● &a%s &8(&a+%s&7&8)", statistics.games(), 1),
-        "",
-        String.format("&8  ▶ &7Siegesrate &8● &a%.1f%% &8(&a%s%.1f%%&7&8)", oldWinrate, winrateDifference > 0 ? "+" : "", winrateDifference),
-        ""
-      ).map(MessageFormat::replaceColors).forEach(player::sendMessage);
+    arena
+        .players()
+        .forEach(
+            gamePlayer -> {
+              Player player = gamePlayer.player();
+              PlayerUtils.sendTitle(
+                  player,
+                  5,
+                  20,
+                  10,
+                  MessageFormat.replaceColors("&7Team " + winningTeam.name().displayName()),
+                  MessageFormat.replaceColors("&7hat gewonnen."));
+              gamePlayer.sound(Sound.ENTITY_PLAYER_LEVELUP, 1f);
+              gamePlayer.sendMessage(
+                  String.format(
+                      "Team %s &7hat das Spiel gewonnen!", winningTeam.name().displayName()));
+              // Setting stats
+              if (arena.configuration().custom()) return;
+              gamePlayer.sendMessage("Deine Statistiken haben sich folgend verändert:");
+              ArenaStatistics arenaStatistics = arena.statsFromPlayer(gamePlayer);
+              Statistics statistics = gamePlayer.data().statistics();
+              double oldKd = StatsCommand.checkForNan(statistics.kills(), statistics.deaths());
+              double newKd =
+                  StatsCommand.checkForNan(
+                      statistics.kills() + arenaStatistics.kills(),
+                      statistics.deaths() + arenaStatistics.deaths());
+              double kdDifference = newKd - oldKd;
+              double oldWinrate =
+                  StatsCommand.checkForNan(statistics.wins(), statistics.games()) * 100;
+              double newWinrate =
+                  StatsCommand.checkForNan(
+                          statistics.wins() + (winningTeam.members().contains(gamePlayer) ? 1 : 0),
+                          statistics.games() + 1)
+                      * 100;
+              double winrateDifference = newWinrate - oldWinrate;
+              Stream.of(
+                      "",
+                      String.format(
+                          "&8  ▶ &7Kills &8● &a%s &8(&a+%s&7&8)",
+                          statistics.kills(), arenaStatistics.kills()),
+                      String.format(
+                          "&8  ▶ &7Tode &8● &a%s &8(&a+%s&7&8)",
+                          statistics.deaths(), arenaStatistics.deaths()),
+                      String.format(
+                          "&8  ▶ &7KD &8● &a%.2f &8(&a%s%.2f&7&8)",
+                          oldKd, kdDifference > 0 ? "+" : "", kdDifference),
+                      "",
+                      String.format(
+                          "&8  ▶ &7Abgebaute Betten &8● &a%s &8(&a+%s&7&8)",
+                          statistics.destroyedBeds(), arenaStatistics.destroyedBeds()),
+                      // String.format("&8  ▶ &7Platzierte Blöcke &8● &a%s &8(&a+%s&7&8)",
+                      // statistics.blocks(), arenaStatistics.blocks()),
+                      String.format(
+                          "&8  ▶ &7Siegreiche Spiele &8● &a%s &8(&a+%s&7&8)",
+                          statistics.wins(), winningTeam.members().contains(gamePlayer) ? 1 : 0),
+                      String.format(
+                          "&8  ▶ &7Gespielte Spiele &8● &a%s &8(&a+%s&7&8)", statistics.games(), 1),
+                      "",
+                      String.format(
+                          "&8  ▶ &7Siegesrate &8● &a%.1f%% &8(&a%s%.1f%%&7&8)",
+                          oldWinrate, winrateDifference > 0 ? "+" : "", winrateDifference),
+                      "")
+                  .map(MessageFormat::replaceColors)
+                  .forEach(player::sendMessage);
 
-      if (winningTeam.members().contains(gamePlayer)) {
-        statistics.addWin();
-      }
-      statistics.addKills(arenaStatistics.kills())
-        .addDeaths(arenaStatistics.deaths())
-        .addBlocks(arenaStatistics.blocks())
-        .addDestroyedBeds(arenaStatistics.destroyedBeds())
-        .addGame();
-    });
+              if (winningTeam.members().contains(gamePlayer)) {
+                statistics.addWin();
+              }
+              statistics
+                  .addKills(arenaStatistics.kills())
+                  .addDeaths(arenaStatistics.deaths())
+                  .addBlocks(arenaStatistics.blocks())
+                  .addDestroyedBeds(arenaStatistics.destroyedBeds())
+                  .addGame();
+            });
     Bukkit.getPluginManager().callEvent(new ArenaTeamWonEvent(arena, winningTeam));
     this.destroy(arena);
   }
@@ -196,7 +256,7 @@ public class ArenaManager {
     player.teleport(RandomElement.of(arena.gameTeams()).spawnLocation());
 
     player.setGameMode(GameMode.SPECTATOR);
-//    player.getInventory().setItem(4, LobbyEnvironment.BACK_TO_LOBBY_ITEM);
+    //    player.getInventory().setItem(4, LobbyEnvironment.BACK_TO_LOBBY_ITEM);
     gamePlayer.sound(Sound.ENTITY_PLAYER_LEVELUP, 2f);
     GameManager.instance().scoreboardHandler().update(gamePlayer);
     gamePlayer.sendMessage("Du kannst wieder zur Lobby\n &azurückkehren &7mit &8/&aquit&7.");
@@ -208,14 +268,13 @@ public class ArenaManager {
     GameManager.instance().locationProvider().get("spawn").ifPresent(player::teleport);
     gamePlayer.sound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2f);
     GameManager.instance().giveLobbyItems(player);
-    this.arenaContainer
-      .activeArenas()
-      .stream()
-      .filter(arena -> arena.spectators().contains(gamePlayer))
-      .findAny()
-      .ifPresent(arena -> {
-        arena.spectators().remove(gamePlayer);
-      });
+    this.arenaContainer.activeArenas().stream()
+        .filter(arena -> arena.spectators().contains(gamePlayer))
+        .findAny()
+        .ifPresent(
+            arena -> {
+              arena.spectators().remove(gamePlayer);
+            });
     GameManager.instance().scoreboardHandler().update(gamePlayer);
   }
 }

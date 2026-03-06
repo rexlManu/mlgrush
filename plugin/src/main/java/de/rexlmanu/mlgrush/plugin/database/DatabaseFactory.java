@@ -7,5 +7,4 @@ public class DatabaseFactory {
   public static DatabaseContext create() {
     return new FileDatabase();
   }
-
 }

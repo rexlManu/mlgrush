@@ -15,16 +15,15 @@ import de.rexlmanu.mlgrush.plugin.task.particle.FloorParticleTask;
 import de.rexlmanu.mlgrush.plugin.task.particle.QueueParticleTask;
 import de.rexlmanu.mlgrush.plugin.task.particle.TwinsParticleTask;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.GameRule;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
 
 public class GamePlugin extends JavaPlugin {
 
@@ -68,12 +67,14 @@ public class GamePlugin extends JavaPlugin {
       this.getCommand("stats").setExecutor(new StatsCommand());
     }
 
-    Bukkit.getWorlds().forEach(world -> {
-      world.setDifficulty(Difficulty.NORMAL);
-      world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-      world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
-      world.setFullTime(2000);
-    });
+    Bukkit.getWorlds()
+        .forEach(
+            world -> {
+              world.setDifficulty(Difficulty.NORMAL);
+              world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+              world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+              world.setFullTime(2000);
+            });
 
     new ArenaActionbarTask();
     new ArenaPlayingTimeExtendCheckerTask();
@@ -82,15 +83,22 @@ public class GamePlugin extends JavaPlugin {
     new ArenaShowCpsTask();
 
     Arrays.asList("queue-npc")
-      .forEach(key -> GameManager.instance().locationProvider().get(key)
-        .ifPresent(FloorParticleTask::new));
+        .forEach(
+            key ->
+                GameManager.instance()
+                    .locationProvider()
+                    .get(key)
+                    .ifPresent(FloorParticleTask::new));
 
     Arrays.asList("stick-change-npc", "block-change-npc")
-      .forEach(key -> GameManager.instance().locationProvider().get(key)
-        .ifPresent(TwinsParticleTask::new));
+        .forEach(
+            key ->
+                GameManager.instance()
+                    .locationProvider()
+                    .get(key)
+                    .ifPresent(TwinsParticleTask::new));
 
-    GameManager.instance().locationProvider().get("queue-npc")
-      .ifPresent(QueueParticleTask::new);
+    GameManager.instance().locationProvider().get("queue-npc").ifPresent(QueueParticleTask::new);
   }
 
   @Override

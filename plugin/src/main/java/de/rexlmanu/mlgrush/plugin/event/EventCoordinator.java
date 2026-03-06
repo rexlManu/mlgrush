@@ -4,6 +4,9 @@ import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.event.type.GamePlayerEvent;
 import de.rexlmanu.mlgrush.plugin.game.Environment;
 import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -14,10 +17,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.plugin.EventExecutor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-
 @SuppressWarnings("unchecked")
 public class EventCoordinator implements EventExecutor {
 
@@ -27,16 +26,17 @@ public class EventCoordinator implements EventExecutor {
     this.containers = new ArrayList<>();
   }
 
-  public <E> EventContainer<E> add(Environment environment, Class<E> eventClass, Consumer<GamePlayerEvent<E>> eventConsumer) {
+  public <E> EventContainer<E> add(
+      Environment environment, Class<E> eventClass, Consumer<GamePlayerEvent<E>> eventConsumer) {
     EventContainer<E> handler = new EventContainer<>(environment, eventClass, eventConsumer);
     this.containers.add(handler);
-    Bukkit.getPluginManager().registerEvent(
-      (Class<? extends Event>) handler.eventClass(),
-      handler,
-      EventPriority.HIGHEST,
-      this,
-      GamePlugin.getProvidingPlugin(GamePlugin.class)
-    );
+    Bukkit.getPluginManager()
+        .registerEvent(
+            (Class<? extends Event>) handler.eventClass(),
+            handler,
+            EventPriority.HIGHEST,
+            this,
+            GamePlugin.getProvidingPlugin(GamePlugin.class));
     return handler;
   }
 
@@ -56,12 +56,21 @@ public class EventCoordinator implements EventExecutor {
   }
 
   private void callEvents(Player target, Event event, Listener listener) {
-    PlayerProvider.find(target.getUniqueId()).ifPresent(gamePlayer -> this.containers.stream()
-      .filter(eventContainer -> eventContainer.equals(listener))
-      .filter(eventContainer -> eventContainer.eventClass().equals(event.getClass()))
-      .filter(eventContainer -> gamePlayer.environment().equals(eventContainer.environment()))
-      .findAny()
-      .ifPresent(eventContainer -> eventContainer.eventConsumer().accept(new GamePlayerEvent(event, gamePlayer))));
+    PlayerProvider.find(target.getUniqueId())
+        .ifPresent(
+            gamePlayer ->
+                this.containers.stream()
+                    .filter(eventContainer -> eventContainer.equals(listener))
+                    .filter(eventContainer -> eventContainer.eventClass().equals(event.getClass()))
+                    .filter(
+                        eventContainer ->
+                            gamePlayer.environment().equals(eventContainer.environment()))
+                    .findAny()
+                    .ifPresent(
+                        eventContainer ->
+                            eventContainer
+                                .eventConsumer()
+                                .accept(new GamePlayerEvent(event, gamePlayer))));
   }
 
   public void remove(EventContainer<?> eventContainer) {

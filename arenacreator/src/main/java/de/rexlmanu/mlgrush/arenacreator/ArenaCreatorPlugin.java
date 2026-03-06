@@ -2,11 +2,10 @@ package de.rexlmanu.mlgrush.arenacreator;
 
 import de.rexlmanu.mlgrush.arenacreator.command.ArenaCreatorCommand;
 import de.rexlmanu.mlgrush.arenacreator.process.ArenaCreationProcess;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class ArenaCreatorPlugin extends JavaPlugin implements Listener {
 

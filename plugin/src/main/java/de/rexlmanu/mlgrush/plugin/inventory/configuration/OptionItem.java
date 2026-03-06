@@ -11,5 +11,4 @@ public interface OptionItem<T> {
   T value();
 
   void interact(InventoryClickEvent event);
-
 }

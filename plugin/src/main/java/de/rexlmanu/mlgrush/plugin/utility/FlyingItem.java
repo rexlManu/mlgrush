@@ -6,10 +6,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * Created by rexlManu on 30.08.2017.
- * Plugin by rexlManu
- * https://rexlGames.de
- * Coded with IntelliJ
+ * Created by rexlManu on 30.08.2017. Plugin by rexlManu https://rexlGames.de Coded with IntelliJ
  */
 public class FlyingItem {
   private ArmorStand armorstand;
@@ -19,9 +16,7 @@ public class FlyingItem {
   private ItemStack itemstack;
   private double height = -1.3;
 
-  public FlyingItem() {
-
-  }
+  public FlyingItem() {}
 
   public void setLocation(Location location) {
     this.location = location;

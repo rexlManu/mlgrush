@@ -7,7 +7,9 @@ import org.bukkit.Bukkit;
 public class UpdateStatsWallTask implements Runnable {
   public UpdateStatsWallTask() {
     StatsHandler.updateStatsWall();
-    Bukkit.getScheduler().runTaskTimerAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 10 * 60 * 20);
+    Bukkit.getScheduler()
+        .runTaskTimerAsynchronously(
+            GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 10 * 60 * 20);
   }
 
   @Override

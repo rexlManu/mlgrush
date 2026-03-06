@@ -25,11 +25,15 @@ public enum StickEquipment implements Equipment, Buyable {
 
   @Override
   public void onEquip(GamePlayer gamePlayer, int slot) {
-    gamePlayer.player().getInventory().setItem(slot, ItemStackBuilder
-      .of(this.material)
-      .amount(1)
-      .name(this.displayName)
-      .enchant(Enchantment.KNOCKBACK, 1)
-      .build());
+    gamePlayer
+        .player()
+        .getInventory()
+        .setItem(
+            slot,
+            ItemStackBuilder.of(this.material)
+                .amount(1)
+                .name(this.displayName)
+                .enchant(Enchantment.KNOCKBACK, 1)
+                .build());
   }
 }

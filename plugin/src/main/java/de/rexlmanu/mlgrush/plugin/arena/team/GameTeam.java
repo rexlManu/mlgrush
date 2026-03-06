@@ -1,12 +1,11 @@
 package de.rexlmanu.mlgrush.plugin.arena.team;
 
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.bukkit.Location;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Accessors(fluent = true)

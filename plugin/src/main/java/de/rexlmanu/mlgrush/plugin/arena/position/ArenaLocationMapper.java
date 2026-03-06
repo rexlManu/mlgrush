@@ -19,5 +19,4 @@ public class ArenaLocationMapper {
     location.setPitch(position.pitch());
     return location;
   }
-
 }

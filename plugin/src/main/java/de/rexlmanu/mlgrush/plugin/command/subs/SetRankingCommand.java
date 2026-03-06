@@ -4,16 +4,15 @@ import de.rexlmanu.mlgrush.plugin.command.CommandParameter;
 import de.rexlmanu.mlgrush.plugin.command.SubCommand;
 import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
+import org.jetbrains.annotations.NotNull;
 
 public class SetRankingCommand implements SubCommand {
   @Override

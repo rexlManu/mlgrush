@@ -10,5 +10,4 @@ import lombok.experimental.Accessors;
 public class GameEvent<E> {
 
   private E target;
-
 }

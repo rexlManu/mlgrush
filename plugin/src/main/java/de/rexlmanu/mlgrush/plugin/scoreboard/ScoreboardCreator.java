@@ -7,5 +7,4 @@ public interface ScoreboardCreator {
   void updateLines(GamePlayer gamePlayer);
 
   void updateTablist(GamePlayer gamePlayer);
-
 }

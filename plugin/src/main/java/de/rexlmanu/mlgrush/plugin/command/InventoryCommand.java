@@ -10,16 +10,20 @@ import org.bukkit.entity.Player;
 
 public class InventoryCommand implements CommandExecutor {
   @Override
-  public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+  public boolean onCommand(
+      CommandSender commandSender, Command command, String s, String[] strings) {
     if (!(commandSender instanceof Player)) return true;
     Player player = (Player) commandSender;
-    PlayerProvider.find(player.getUniqueId()).filter(gamePlayer -> {
-      if (gamePlayer.environment().equals(Environment.ARENA)) {
-        gamePlayer.sendMessage("Du kannst dein Inventar nur in der Lobby anpassen.");
-        return false;
-      }
-      return true;
-    }).ifPresent(EditLayoutHandler::new);
+    PlayerProvider.find(player.getUniqueId())
+        .filter(
+            gamePlayer -> {
+              if (gamePlayer.environment().equals(Environment.ARENA)) {
+                gamePlayer.sendMessage("Du kannst dein Inventar nur in der Lobby anpassen.");
+                return false;
+              }
+              return true;
+            })
+        .ifPresent(EditLayoutHandler::new);
     return true;
   }
 }

@@ -1,10 +1,9 @@
 package de.rexlmanu.mlgrush.plugin.detection;
 
-import lombok.Data;
-import lombok.experimental.Accessors;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
 @Accessors(fluent = true)
 @Data
@@ -12,8 +11,11 @@ public class Detection {
 
   private List<Integer> clickHistory, placeHistory;
   private boolean digging, placing;
-  private long lastDiggingAction, lastPlacingAction, transactionPing, startTransactionTime, transactionId;
-
+  private long lastDiggingAction,
+      lastPlacingAction,
+      transactionPing,
+      startTransactionTime,
+      transactionId;
   private int clicks, lastClicks, places, lastPlaces;
   private double clickAverage, clickAverageSecondly, placeAverage, placeAverageSecondly;
 

@@ -48,6 +48,8 @@ public class QueueParticleTask implements Runnable {
   private void spawnAtAngle(float currentAngle) {
     double x = this.radius * Math.sin(currentAngle);
     double z = this.radius * Math.cos(currentAngle);
-    this.location.getWorld().spawnParticle(Particle.WITCH, this.location.clone().add(x, this.height, z), 1, 0, 0, 0, 0);
+    this.location
+        .getWorld()
+        .spawnParticle(Particle.WITCH, this.location.clone().add(x, this.height, z), 1, 0, 0, 0, 0);
   }
 }

@@ -1,12 +1,11 @@
 package de.rexlmanu.mlgrush.plugin.task.particle;
 
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
+import java.util.ArrayList;
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class FloorParticleTask implements Runnable {
 

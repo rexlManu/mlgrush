@@ -5,8 +5,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import eu.miopowered.repository.Key;
 import eu.miopowered.repository.Repository;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,11 +14,12 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A {@link Repository} implementation for json file system
- * <p>
- * The objects are serialized by gson and the key name is the file name with json ending.
+ *
+ * <p>The objects are serialized by gson and the key name is the file name with json ending.
  *
  * @param <T>
  */
@@ -32,8 +31,8 @@ public class GsonRepository<T extends Key> implements Repository<T> {
    * Creates a instance for {@link GsonRepository} declared {@link Repository}
    *
    * @param directory the directory where the objects are saved
-   * @param type      the object class is needed to deserialize the object back to the class
-   * @param <T>       the object type
+   * @param type the object class is needed to deserialize the object back to the class
+   * @param <T> the object type
    * @return Repository instance
    */
   public static <T extends Key> Repository<T> of(Path directory, Class<T> type) {
@@ -53,11 +52,12 @@ public class GsonRepository<T extends Key> implements Repository<T> {
   @Override
   public ImmutableList<T> all() {
     try {
-      return ImmutableList.copyOf(Files.list(this.directory)
-        .map(this::read)
-        .map(this::fromJson)
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList()));
+      return ImmutableList.copyOf(
+          Files.list(this.directory)
+              .map(this::read)
+              .map(this::fromJson)
+              .filter(Objects::nonNull)
+              .collect(Collectors.toList()));
     } catch (IOException e) {
       logger.log(Level.SEVERE, "Failed to find all elements.", e);
       return null;
@@ -68,8 +68,8 @@ public class GsonRepository<T extends Key> implements Repository<T> {
   public Optional<T> find(@NotNull Key key) {
     try {
       return Optional.ofNullable(
-        this.fromJson(new String(Files.readAllBytes(this.directory.resolve(this.keyAsFileName(key)))))
-      );
+          this.fromJson(
+              new String(Files.readAllBytes(this.directory.resolve(this.keyAsFileName(key))))));
     } catch (IOException e) {
       logger.log(Level.SEVERE, "Could not found any element with that key.", e);
       return Optional.empty();
@@ -80,10 +80,9 @@ public class GsonRepository<T extends Key> implements Repository<T> {
   public boolean insert(@NotNull T object) {
     try {
       Files.write(
-        this.directory.resolve(this.keyAsFileName(object)),
-        this.toJson(object).getBytes(),
-        StandardOpenOption.CREATE_NEW
-      );
+          this.directory.resolve(this.keyAsFileName(object)),
+          this.toJson(object).getBytes(),
+          StandardOpenOption.CREATE_NEW);
       return true;
     } catch (IOException e) {
       logger.log(Level.SEVERE, "Error occurred while inserting data.", e);
@@ -95,12 +94,11 @@ public class GsonRepository<T extends Key> implements Repository<T> {
   public boolean update(@NotNull T object) {
     try {
       Files.write(
-        this.directory.resolve(this.keyAsFileName(object)),
-        this.toJson(object).getBytes(),
-        StandardOpenOption.CREATE,
-        StandardOpenOption.WRITE,
-        StandardOpenOption.TRUNCATE_EXISTING
-      );
+          this.directory.resolve(this.keyAsFileName(object)),
+          this.toJson(object).getBytes(),
+          StandardOpenOption.CREATE,
+          StandardOpenOption.WRITE,
+          StandardOpenOption.TRUNCATE_EXISTING);
       return true;
     } catch (IOException e) {
       logger.log(Level.SEVERE, "Error occurred while updating data.", e);

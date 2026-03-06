@@ -18,6 +18,10 @@ import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.utility.LocationUtils;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import de.rexlmanu.mlgrush.plugin.utility.RandomElement;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import net.jodah.expiringmap.ExpiringMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -39,153 +43,226 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
-
 public class ArenaEnvironment implements GameEnvironment {
 
   public static final Environment ENVIRONMENT = Environment.ARENA;
   private final Map<UUID, UUID> lastHitterMap;
 
   public ArenaEnvironment() {
-    this.lastHitterMap = ExpiringMap.builder()
-      .expiration(25, TimeUnit.SECONDS)
-      .build();
+    this.lastHitterMap = ExpiringMap.builder().expiration(25, TimeUnit.SECONDS).build();
     EventCoordinator coordinator = GameManager.instance().eventCoordinator();
     ArenaManager arenaManager = GameManager.instance().arenaManager();
 
-    coordinator.add(ENVIRONMENT, AsyncPlayerChatEvent.class, event -> {
-      event.target().setCancelled(true);
-      String prefix = GameManager.instance().nicknameService().isNicked(event.gamePlayer().uniqueId()) ? "&8[N] &a" : "&a";
-      String name = GameManager.instance().nicknameService().displayName(event.gamePlayer().uniqueId(), event.gamePlayer().player().getName());
-      String message = MessageFormat.replaceColors(String.format("%s%s &8» &7%s", prefix, name, event.target().getMessage()));
-
-      arenaManager
-        .arenaContainer()
-        .findArenaByPlayer(event.gamePlayer())
-        .ifPresent(arena -> arena.players().forEach(gamePlayer -> gamePlayer.player().sendMessage(message)));
-    });
-    coordinator.add(ENVIRONMENT, BlockPlaceEvent.class, event -> arenaManager
-      .arenaContainer()
-      .findArenaByPlayer(event.gamePlayer()).ifPresent(arena -> {
-        Block block = event.target().getBlock();
-        Location location = block.getLocation();
-        GameTeam team = arena.getTeam(event.gamePlayer());
-        if (!arena.region().contains(location)
-          || arena.buildHeightLimit() <= location.getBlockY()
-          || LocationUtils.rangeContains(team.spawnLocation(), location, arena.configuration().spawnProtection())) {
+    coordinator.add(
+        ENVIRONMENT,
+        AsyncPlayerChatEvent.class,
+        event -> {
           event.target().setCancelled(true);
-          return;
-        }
-        if (arena.configuration().unlimitedBlocks()) {
-          ItemStack item = event.gamePlayer().player().getInventory().getItemInMainHand();
-          item.setAmount(item.getMaxStackSize());
-        }
+          String prefix =
+              GameManager.instance().nicknameService().isNicked(event.gamePlayer().uniqueId())
+                  ? "&8[N] &a"
+                  : "&a";
+          String name =
+              GameManager.instance()
+                  .nicknameService()
+                  .displayName(
+                      event.gamePlayer().uniqueId(), event.gamePlayer().player().getName());
+          String message =
+              MessageFormat.replaceColors(
+                  String.format("%s%s &8» &7%s", prefix, name, event.target().getMessage()));
 
-        arena.placedBlocks().add(block);
-        Bukkit.getPluginManager().callEvent(new ArenaPlayerBlockPlaceEvent(event.gamePlayer(), block));
-      }));
-    coordinator.add(ENVIRONMENT, BlockBreakEvent.class, event -> arenaManager.arenaContainer().findArenaByPlayer(event.gamePlayer()).ifPresent(arena -> {
-      Block block = event.target().getBlock();
-      Location location = block.getLocation();
-      if (!arena.region().contains(location)) {
-        event.target().setCancelled(true);
-        return;
-      }
+          arenaManager
+              .arenaContainer()
+              .findArenaByPlayer(event.gamePlayer())
+              .ifPresent(
+                  arena ->
+                      arena
+                          .players()
+                          .forEach(gamePlayer -> gamePlayer.player().sendMessage(message)));
+        });
+    coordinator.add(
+        ENVIRONMENT,
+        BlockPlaceEvent.class,
+        event ->
+            arenaManager
+                .arenaContainer()
+                .findArenaByPlayer(event.gamePlayer())
+                .ifPresent(
+                    arena -> {
+                      Block block = event.target().getBlock();
+                      Location location = block.getLocation();
+                      GameTeam team = arena.getTeam(event.gamePlayer());
+                      if (!arena.region().contains(location)
+                          || arena.buildHeightLimit() <= location.getBlockY()
+                          || LocationUtils.rangeContains(
+                              team.spawnLocation(),
+                              location,
+                              arena.configuration().spawnProtection())) {
+                        event.target().setCancelled(true);
+                        return;
+                      }
+                      if (arena.configuration().unlimitedBlocks()) {
+                        ItemStack item =
+                            event.gamePlayer().player().getInventory().getItemInMainHand();
+                        item.setAmount(item.getMaxStackSize());
+                      }
 
-      if (Tag.BEDS.isTagged(block.getType())) {
-        GameTeam destroyedBedTeam = arena.getTeam(location);
-        GameTeam team = arena.getTeam(event.gamePlayer());
-        if (destroyedBedTeam.equals(team)) {
-          event.target().setCancelled(true);
-          return;
-        }
-        team.addPoint();
-        arena.statsFromPlayer(event.gamePlayer()).addDestroyedBed();
-        event.target().setCancelled(true);
-        Bukkit.getPluginManager().callEvent(new ArenaTeamBedDestroyedEvent(event.gamePlayer(), destroyedBedTeam));
-        return;
-      }
-      if (!arena.placedBlocks().contains(block)) {
-        event.target().setCancelled(true);
-        return;
-      }
-      Bukkit.getPluginManager().callEvent(new ArenaPlayerBlockPlaceEvent(event.gamePlayer(), block));
-      block.setType(Material.AIR);
-      arena.placedBlocks().remove(block);
-    }));
-    coordinator.add(ENVIRONMENT, PlayerMoveEvent.class, event -> arenaManager
-      .arenaContainer()
-      .findArenaByPlayer(event.gamePlayer()).ifPresent(arena -> {
-        Location to = event.target().getTo();
-        Location from = event.target().getFrom();
-        if (to.getX() == from.getX() && to.getY() == from.getY() && to.getZ() == from.getZ()) {
-          return;
-        }
-        if (!arena.region().contains(to)) {
-          Bukkit.getPluginManager().callEvent(new ArenaPlayerDiedEvent(
-            event.gamePlayer(),
-            PlayerProvider.find(this.lastHitterMap.get(event.gamePlayer().uniqueId())).orElse(null))
-          );
-          this.lastHitterMap.remove(event.gamePlayer().uniqueId());
-          arena.respawnPlayer(event.gamePlayer());
-        }
-      }));
-    coordinator.add(ENVIRONMENT, ArenaPlayerLeftEvent.class, event -> {
-      Arena arena = event.target().arena();
-      arena.getTeam(event.gamePlayer()).members().remove(event.gamePlayer());
-      arenaManager.delete(arena);
-    });
+                      arena.placedBlocks().add(block);
+                      Bukkit.getPluginManager()
+                          .callEvent(new ArenaPlayerBlockPlaceEvent(event.gamePlayer(), block));
+                    }));
+    coordinator.add(
+        ENVIRONMENT,
+        BlockBreakEvent.class,
+        event ->
+            arenaManager
+                .arenaContainer()
+                .findArenaByPlayer(event.gamePlayer())
+                .ifPresent(
+                    arena -> {
+                      Block block = event.target().getBlock();
+                      Location location = block.getLocation();
+                      if (!arena.region().contains(location)) {
+                        event.target().setCancelled(true);
+                        return;
+                      }
 
-    coordinator.add(ENVIRONMENT, ArenaTeamBedDestroyedEvent.class, event -> arenaManager.arenaContainer()
-      .findArenaByPlayer(event.gamePlayer()).ifPresent(Arena::resetGame));
+                      if (Tag.BEDS.isTagged(block.getType())) {
+                        GameTeam destroyedBedTeam = arena.getTeam(location);
+                        GameTeam team = arena.getTeam(event.gamePlayer());
+                        if (destroyedBedTeam.equals(team)) {
+                          event.target().setCancelled(true);
+                          return;
+                        }
+                        team.addPoint();
+                        arena.statsFromPlayer(event.gamePlayer()).addDestroyedBed();
+                        event.target().setCancelled(true);
+                        Bukkit.getPluginManager()
+                            .callEvent(
+                                new ArenaTeamBedDestroyedEvent(
+                                    event.gamePlayer(), destroyedBedTeam));
+                        return;
+                      }
+                      if (!arena.placedBlocks().contains(block)) {
+                        event.target().setCancelled(true);
+                        return;
+                      }
+                      Bukkit.getPluginManager()
+                          .callEvent(new ArenaPlayerBlockPlaceEvent(event.gamePlayer(), block));
+                      block.setType(Material.AIR);
+                      arena.placedBlocks().remove(block);
+                    }));
+    coordinator.add(
+        ENVIRONMENT,
+        PlayerMoveEvent.class,
+        event ->
+            arenaManager
+                .arenaContainer()
+                .findArenaByPlayer(event.gamePlayer())
+                .ifPresent(
+                    arena -> {
+                      Location to = event.target().getTo();
+                      Location from = event.target().getFrom();
+                      if (to.getX() == from.getX()
+                          && to.getY() == from.getY()
+                          && to.getZ() == from.getZ()) {
+                        return;
+                      }
+                      if (!arena.region().contains(to)) {
+                        Bukkit.getPluginManager()
+                            .callEvent(
+                                new ArenaPlayerDiedEvent(
+                                    event.gamePlayer(),
+                                    PlayerProvider.find(
+                                            this.lastHitterMap.get(event.gamePlayer().uniqueId()))
+                                        .orElse(null)));
+                        this.lastHitterMap.remove(event.gamePlayer().uniqueId());
+                        arena.respawnPlayer(event.gamePlayer());
+                      }
+                    }));
+    coordinator.add(
+        ENVIRONMENT,
+        ArenaPlayerLeftEvent.class,
+        event -> {
+          Arena arena = event.target().arena();
+          arena.getTeam(event.gamePlayer()).members().remove(event.gamePlayer());
+          arenaManager.delete(arena);
+        });
 
-    coordinator.add(ENVIRONMENT, ArenaPlayerBlockPlaceEvent.class, event -> arenaManager.arenaContainer()
-      .findArenaByPlayer(event.gamePlayer()).ifPresent(arena -> arena.statsFromPlayer(event.gamePlayer()).addBlock()));
+    coordinator.add(
+        ENVIRONMENT,
+        ArenaTeamBedDestroyedEvent.class,
+        event ->
+            arenaManager
+                .arenaContainer()
+                .findArenaByPlayer(event.gamePlayer())
+                .ifPresent(Arena::resetGame));
 
-    coordinator.add(ENVIRONMENT, ArenaPlayerDiedEvent.class, event -> arenaManager.arenaContainer()
-      .findArenaByPlayer(event.gamePlayer()).ifPresent(arena -> {
-        arena.statsFromPlayer(event.gamePlayer()).addDeath();
-        GamePlayer killer = event.target().killer();
+    coordinator.add(
+        ENVIRONMENT,
+        ArenaPlayerBlockPlaceEvent.class,
+        event ->
+            arenaManager
+                .arenaContainer()
+                .findArenaByPlayer(event.gamePlayer())
+                .ifPresent(arena -> arena.statsFromPlayer(event.gamePlayer()).addBlock()));
 
-        if (killer != null) {
-          ArenaStatistics statistics = arena.statsFromPlayer(killer);
-          if (statistics == null) {
+    coordinator.add(
+        ENVIRONMENT,
+        ArenaPlayerDiedEvent.class,
+        event ->
+            arenaManager
+                .arenaContainer()
+                .findArenaByPlayer(event.gamePlayer())
+                .ifPresent(
+                    arena -> {
+                      arena.statsFromPlayer(event.gamePlayer()).addDeath();
+                      GamePlayer killer = event.target().killer();
+
+                      if (killer != null) {
+                        ArenaStatistics statistics = arena.statsFromPlayer(killer);
+                        if (statistics == null) {
+                          return;
+                        }
+                        statistics.addKill();
+                        killer.sound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f);
+                      }
+                    }));
+    coordinator.add(
+        Environment.LOBBY,
+        PlayerMoveEvent.class,
+        event -> {
+          Location to = event.target().getTo();
+          Location from = event.target().getFrom();
+          if (to.getX() == from.getX() && to.getY() == from.getY() && to.getZ() == from.getZ()) {
             return;
           }
-          statistics.addKill();
-          killer.sound(Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f);
-        }
-      }));
-    coordinator.add(Environment.LOBBY, PlayerMoveEvent.class, event -> {
-      Location to = event.target().getTo();
-      Location from = event.target().getFrom();
-      if (to.getX() == from.getX() && to.getY() == from.getY() && to.getZ() == from.getZ()) {
-        return;
-      }
 
-      arenaManager
-        .arenaContainer()
-        .activeArenas()
-        .stream()
-        .filter(arena -> arena.spectators().contains(event.gamePlayer()))
-        .findAny()
-        .ifPresent(arena -> {
-          if (!arena.region().contains(to)) {
-            event.gamePlayer().player().teleport(RandomElement.of(arena.gameTeams()).spawnLocation());
+          arenaManager.arenaContainer().activeArenas().stream()
+              .filter(arena -> arena.spectators().contains(event.gamePlayer()))
+              .findAny()
+              .ifPresent(
+                  arena -> {
+                    if (!arena.region().contains(to)) {
+                      event
+                          .gamePlayer()
+                          .player()
+                          .teleport(RandomElement.of(arena.gameTeams()).spawnLocation());
+                    }
+                  });
+        });
+    coordinator.add(
+        ENVIRONMENT,
+        PlayerInteractEvent.class,
+        event -> {
+          if (event.target().getClickedBlock() == null
+              || event.target().getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return;
+          }
+          if (Tag.BEDS.isTagged(event.target().getClickedBlock().getType())) {
+            event.target().setCancelled(true);
           }
         });
-    });
-    coordinator.add(ENVIRONMENT, PlayerInteractEvent.class, event -> {
-      if (event.target().getClickedBlock() == null || event.target().getAction() != Action.RIGHT_CLICK_BLOCK) {
-        return;
-      }
-      if (Tag.BEDS.isTagged(event.target().getClickedBlock().getType())) {
-        event.target().setCancelled(true);
-      }
-    });
   }
 
   @EventHandler
@@ -193,34 +270,63 @@ public class ArenaEnvironment implements GameEnvironment {
     if (!(event.getEntity() instanceof Player player)) {
       return;
     }
-    PlayerProvider.find(player.getUniqueId()).filter(gamePlayer -> gamePlayer.environment().equals(ENVIRONMENT))
-      .ifPresent(gamePlayer -> {
-        GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(gamePlayer).ifPresent(arena -> {
-          if (event.getCause().equals(EntityDamageEvent.DamageCause.FALL) && !arena.configuration().fallDamage()) {
-            event.setCancelled(true);
-          }
-        });
-        event.setDamage(0);
-      });
+    PlayerProvider.find(player.getUniqueId())
+        .filter(gamePlayer -> gamePlayer.environment().equals(ENVIRONMENT))
+        .ifPresent(
+            gamePlayer -> {
+              GameManager.instance()
+                  .arenaManager()
+                  .arenaContainer()
+                  .findArenaByPlayer(gamePlayer)
+                  .ifPresent(
+                      arena -> {
+                        if (event.getCause().equals(EntityDamageEvent.DamageCause.FALL)
+                            && !arena.configuration().fallDamage()) {
+                          event.setCancelled(true);
+                        }
+                      });
+              event.setDamage(0);
+            });
   }
 
   @EventHandler
   public void handle(EntityDamageByEntityEvent event) {
-    if (!(event.getDamager() instanceof Player damager) || !(event.getEntity() instanceof Player player)) {
+    if (!(event.getDamager() instanceof Player damager)
+        || !(event.getEntity() instanceof Player player)) {
       return;
     }
-    PlayerProvider.find(player.getUniqueId()).filter(gamePlayer -> gamePlayer.environment().equals(ENVIRONMENT))
-      .ifPresent(gamePlayer -> PlayerProvider.find(damager.getUniqueId()).filter(target -> target.environment().equals(ENVIRONMENT))
-        .ifPresent(targetPlayer -> {
-          GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(gamePlayer).ifPresent(arena -> {
-            if (arena.configuration().knockbackOnlyHeight()) {
-              player.setVelocity(new Vector(0, ThreadLocalRandom.current().nextDouble(0.311), 0));
-              Bukkit.getScheduler().runTask(GamePlugin.getPlugin(GamePlugin.class), () ->
-                player.setVelocity(new Vector(0, ThreadLocalRandom.current().nextDouble(0.311), 0)));
-            }
-          });
-          this.lastHitterMap.put(gamePlayer.uniqueId(), targetPlayer.uniqueId());
-        }));
+    PlayerProvider.find(player.getUniqueId())
+        .filter(gamePlayer -> gamePlayer.environment().equals(ENVIRONMENT))
+        .ifPresent(
+            gamePlayer ->
+                PlayerProvider.find(damager.getUniqueId())
+                    .filter(target -> target.environment().equals(ENVIRONMENT))
+                    .ifPresent(
+                        targetPlayer -> {
+                          GameManager.instance()
+                              .arenaManager()
+                              .arenaContainer()
+                              .findArenaByPlayer(gamePlayer)
+                              .ifPresent(
+                                  arena -> {
+                                    if (arena.configuration().knockbackOnlyHeight()) {
+                                      player.setVelocity(
+                                          new Vector(
+                                              0, ThreadLocalRandom.current().nextDouble(0.311), 0));
+                                      Bukkit.getScheduler()
+                                          .runTask(
+                                              GamePlugin.getPlugin(GamePlugin.class),
+                                              () ->
+                                                  player.setVelocity(
+                                                      new Vector(
+                                                          0,
+                                                          ThreadLocalRandom.current()
+                                                              .nextDouble(0.311),
+                                                          0)));
+                                    }
+                                  });
+                          this.lastHitterMap.put(gamePlayer.uniqueId(), targetPlayer.uniqueId());
+                        }));
   }
 
   @EventHandler

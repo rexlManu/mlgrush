@@ -7,7 +7,8 @@ plugins {
 }
 
 dependencies {
-  compileOnly("io.papermc.paper:paper-api:${rootProject.providers.gradleProperty("paperApiVersion").get()}")
+  compileOnly(
+      "io.papermc.paper:paper-api:${rootProject.providers.gradleProperty("paperApiVersion").get()}")
 
   implementation(project(":arenalib"))
 
@@ -18,22 +19,17 @@ dependencies {
 
 tasks.processResources {
   filteringCharset = "UTF-8"
-  val pluginProperties = mapOf(
-    "version" to project.version.toString(),
-    "description" to rootProject.providers.gradleProperty("plugin.description").get(),
-    "author" to rootProject.providers.gradleProperty("plugin.author").get(),
-    "website" to rootProject.providers.gradleProperty("plugin.website").get(),
-  )
+  val pluginProperties =
+      mapOf(
+          "version" to project.version.toString(),
+          "description" to rootProject.providers.gradleProperty("plugin.description").get(),
+          "author" to rootProject.providers.gradleProperty("plugin.author").get(),
+          "website" to rootProject.providers.gradleProperty("plugin.website").get(),
+      )
 
-  filesMatching("plugin.yml") {
-    expand(pluginProperties)
-  }
+  filesMatching("plugin.yml") { expand(pluginProperties) }
 }
 
-tasks.named<ShadowJar>("shadowJar") {
-  archiveFileName.set("arenacreator-${project.version}.jar")
-}
+tasks.named<ShadowJar>("shadowJar") { archiveFileName.set("arenacreator-${project.version}.jar") }
 
-tasks.build {
-  dependsOn(tasks.shadowJar)
-}
+tasks.build { dependsOn(tasks.shadowJar) }

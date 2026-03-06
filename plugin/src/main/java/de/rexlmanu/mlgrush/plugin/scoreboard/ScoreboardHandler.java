@@ -6,12 +6,11 @@ import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.scoreboard.impl.ArenaScoreboardCreator;
 import de.rexlmanu.mlgrush.plugin.scoreboard.impl.LobbyScoreboardCreator;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Getter
 @Accessors(fluent = true)
@@ -29,9 +28,12 @@ public class ScoreboardHandler {
     if (gamePlayer.player() == null) return;
     ScoreboardCreator creator = this.environmentScoreboardCreatorMap.get(gamePlayer.environment());
     creator.updateLines(gamePlayer);
-    Bukkit.getScheduler().runTask(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> {
-      creator.updateTablist(gamePlayer);
-    });
+    Bukkit.getScheduler()
+        .runTask(
+            GamePlugin.getProvidingPlugin(GamePlugin.class),
+            () -> {
+              creator.updateTablist(gamePlayer);
+            });
   }
 
   public void updateSidebar(GamePlayer gamePlayer) {
@@ -43,5 +45,4 @@ public class ScoreboardHandler {
   public void updateAll(Environment environment) {
     PlayerProvider.getPlayers(environment).forEach(this::update);
   }
-
 }

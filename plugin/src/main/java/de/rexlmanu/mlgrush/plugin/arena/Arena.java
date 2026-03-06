@@ -12,6 +12,8 @@ import de.rexlmanu.mlgrush.plugin.game.GameManager;
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.utility.PlayerUtils;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -20,15 +22,11 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 @Accessors(fluent = true)
 @Getter
 @Setter
 public class Arena {
   private List<Block> placedBlocks = new CopyOnWriteArrayList<>();
-
 
   private ArenaConfiguration configuration;
   private List<GamePlayer> players, spectators;
@@ -48,10 +46,10 @@ public class Arena {
     this.gameStart = System.currentTimeMillis();
 
     this.mapper = new ArenaLocationMapper(this.configuration.startPoint());
-    this.region = new ArenaRegion(
-      this.getPosition(ArenaPosition.FIRST_CORNER),
-      this.getPosition(ArenaPosition.SECOND_CORNER)
-    );
+    this.region =
+        new ArenaRegion(
+            this.getPosition(ArenaPosition.FIRST_CORNER),
+            this.getPosition(ArenaPosition.SECOND_CORNER));
     this.arenaStatisticsMap = new HashMap<>();
 
     this.players.forEach(gamePlayer -> gamePlayer.environment(Environment.ARENA));
@@ -68,15 +66,21 @@ public class Arena {
   }
 
   public int buildHeightLimit() {
-    return this.getPosition(ArenaPosition.BUILD_HEIGHT).getBlockY() + this.configuration.buildHeight();
+    return this.getPosition(ArenaPosition.BUILD_HEIGHT).getBlockY()
+        + this.configuration.buildHeight();
   }
 
   public GameTeam getTeam(GamePlayer gamePlayer) {
-    return this.gameTeams.stream().filter(gameTeam -> gameTeam.members().contains(gamePlayer)).findFirst().orElseThrow(IllegalStateException::new);
+    return this.gameTeams.stream()
+        .filter(gameTeam -> gameTeam.members().contains(gamePlayer))
+        .findFirst()
+        .orElseThrow(IllegalStateException::new);
   }
 
   public GameTeam getTeam(Location location) {
-    return this.gameTeams.stream().min(Comparator.comparing(o -> o.spawnLocation().distance(location))).orElse(null);
+    return this.gameTeams.stream()
+        .min(Comparator.comparing(o -> o.spawnLocation().distance(location)))
+        .orElse(null);
   }
 
   public void respawnPlayer(GamePlayer gamePlayer) {
@@ -91,10 +95,10 @@ public class Arena {
     GameManager.instance().scoreboardHandler().update(gamePlayer);
     if (this.configuration.nohitdelay()) {
       player.setMaximumNoDamageTicks(0);
-    }else {
+    } else {
       player.setMaximumNoDamageTicks(20);
     }
-//    player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 10, 30, false, false));
+    //    player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 10, 30, false, false));
   }
 
   public void resetGame() {
@@ -109,25 +113,30 @@ public class Arena {
   }
 
   private void checkWinCondition() {
-    this.gameTeams
-      .stream()
-      .filter(gameTeam -> gameTeam.points() == this.configuration.maximalPoints())
-      .findFirst()
-      .ifPresent(gameTeam -> {
-        GameManager.instance().arenaManager().delete(this);
-      });
+    this.gameTeams.stream()
+        .filter(gameTeam -> gameTeam.points() == this.configuration.maximalPoints())
+        .findFirst()
+        .ifPresent(
+            gameTeam -> {
+              GameManager.instance().arenaManager().delete(this);
+            });
   }
 
   public GameTeam getWinningTeam() {
-    return this.gameTeams
-      .stream()
-      .filter(gameTeam -> gameTeam.points() == this.configuration.maximalPoints())
-      .findFirst().orElseGet(() -> {
-        if (this.gameTeams.stream().filter(gameTeam -> !gameTeam.members().isEmpty()).count() == 1) {
-          return this.gameTeams.stream().filter(gameTeam -> !gameTeam.members().isEmpty()).findAny().get();
-        }
-        return null;
-      });
+    return this.gameTeams.stream()
+        .filter(gameTeam -> gameTeam.points() == this.configuration.maximalPoints())
+        .findFirst()
+        .orElseGet(
+            () -> {
+              if (this.gameTeams.stream().filter(gameTeam -> !gameTeam.members().isEmpty()).count()
+                  == 1) {
+                return this.gameTeams.stream()
+                    .filter(gameTeam -> !gameTeam.members().isEmpty())
+                    .findAny()
+                    .get();
+              }
+              return null;
+            });
   }
 
   private void addPlayersToTeams() {
@@ -152,19 +161,24 @@ public class Arena {
   }
 
   private void setup() {
-    this.players.forEach(gamePlayer -> {
-      this.arenaStatisticsMap.put(gamePlayer.uniqueId(), new ArenaStatistics());
-      Player player = gamePlayer.player();
-      PlayerProvider.PLAYERS.stream()
-        .filter(gamePlayer1 -> !this.players.contains(gamePlayer1))
-        .map(GamePlayer::player)
-        .forEach(player::hidePlayer);
-      PlayerUtils.resetPlayer(player);
-      player.setGameMode(GameMode.SURVIVAL);
-    });
-    Bukkit.getScheduler().runTaskLater(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> {
-      GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
-      this.players.forEach(this::respawnPlayer);
-    }, 1);
+    this.players.forEach(
+        gamePlayer -> {
+          this.arenaStatisticsMap.put(gamePlayer.uniqueId(), new ArenaStatistics());
+          Player player = gamePlayer.player();
+          PlayerProvider.PLAYERS.stream()
+              .filter(gamePlayer1 -> !this.players.contains(gamePlayer1))
+              .map(GamePlayer::player)
+              .forEach(player::hidePlayer);
+          PlayerUtils.resetPlayer(player);
+          player.setGameMode(GameMode.SURVIVAL);
+        });
+    Bukkit.getScheduler()
+        .runTaskLater(
+            GamePlugin.getProvidingPlugin(GamePlugin.class),
+            () -> {
+              GameManager.instance().scoreboardHandler().updateAll(Environment.LOBBY);
+              this.players.forEach(this::respawnPlayer);
+            },
+            1);
   }
 }

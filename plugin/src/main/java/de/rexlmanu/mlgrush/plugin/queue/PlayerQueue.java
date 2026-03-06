@@ -1,7 +1,6 @@
 package de.rexlmanu.mlgrush.plugin.queue;
 
 import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
-
 import java.util.AbstractQueue;
 import java.util.Iterator;
 import java.util.LinkedList;

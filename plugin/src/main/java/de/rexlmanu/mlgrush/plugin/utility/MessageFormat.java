@@ -11,5 +11,4 @@ public class MessageFormat {
   public static String of(String format, Object... parameters) {
     return replaceColors(String.format(format, parameters));
   }
-
 }

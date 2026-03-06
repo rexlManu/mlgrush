@@ -12,7 +12,9 @@ public class DetectionController {
 
   public void register(GamePlayer gamePlayer) {
     if (gamePlayer.player() != null) {
-      gamePlayer.detection().transactionPing(PacketEvents.getAPI().getPlayerManager().getPing(gamePlayer.player()));
+      gamePlayer
+          .detection()
+          .transactionPing(PacketEvents.getAPI().getPlayerManager().getPing(gamePlayer.player()));
     }
   }
 

@@ -13,10 +13,14 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTe
 import de.rexlmanu.mlgrush.plugin.GamePlugin;
 import de.rexlmanu.mlgrush.plugin.equipment.BlockEquipment;
 import de.rexlmanu.mlgrush.plugin.equipment.StickEquipment;
-import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 import de.rexlmanu.mlgrush.plugin.player.PlayerProvider;
 import de.rexlmanu.mlgrush.plugin.utility.hologram.VirtualHologram;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -30,18 +34,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class LobbyNpcManager implements Listener {
 
   private static final AtomicInteger ENTITY_IDS = new AtomicInteger(2_000_000);
 
   private final List<ManagedNpc> npcs = new ArrayList<>();
-  private final PacketNpcInteractionListener interactionListener = new PacketNpcInteractionListener();
+  private final PacketNpcInteractionListener interactionListener =
+      new PacketNpcInteractionListener();
 
   private BukkitTask rotationTask;
 
@@ -71,7 +70,11 @@ public class LobbyNpcManager implements Listener {
 
   @EventHandler
   public void handle(PlayerJoinEvent event) {
-    Bukkit.getScheduler().runTaskLater(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> this.spawnFor(event.getPlayer()), 10L);
+    Bukkit.getScheduler()
+        .runTaskLater(
+            GamePlugin.getProvidingPlugin(GamePlugin.class),
+            () -> this.spawnFor(event.getPlayer()),
+            10L);
   }
 
   @EventHandler
@@ -80,58 +83,102 @@ public class LobbyNpcManager implements Listener {
     if (channel == null) {
       return;
     }
-    this.npcs.forEach(npc -> {
-      npc.hologram().destroy(event.getPlayer());
-      npc.despawn(channel);
-    });
+    this.npcs.forEach(
+        npc -> {
+          npc.hologram().destroy(event.getPlayer());
+          npc.despawn(channel);
+        });
   }
 
   private void load() {
-    this.register("queue-npc", "QueueNpc", "&aQueue", "&7Suche nach einem Gegner.", Material.COMPASS, player -> {
-      if (player.environment().equals(de.rexlmanu.mlgrush.plugin.game.Environment.ARENA)) {
-        player.sendMessage("Du bist bereits in einem Spiel.");
-        return;
-      }
-      de.rexlmanu.mlgrush.plugin.game.GameManager gameManager = de.rexlmanu.mlgrush.plugin.game.GameManager.instance();
-      if (gameManager.queueCooldown().currently(player.uniqueId())) {
-        return;
-      }
-      gameManager.queueCooldown().add(player.uniqueId());
-      if (gameManager.queueController().inQueue(player)) {
-        gameManager.queueController().playerQueue().remove(player);
-        player.sendMessage("Du hast die &aWarteschlange &7verlassen.");
-        gameManager.scoreboardHandler().updateAll(de.rexlmanu.mlgrush.plugin.game.Environment.LOBBY);
-        player.sound(org.bukkit.Sound.BLOCK_PISTON_CONTRACT, 2f);
-        return;
-      }
-      gameManager.queueController().playerQueue().offer(player);
-      player.sendMessage("Du hast die &aWarteschlange &7betreten.");
-      gameManager.scoreboardHandler().updateAll(de.rexlmanu.mlgrush.plugin.game.Environment.LOBBY);
-      player.sound(org.bukkit.Sound.BLOCK_PISTON_EXTEND, 2f);
-    });
-    this.register("stick-change-npc", "StickNpc", "&aSticks", "&7Ändere deinen Stick.", new ItemStack(StickEquipment.values()[0].material()), player ->
-      new de.rexlmanu.mlgrush.plugin.inventory.ShopInventory(player, "&aStick", StickEquipment.values()));
-    this.register("block-change-npc", "BlockNpc", "&aBlöcke", "&7Ändere den Typ deiner Blöcke.", new ItemStack(BlockEquipment.values()[0].material()), player ->
-      new de.rexlmanu.mlgrush.plugin.inventory.ShopInventory(player, "&aBlöcke", BlockEquipment.values()));
+    this.register(
+        "queue-npc",
+        "QueueNpc",
+        "&aQueue",
+        "&7Suche nach einem Gegner.",
+        Material.COMPASS,
+        player -> {
+          if (player.environment().equals(de.rexlmanu.mlgrush.plugin.game.Environment.ARENA)) {
+            player.sendMessage("Du bist bereits in einem Spiel.");
+            return;
+          }
+          de.rexlmanu.mlgrush.plugin.game.GameManager gameManager =
+              de.rexlmanu.mlgrush.plugin.game.GameManager.instance();
+          if (gameManager.queueCooldown().currently(player.uniqueId())) {
+            return;
+          }
+          gameManager.queueCooldown().add(player.uniqueId());
+          if (gameManager.queueController().inQueue(player)) {
+            gameManager.queueController().playerQueue().remove(player);
+            player.sendMessage("Du hast die &aWarteschlange &7verlassen.");
+            gameManager
+                .scoreboardHandler()
+                .updateAll(de.rexlmanu.mlgrush.plugin.game.Environment.LOBBY);
+            player.sound(org.bukkit.Sound.BLOCK_PISTON_CONTRACT, 2f);
+            return;
+          }
+          gameManager.queueController().playerQueue().offer(player);
+          player.sendMessage("Du hast die &aWarteschlange &7betreten.");
+          gameManager
+              .scoreboardHandler()
+              .updateAll(de.rexlmanu.mlgrush.plugin.game.Environment.LOBBY);
+          player.sound(org.bukkit.Sound.BLOCK_PISTON_EXTEND, 2f);
+        });
+    this.register(
+        "stick-change-npc",
+        "StickNpc",
+        "&aSticks",
+        "&7Ändere deinen Stick.",
+        new ItemStack(StickEquipment.values()[0].material()),
+        player ->
+            new de.rexlmanu.mlgrush.plugin.inventory.ShopInventory(
+                player, "&aStick", StickEquipment.values()));
+    this.register(
+        "block-change-npc",
+        "BlockNpc",
+        "&aBlöcke",
+        "&7Ändere den Typ deiner Blöcke.",
+        new ItemStack(BlockEquipment.values()[0].material()),
+        player ->
+            new de.rexlmanu.mlgrush.plugin.inventory.ShopInventory(
+                player, "&aBlöcke", BlockEquipment.values()));
 
     if (this.rotationTask != null) {
       this.rotationTask.cancel();
     }
-    this.rotationTask = Bukkit.getScheduler().runTaskTimer(GamePlugin.getProvidingPlugin(GamePlugin.class), this::updateRotations, 1L, 10L);
+    this.rotationTask =
+        Bukkit.getScheduler()
+            .runTaskTimer(
+                GamePlugin.getProvidingPlugin(GamePlugin.class), this::updateRotations, 1L, 10L);
   }
 
-  private void register(String locationKey, String profileName, String title, String subtitle, Material mainHand, InteractionHandler handler) {
+  private void register(
+      String locationKey,
+      String profileName,
+      String title,
+      String subtitle,
+      Material mainHand,
+      InteractionHandler handler) {
     this.register(locationKey, profileName, title, subtitle, new ItemStack(mainHand), handler);
   }
 
-  private void register(String locationKey, String profileName, String title, String subtitle, ItemStack mainHand, InteractionHandler handler) {
-    Optional<Location> optionalLocation = de.rexlmanu.mlgrush.plugin.game.GameManager.instance().locationProvider().get(locationKey);
+  private void register(
+      String locationKey,
+      String profileName,
+      String title,
+      String subtitle,
+      ItemStack mainHand,
+      InteractionHandler handler) {
+    Optional<Location> optionalLocation =
+        de.rexlmanu.mlgrush.plugin.game.GameManager.instance().locationProvider().get(locationKey);
     if (optionalLocation.isEmpty()) {
       return;
     }
 
     Location location = optionalLocation.get().clone();
-    UserProfile profile = new UserProfile(UUID.nameUUIDFromBytes(("mlgrush:npc:" + profileName).getBytes()), profileName);
+    UserProfile profile =
+        new UserProfile(
+            UUID.nameUUIDFromBytes(("mlgrush:npc:" + profileName).getBytes()), profileName);
     NPC npc = new NPC(profile, ENTITY_IDS.getAndIncrement(), Component.empty());
     npc.setLocation(SpigotConversionUtil.fromBukkitLocation(location));
     npc.setMainHand(SpigotConversionUtil.fromBukkitItemStack(mainHand));
@@ -148,11 +195,15 @@ public class LobbyNpcManager implements Listener {
     if (channel == null) {
       return;
     }
-    this.npcs.forEach(npc -> {
-      npc.spawn(channel);
-      npc.hologram().send(player);
-      PacketEvents.getAPI().getPlayerManager().sendPacket(player, new WrapperPlayServerPlayerInfoRemove(npc.npc().getProfile().getUUID()));
-    });
+    this.npcs.forEach(
+        npc -> {
+          npc.spawn(channel);
+          npc.hologram().send(player);
+          PacketEvents.getAPI()
+              .getPlayerManager()
+              .sendPacket(
+                  player, new WrapperPlayServerPlayerInfoRemove(npc.npc().getProfile().getUUID()));
+        });
   }
 
   private Object channel(Player player) {
@@ -160,19 +211,24 @@ public class LobbyNpcManager implements Listener {
   }
 
   private void updateRotations() {
-    this.npcs.forEach(managedNpc -> {
-      Player nearest = Bukkit.getOnlinePlayers().stream()
-        .filter(player -> player.getWorld().equals(managedNpc.location().getWorld()))
-        .filter(player -> player.getLocation().distanceSquared(managedNpc.location()) <= 25)
-        .min(java.util.Comparator.comparingDouble(player -> player.getLocation().distanceSquared(managedNpc.location())))
-        .orElse(null);
-      if (nearest == null) {
-        return;
-      }
-      Location facing = managedNpc.location().clone();
-      facing.setDirection(nearest.getEyeLocation().toVector().subtract(facing.toVector()));
-      managedNpc.npc().updateRotation(facing.getYaw(), managedNpc.location().getPitch());
-    });
+    this.npcs.forEach(
+        managedNpc -> {
+          Player nearest =
+              Bukkit.getOnlinePlayers().stream()
+                  .filter(player -> player.getWorld().equals(managedNpc.location().getWorld()))
+                  .filter(
+                      player -> player.getLocation().distanceSquared(managedNpc.location()) <= 25)
+                  .min(
+                      java.util.Comparator.comparingDouble(
+                          player -> player.getLocation().distanceSquared(managedNpc.location())))
+                  .orElse(null);
+          if (nearest == null) {
+            return;
+          }
+          Location facing = managedNpc.location().clone();
+          facing.setDirection(nearest.getEyeLocation().toVector().subtract(facing.toVector()));
+          managedNpc.npc().updateRotation(facing.getYaw(), managedNpc.location().getPitch());
+        });
   }
 
   private final class PacketNpcInteractionListener extends PacketListenerAbstract {
@@ -196,46 +252,57 @@ public class LobbyNpcManager implements Listener {
         return;
       }
 
-      ManagedNpc managedNpc = LobbyNpcManager.this.npcs.stream()
-        .filter(npc -> npc.npc().getId() == wrapper.getEntityId())
-        .findFirst()
-        .orElse(null);
+      ManagedNpc managedNpc =
+          LobbyNpcManager.this.npcs.stream()
+              .filter(npc -> npc.npc().getId() == wrapper.getEntityId())
+              .findFirst()
+              .orElse(null);
       if (managedNpc == null) {
         return;
       }
 
-      Bukkit.getScheduler().runTask(GamePlugin.getProvidingPlugin(GamePlugin.class), () ->
-        PlayerProvider.find(player.getUniqueId()).ifPresent(gamePlayer -> managedNpc.handler().handle(gamePlayer)));
+      Bukkit.getScheduler()
+          .runTask(
+              GamePlugin.getProvidingPlugin(GamePlugin.class),
+              () ->
+                  PlayerProvider.find(player.getUniqueId())
+                      .ifPresent(gamePlayer -> managedNpc.handler().handle(gamePlayer)));
     }
   }
 
-  private record ManagedNpc(Location location, NPC npc, VirtualHologram hologram, InteractionHandler handler) {
+  private record ManagedNpc(
+      Location location, NPC npc, VirtualHologram hologram, InteractionHandler handler) {
 
     private void spawn(Object channel) {
       this.npc.spawn(channel);
-      PacketEvents.getAPI().getProtocolManager().sendPacket(channel, new WrapperPlayServerTeams(
-        "nh" + this.npc.getId(),
-        WrapperPlayServerTeams.TeamMode.CREATE,
-        new WrapperPlayServerTeams.ScoreBoardTeamInfo(
-          Component.text("nh" + this.npc.getId()),
-          Component.empty(),
-          Component.empty(),
-          WrapperPlayServerTeams.NameTagVisibility.NEVER,
-          WrapperPlayServerTeams.CollisionRule.ALWAYS,
-          null,
-          WrapperPlayServerTeams.OptionData.NONE
-        ),
-        this.npc.getProfile().getName()
-      ));
+      PacketEvents.getAPI()
+          .getProtocolManager()
+          .sendPacket(
+              channel,
+              new WrapperPlayServerTeams(
+                  "nh" + this.npc.getId(),
+                  WrapperPlayServerTeams.TeamMode.CREATE,
+                  new WrapperPlayServerTeams.ScoreBoardTeamInfo(
+                      Component.text("nh" + this.npc.getId()),
+                      Component.empty(),
+                      Component.empty(),
+                      WrapperPlayServerTeams.NameTagVisibility.NEVER,
+                      WrapperPlayServerTeams.CollisionRule.ALWAYS,
+                      null,
+                      WrapperPlayServerTeams.OptionData.NONE),
+                  this.npc.getProfile().getName()));
     }
 
     private void despawn(Object channel) {
       this.npc.despawn(channel);
-      PacketEvents.getAPI().getProtocolManager().sendPacket(channel, new WrapperPlayServerTeams(
-        "nh" + this.npc.getId(),
-        WrapperPlayServerTeams.TeamMode.REMOVE,
-        java.util.Optional.empty()
-      ));
+      PacketEvents.getAPI()
+          .getProtocolManager()
+          .sendPacket(
+              channel,
+              new WrapperPlayServerTeams(
+                  "nh" + this.npc.getId(),
+                  WrapperPlayServerTeams.TeamMode.REMOVE,
+                  java.util.Optional.empty()));
     }
 
     private void despawnAll() {

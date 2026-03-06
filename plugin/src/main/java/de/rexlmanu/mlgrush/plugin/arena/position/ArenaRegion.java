@@ -13,7 +13,6 @@ public class ArenaRegion {
 
   private int minX, minY, minZ;
   private int maxX, maxY, maxZ;
-
   private Location firstPoint, secondPoint;
 
   public ArenaRegion(Location firstPoint, Location secondPoint) {
@@ -34,23 +33,29 @@ public class ArenaRegion {
   }
 
   public boolean contains(Location location) {
-    return location.getX() > minX && location.getX() < maxX
-      && location.getY() > minY && location.getY() < 250 // replaced from maxY because we take full max
-      && location.getZ() > minZ && location.getZ() < maxZ;
+    return location.getX() > minX
+        && location.getX() < maxX
+        && location.getY() > minY
+        && location.getY() < 250 // replaced from maxY because we take full max
+        && location.getZ() > minZ
+        && location.getZ() < maxZ;
   }
 
   public void clear(Location location) {
-    Bukkit.getScheduler().runTask(GamePlugin.getProvidingPlugin(GamePlugin.class), () -> {
-      for (int x = 0; x < (maxX - minX); x++) {
-        for (int y = 0; y < (maxY - minY); y++) {
-          for (int z = 0; z < (maxZ - minZ); z++) {
-            Location add = location.clone().add(x, y, z);
-            if (!add.getBlock().getType().equals(Material.AIR)) {
-              add.getBlock().setType(Material.AIR);
-            }
-          }
-        }
-      }
-    });
+    Bukkit.getScheduler()
+        .runTask(
+            GamePlugin.getProvidingPlugin(GamePlugin.class),
+            () -> {
+              for (int x = 0; x < (maxX - minX); x++) {
+                for (int y = 0; y < (maxY - minY); y++) {
+                  for (int z = 0; z < (maxZ - minZ); z++) {
+                    Location add = location.clone().add(x, y, z);
+                    if (!add.getBlock().getType().equals(Material.AIR)) {
+                      add.getBlock().setType(Material.AIR);
+                    }
+                  }
+                }
+              }
+            });
   }
 }

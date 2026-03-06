@@ -7,19 +7,18 @@ import org.bukkit.Bukkit;
 
 public class ArenaPlayingTimeExtendCheckerTask implements Runnable {
   public ArenaPlayingTimeExtendCheckerTask() {
-    Bukkit.getScheduler().runTaskTimerAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 1);
+    Bukkit.getScheduler()
+        .runTaskTimerAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 1);
   }
 
   @Override
   public void run() {
-    ArenaManager arenaManager = GameManager
-      .instance()
-      .arenaManager();
-    arenaManager
-      .arenaContainer()
-      .activeArenas()
-      .stream()
-      .filter(arena -> (System.currentTimeMillis() - arena.gameStart()) > arena.configuration().maximalGameLength() * 1000)
-      .forEach(arenaManager::destroy);
+    ArenaManager arenaManager = GameManager.instance().arenaManager();
+    arenaManager.arenaContainer().activeArenas().stream()
+        .filter(
+            arena ->
+                (System.currentTimeMillis() - arena.gameStart())
+                    > arena.configuration().maximalGameLength() * 1000)
+        .forEach(arenaManager::destroy);
   }
 }

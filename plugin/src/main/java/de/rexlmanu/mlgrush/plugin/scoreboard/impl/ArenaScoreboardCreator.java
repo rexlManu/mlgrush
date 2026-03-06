@@ -10,6 +10,12 @@ import de.rexlmanu.mlgrush.plugin.scoreboard.ScoreboardCreator;
 import de.rexlmanu.mlgrush.plugin.scoreboard.packet.PacketTeamDefinition;
 import de.rexlmanu.mlgrush.plugin.utility.MessageFormat;
 import de.rexlmanu.mlgrush.plugin.utility.RandomElement;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import net.kyori.adventure.text.Component;
@@ -17,17 +23,11 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 @Getter
 @Accessors(fluent = true)
 public class ArenaScoreboardCreator implements ScoreboardCreator, Runnable {
-  private static final LegacyComponentSerializer LEGACY_SERIALIZER = LegacyComponentSerializer.legacySection();
+  private static final LegacyComponentSerializer LEGACY_SERIALIZER =
+      LegacyComponentSerializer.legacySection();
   private static final String SIDEBAR_TITLE = "&8« &a&lMLGRush &8»";
 
   private int currentAd;
@@ -35,7 +35,10 @@ public class ArenaScoreboardCreator implements ScoreboardCreator, Runnable {
 
   public ArenaScoreboardCreator() {
     this.currentAd = 0;
-    this.task = Bukkit.getScheduler().runTaskTimerAsynchronously(GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 20 * 3);
+    this.task =
+        Bukkit.getScheduler()
+            .runTaskTimerAsynchronously(
+                GamePlugin.getProvidingPlugin(GamePlugin.class), this, 0, 20 * 3);
   }
 
   @Override
@@ -49,67 +52,99 @@ public class ArenaScoreboardCreator implements ScoreboardCreator, Runnable {
   @Override
   public void updateLines(GamePlayer gamePlayer) {
     String[] ad = LobbyScoreboardCreator.ADS[this.currentAd];
-    GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(gamePlayer).ifPresent(arena -> {
-      GameTeam team;
-      try {
-        team = arena.getTeam(gamePlayer);
-      } catch (IllegalStateException e) {
-        return;
-      }
-      String enemy = arena.gameTeams()
-        .stream()
-        .filter(gameTeam -> !gameTeam.equals(team))
-        .map(GameTeam::members)
-        .map(RandomElement::of)
-        .filter(Objects::nonNull)
-        .map(target -> target.player().getName())
-        .findFirst()
-        .orElse("Unbekannt");
-      long seconds = (System.currentTimeMillis() - arena.gameStart()) / 1000;
-      if (!arena.configuration().showCps()) {
-        gamePlayer.scoreboardSession().clearBelowName();
-      }
-      gamePlayer.scoreboardSession().updateSidebar(SIDEBAR_TITLE, Stream.of(
-        "",
-        "&7Dein Gegner&8:",
-        "&8 » &a" + enemy,
-        "",
-        "&7Deine Punkte&8:",
-        "&8 » &a" + team.points(),
-        "",
-        "&7Arena&8:",
-        "&8 » &a" + arena.configuration().arenaTemplate().name(),
-        "",
-        "&7" + "Zeit" + "&8:",
-        String.format("&8 » &a%02d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60),
-        ""
-      ).map(MessageFormat::replaceColors).collect(Collectors.toList()));
-    });
+    GameManager.instance()
+        .arenaManager()
+        .arenaContainer()
+        .findArenaByPlayer(gamePlayer)
+        .ifPresent(
+            arena -> {
+              GameTeam team;
+              try {
+                team = arena.getTeam(gamePlayer);
+              } catch (IllegalStateException e) {
+                return;
+              }
+              String enemy =
+                  arena.gameTeams().stream()
+                      .filter(gameTeam -> !gameTeam.equals(team))
+                      .map(GameTeam::members)
+                      .map(RandomElement::of)
+                      .filter(Objects::nonNull)
+                      .map(target -> target.player().getName())
+                      .findFirst()
+                      .orElse("Unbekannt");
+              long seconds = (System.currentTimeMillis() - arena.gameStart()) / 1000;
+              if (!arena.configuration().showCps()) {
+                gamePlayer.scoreboardSession().clearBelowName();
+              }
+              gamePlayer
+                  .scoreboardSession()
+                  .updateSidebar(
+                      SIDEBAR_TITLE,
+                      Stream.of(
+                              "",
+                              "&7Dein Gegner&8:",
+                              "&8 » &a" + enemy,
+                              "",
+                              "&7Deine Punkte&8:",
+                              "&8 » &a" + team.points(),
+                              "",
+                              "&7Arena&8:",
+                              "&8 » &a" + arena.configuration().arenaTemplate().name(),
+                              "",
+                              "&7" + "Zeit" + "&8:",
+                              String.format(
+                                  "&8 » &a%02d:%02d:%02d",
+                                  seconds / 3600, (seconds % 3600) / 60, seconds % 60),
+                              "")
+                          .map(MessageFormat::replaceColors)
+                          .collect(Collectors.toList()));
+            });
   }
 
   @Override
   public void updateTablist(GamePlayer gamePlayer) {
-    GameManager.instance().arenaManager().arenaContainer().findArenaByPlayer(gamePlayer).ifPresent(arena -> {
-      List<PacketTeamDefinition> teams = new ArrayList<>();
-      LinkedHashMap<java.util.UUID, Component> displayNames = new LinkedHashMap<>();
-      arena.gameTeams().forEach(gameTeam -> {
-        List<String> entries = new ArrayList<>();
-        gameTeam.members().stream().map(GamePlayer::player).filter(Objects::nonNull).forEach(player -> {
-          entries.add(player.getName());
-          displayNames.put(player.getUniqueId(), this.component(GameManager.instance().nicknameService().displayName(player.getUniqueId(), player.getName())));
-        });
-        teams.add(new PacketTeamDefinition(
-          "20-" + gameTeam.name().key(),
-          this.component(String.valueOf(gameTeam.name().color())),
-          Component.empty(),
-          com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams.NameTagVisibility.ALWAYS,
-          com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams.CollisionRule.ALWAYS,
-          entries
-        ));
-      });
-      gamePlayer.scoreboardSession().applyTeams(teams);
-      gamePlayer.scoreboardSession().updateTabEntries(displayNames);
-    });
+    GameManager.instance()
+        .arenaManager()
+        .arenaContainer()
+        .findArenaByPlayer(gamePlayer)
+        .ifPresent(
+            arena -> {
+              List<PacketTeamDefinition> teams = new ArrayList<>();
+              LinkedHashMap<java.util.UUID, Component> displayNames = new LinkedHashMap<>();
+              arena
+                  .gameTeams()
+                  .forEach(
+                      gameTeam -> {
+                        List<String> entries = new ArrayList<>();
+                        gameTeam.members().stream()
+                            .map(GamePlayer::player)
+                            .filter(Objects::nonNull)
+                            .forEach(
+                                player -> {
+                                  entries.add(player.getName());
+                                  displayNames.put(
+                                      player.getUniqueId(),
+                                      this.component(
+                                          GameManager.instance()
+                                              .nicknameService()
+                                              .displayName(
+                                                  player.getUniqueId(), player.getName())));
+                                });
+                        teams.add(
+                            new PacketTeamDefinition(
+                                "20-" + gameTeam.name().key(),
+                                this.component(String.valueOf(gameTeam.name().color())),
+                                Component.empty(),
+                                com.github.retrooper.packetevents.wrapper.play.server
+                                    .WrapperPlayServerTeams.NameTagVisibility.ALWAYS,
+                                com.github.retrooper.packetevents.wrapper.play.server
+                                    .WrapperPlayServerTeams.CollisionRule.ALWAYS,
+                                entries));
+                      });
+              gamePlayer.scoreboardSession().applyTeams(teams);
+              gamePlayer.scoreboardSession().updateTabEntries(displayNames);
+            });
   }
 
   private Component component(String value) {

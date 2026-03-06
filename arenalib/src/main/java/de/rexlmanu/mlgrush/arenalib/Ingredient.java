@@ -1,10 +1,9 @@
 package de.rexlmanu.mlgrush.arenalib;
 
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
-
-import java.io.Serializable;
 
 @AllArgsConstructor
 @Data

@@ -9,15 +9,14 @@ public class LocationUtils {
    *
    * @param center location of the center point
    * @param target location that should get checked
-   * @param range  range that is used to check how far away the target can be
+   * @param range range that is used to check how far away the target can be
    * @return if the location is inside the range
    */
   public static boolean rangeContains(Location center, Location target, int range) {
     if (range == 0) return false;
     return target.getX() > Math.min(center.getX() + range, center.getX() - range)
-      && target.getX() < Math.max(center.getX() + range, center.getX() - range)
-      && target.getZ() > Math.min(center.getZ() + range, center.getZ() - range)
-      && target.getZ() < Math.max(center.getZ() + range, center.getZ() - range);
+        && target.getX() < Math.max(center.getX() + range, center.getX() - range)
+        && target.getZ() > Math.min(center.getZ() + range, center.getZ() - range)
+        && target.getZ() < Math.max(center.getZ() + range, center.getZ() - range);
   }
-
 }

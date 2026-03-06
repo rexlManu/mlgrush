@@ -24,6 +24,10 @@ public enum BlockEquipment implements Equipment, Buyable {
 
   @Override
   public void onEquip(GamePlayer gamePlayer, int slot) {
-    gamePlayer.player().getInventory().setItem(slot, ItemStackBuilder.of(this.material).amount(64).name(this.displayName).build());
+    gamePlayer
+        .player()
+        .getInventory()
+        .setItem(
+            slot, ItemStackBuilder.of(this.material).amount(64).name(this.displayName).build());
   }
 }

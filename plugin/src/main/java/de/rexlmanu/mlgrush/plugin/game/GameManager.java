@@ -20,6 +20,8 @@ import de.rexlmanu.mlgrush.plugin.stats.StatsHologramManager;
 import de.rexlmanu.mlgrush.plugin.utility.FlyingItem;
 import de.rexlmanu.mlgrush.plugin.utility.ItemStackBuilder;
 import de.rexlmanu.mlgrush.plugin.utility.cooldown.Cooldown;
+import java.io.File;
+import java.util.List;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.Bukkit;
@@ -37,12 +39,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
-import java.io.File;
-import java.util.List;
-
-/**
- * The main logic will get manages from here
- */
+/** The main logic will get manages from here */
 @Accessors(fluent = true)
 @Getter
 public class GameManager {
@@ -51,8 +48,7 @@ public class GameManager {
     new GameManager();
   }
 
-  @Getter
-  private static GameManager instance;
+  @Getter private static GameManager instance;
 
   private DatabaseContext databaseContext;
   private LocationProvider locationProvider;
@@ -88,37 +84,46 @@ public class GameManager {
 
     this.spectatorInventory = new SpectatorInventory();
     this.statsHologramManager = new StatsHologramManager();
-//    this.statsNPCProvider = new StatsNPCProvider();
+    //    this.statsNPCProvider = new StatsNPCProvider();
     this.queueCooldown = new Cooldown(1500);
     this.flyingItem = new FlyingItem();
-    this.flyingItem.setItemStack(ItemStackBuilder.of(Material.STICK).enchant(Enchantment.INFINITY, 1).build());
-    // Sometimes in development it happens when the server don't get nicely shutdown, the 'old' are still there and you can't use the new spawned one.
-    // Bukkit.getWorlds().stream().map(World::getLivingEntities).forEach(livingEntities -> livingEntities.forEach(Entity::remove));
+    this.flyingItem.setItemStack(
+        ItemStackBuilder.of(Material.STICK).enchant(Enchantment.INFINITY, 1).build());
+    // Sometimes in development it happens when the server don't get nicely shutdown, the 'old' are
+    // still there and you can't use the new spawned one.
+    // Bukkit.getWorlds().stream().map(World::getLivingEntities).forEach(livingEntities ->
+    // livingEntities.forEach(Entity::remove));
     Bukkit.getWorlds().forEach(world -> world.setDifficulty(Difficulty.EASY));
 
-    this.locationProvider.get("hologram").ifPresent(location -> {
-      this.flyingItem.setLocation(location);
-      this.flyingItem.setHeight(1.5);
-      this.flyingItem.spawn();
-    });
+    this.locationProvider
+        .get("hologram")
+        .ifPresent(
+            location -> {
+              this.flyingItem.setLocation(location);
+              this.flyingItem.setHeight(1.5);
+              this.flyingItem.spawn();
+            });
 
-    this.environments.forEach(gameEnvironment -> Bukkit.getPluginManager().registerEvents(gameEnvironment, GamePlugin.getProvidingPlugin(GamePlugin.class)));
+    this.environments.forEach(
+        gameEnvironment ->
+            Bukkit.getPluginManager()
+                .registerEvents(gameEnvironment, GamePlugin.getProvidingPlugin(GamePlugin.class)));
 
     // Cancel all basic events that are not necessary
     java.util.Arrays.asList(
-      FoodLevelChangeEvent.class,
-      WeatherChangeEvent.class,
-      PlayerDropItemEvent.class,
-      EntityPickupItemEvent.class,
-      PlayerArmorStandManipulateEvent.class,
-      PlayerBedEnterEvent.class,
-      PlayerItemDamageEvent.class,
-      BlockPhysicsEvent.class,
-      BlockSpreadEvent.class,
-      BlockGrowEvent.class,
-      BlockIgniteEvent.class,
-      EntityCombustEvent.class
-    ).forEach(EventCancel::on);
+            FoodLevelChangeEvent.class,
+            WeatherChangeEvent.class,
+            PlayerDropItemEvent.class,
+            EntityPickupItemEvent.class,
+            PlayerArmorStandManipulateEvent.class,
+            PlayerBedEnterEvent.class,
+            PlayerItemDamageEvent.class,
+            BlockPhysicsEvent.class,
+            BlockSpreadEvent.class,
+            BlockGrowEvent.class,
+            BlockIgniteEvent.class,
+            EntityCombustEvent.class)
+        .forEach(EventCancel::on);
   }
 
   public void onDisable() {
@@ -134,6 +139,7 @@ public class GameManager {
     player.getInventory().setItem(0, LobbyEnvironment.CHALLENGER_ITEM);
     player.getInventory().setItem(4, LobbyEnvironment.TUTORIAL_ITEM);
 
-    PlayerProvider.find(player.getUniqueId()).ifPresent(gamePlayer -> GameManager.instance().statsHologramManager().show(gamePlayer));
+    PlayerProvider.find(player.getUniqueId())
+        .ifPresent(gamePlayer -> GameManager.instance().statsHologramManager().show(gamePlayer));
   }
 }

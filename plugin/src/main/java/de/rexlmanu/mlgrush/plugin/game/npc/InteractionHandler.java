@@ -5,5 +5,4 @@ import de.rexlmanu.mlgrush.plugin.player.GamePlayer;
 public interface InteractionHandler {
 
   void handle(GamePlayer player);
-
 }

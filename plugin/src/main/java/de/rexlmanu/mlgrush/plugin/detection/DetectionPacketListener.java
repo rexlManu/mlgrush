@@ -28,7 +28,8 @@ public class DetectionPacketListener extends PacketListenerAbstract {
       return;
     }
 
-    PlayerProvider.find(player.getUniqueId()).ifPresent(gamePlayer -> this.handleReceive(gamePlayer, event));
+    PlayerProvider.find(player.getUniqueId())
+        .ifPresent(gamePlayer -> this.handleReceive(gamePlayer, event));
   }
 
   @Override
@@ -38,14 +39,16 @@ public class DetectionPacketListener extends PacketListenerAbstract {
       return;
     }
 
-    PlayerProvider.find(player.getUniqueId()).ifPresent(gamePlayer -> {
-      if (event.getPacketType() == PacketType.Play.Server.KEEP_ALIVE) {
-        WrapperPlayServerKeepAlive wrapper = new WrapperPlayServerKeepAlive(event);
-        Detection detection = gamePlayer.detection();
-        detection.startTransactionTime(System.currentTimeMillis());
-        detection.transactionId(wrapper.getId());
-      }
-    });
+    PlayerProvider.find(player.getUniqueId())
+        .ifPresent(
+            gamePlayer -> {
+              if (event.getPacketType() == PacketType.Play.Server.KEEP_ALIVE) {
+                WrapperPlayServerKeepAlive wrapper = new WrapperPlayServerKeepAlive(event);
+                Detection detection = gamePlayer.detection();
+                detection.startTransactionTime(System.currentTimeMillis());
+                detection.transactionId(wrapper.getId());
+              }
+            });
   }
 
   private void handleReceive(GamePlayer gamePlayer, PacketReceiveEvent event) {
@@ -70,14 +73,16 @@ public class DetectionPacketListener extends PacketListenerAbstract {
         detection.placing(false);
         return;
       }
-      if (!detection.digging() && System.currentTimeMillis() - detection.lastDiggingAction() > 1000L) {
+      if (!detection.digging()
+          && System.currentTimeMillis() - detection.lastDiggingAction() > 1000L) {
         detection.clicks(detection.clicks() + 1);
       }
       return;
     }
 
     if (event.getPacketType() == PacketType.Play.Client.PLAYER_BLOCK_PLACEMENT) {
-      WrapperPlayClientPlayerBlockPlacement wrapper = new WrapperPlayClientPlayerBlockPlacement(event);
+      WrapperPlayClientPlayerBlockPlacement wrapper =
+          new WrapperPlayClientPlayerBlockPlacement(event);
       if (wrapper.getBlockPosition() != null) {
         detection.places(detection.places() + 1);
         detection.placing(true);

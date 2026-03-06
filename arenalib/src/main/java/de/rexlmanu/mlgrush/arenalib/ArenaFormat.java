@@ -25,5 +25,4 @@ public class ArenaFormat {
       return Optional.empty();
     }
   }
-
 }

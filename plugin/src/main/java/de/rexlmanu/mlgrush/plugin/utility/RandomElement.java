@@ -10,5 +10,4 @@ public class RandomElement {
   public static <E> E of(List<E> list) {
     return list.get(RANDOM.nextInt(list.size()));
   }
-
 }

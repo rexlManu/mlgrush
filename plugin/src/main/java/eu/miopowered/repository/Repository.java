@@ -1,9 +1,8 @@
 package eu.miopowered.repository;
 
 import com.google.common.collect.ImmutableList;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Repository with all crud operations (create, read, update and delete)

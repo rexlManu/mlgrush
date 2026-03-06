@@ -18,12 +18,12 @@ public class EventCancel {
    * @param eventClass event
    */
   public static void on(@NotNull Class<? extends Event> eventClass) {
-    Bukkit.getPluginManager().registerEvent(
-      eventClass,
-      new Listener() {},
-      EventPriority.HIGHEST,
-      EVENT_EXECUTOR,
-      GamePlugin.getProvidingPlugin(GamePlugin.class)
-    );
+    Bukkit.getPluginManager()
+        .registerEvent(
+            eventClass,
+            new Listener() {},
+            EventPriority.HIGHEST,
+            EVENT_EXECUTOR,
+            GamePlugin.getProvidingPlugin(GamePlugin.class));
   }
 }
